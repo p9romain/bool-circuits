@@ -74,6 +74,7 @@ class open_digraph: # for open directed graph
         self.__inputs = inputs
         self.__outputs = outputs
         self.__nodes = {node.id:node for node in nodes} # self.nodes: <int,node> dict
+        self.__new_id = max(self.node_ids) + 1
     
     @property
     def input_ids(self):
@@ -120,6 +121,46 @@ class open_digraph: # for open directed graph
     @classmethod
     def empty(cls):
         return cls([],[],{})
+
+    @property
+    def new_id(self):
+        return self.__new_id
+
+    def add_edge(self, src, tgt):
+        if (not src in self.node_ids || not tgt in self.node_ids):
+            raise Exception(f'The node with id {src} or {tgt} does not exist.')
+
+        self.node_by_id(src).add_child_id(tgt)
+        self.node_by_id(tgt).add_child_id(src)
+
+    def add_edges(self, edges):
+        for (src, tgt) in edges:
+            self.add_edge(src, tgt)
+
+    def add_node(self, label = '', parents = None, children = None):
+        for l in [parents, children]:
+            if l is None: l = {}
+            else:
+                # it's a security
+                notin = list(set(l.keys()) - set(self.node_ids))
+                for key in notin:
+                    del l[key]
+
+        n = node(self.__new_id, label, parents, children)
+        self.__nodes[n.id] = n
+        self.__new_id += 1
+
+        return n.id
+
+    def add_input_node(self, label = '', children = None):
+        nodeId = self.add_node(label, None, children)
+        self.add_input_id(nodeId)
+        return nodeId
+
+    def add_output_node(self, label = '', parents = None):
+        nodeId = self.add_node(label, parents, None)
+        self.add_output_id(nodeId)
+        return nodeId
 
     def __str__(self):
         V = [ v.__label for v in self.__nodes.values() ]
