@@ -239,6 +239,7 @@ class open_digraph: # for open directed graph
         if (not src in self.node_ids || not tgt in self.node_ids):
             raise Exception(f'The node with id {src} or {tgt} does not exist.')
 
+        # non-orienté ? à demander
         self.node_by_id(src).add_child_id(tgt)
         self.node_by_id(tgt).add_child_id(src)
 
@@ -250,11 +251,10 @@ class open_digraph: # for open directed graph
         for l in [parents, children]:
             if l is None: l = {}
             else:
-                # it's a security
+                # par sécurité
                 notin = list(set(l.keys()) - set(self.node_ids))
                 for key in notin:
                     del l[key]
-
         n = node(self.__new_id, label, parents, children)
         self.__nodes[n.id] = n
         self.__new_id += 1
