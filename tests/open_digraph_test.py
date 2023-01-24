@@ -63,7 +63,6 @@ class NodeTest(unittest.TestCase):
         self.remove_child_id(0)
         self.remove_parent_id(1)
 
-
         self.assertEqual(self.n0.parent_ids, [1, 4])
         self.assertEqual(self.n0.parents, [3, 1])
         self.assertEqual(self.n0.child_ids, [7, 2])
@@ -77,10 +76,10 @@ class Open_DigraphTest(unittest.TestCase):
         n0 = node(0, 'a', {3:1, 4:1}, {1:1, 2:1})
         n1 = node(1, 'b', {0:1}, {2:2, 5:1})
         n2 = node(2, 'c', {0:1, 1:2}, {6:1})
-        i0 = node(3, 'i0', None, {0:1})
-        i1 = node(4, 'i1', None, {0:1})
-        o0 = node(5, 'o0', {1:1}, None)
-        o1 = node(6, 'o1', {2:1}, None)
+        i0 = node(3, 'i0', {}, {0:1})
+        i1 = node(4, 'i1', {}, {0:1})
+        o0 = node(5, 'o0', {1:1}, {})
+        o1 = node(6, 'o1', {2:1}, {})
         self.g0 = open_digraph([3,4], [5,6], [n0,n1,n2,i0,i1,o0,o1])
         
     def test_init(self):
@@ -106,10 +105,10 @@ class Open_DigraphTest(unittest.TestCase):
             [node(0, 'a', {3:1, 4:1}, {1:1, 2:1}),
              node(1, 'b', {0:1}, {2:2, 5:1}),
              node(2, 'c', {0:1, 1:2}, {6:1}),
-             node(3, 'i0', None, {0:1}),
-             node(4, 'i1', None, {0:1}),
-             node(5, 'o0', {1:1}, None),
-             node(6, 'o1', {2:1}, None)
+             node(3, 'i0', {}, {0:1}),
+             node(4, 'i1', {}, {0:1}),
+             node(5, 'o0', {1:1}, {}),
+             node(6, 'o1', {2:1}, {})
              ])
         self.assertEqual(self.g0.nodes_ids, [ i for i in range(7) ])
         self.assertEqual(self.g0.get_node_by_id(4), node(4, 'i1', {}, {0:1}))
@@ -139,9 +138,9 @@ class Open_DigraphTest(unittest.TestCase):
              node(1, 'b', {0:1}, {2:2, 5:1, 3:1}),
              node(2, 'c', {0:1, 1:2}, {6:1}),
              node(3, 'i0', {1: 1}, {0:1}),
-             node(4, 'i1', None, {0:1}),
-             node(5, 'o0', {1:1}, None),
-             node(6, 'o1', {2:1}, None)
+             node(4, 'i1', {}, {0:1}),
+             node(5, 'o0', {1:1}, {}),
+             node(6, 'o1', {2:1}, {})
              ])
 
         self.g0.add_edges([(0, 0), (1, 3), (1, 5)])
@@ -150,9 +149,9 @@ class Open_DigraphTest(unittest.TestCase):
              node(1, 'b', {0:1}, {2:2, 5:2, 3:2}),
              node(2, 'c', {0:1, 1:2}, {6:1}),
              node(3, 'i0', {1: 2}, {0:1}),
-             node(4, 'i1', None, {0:1}),
-             node(5, 'o0', {1:2}, None),
-             node(6, 'o1', {2:1}, None)
+             node(4, 'i1', {}, {0:1}),
+             node(5, 'o0', {1:2}, {}),
+             node(6, 'o1', {2:1}, {})
              ])
 
         self.setUp()
@@ -175,7 +174,7 @@ class Open_DigraphTest(unittest.TestCase):
              node(3, 'i0', {1: 2}, {0:1, 11:1}),
              node(4, 'i1', {10:1}, {0:1}),
              node(5, 'o0', {1:2, 11:2}, {11:2}),
-             node(6, 'o1', {2:1}, None),
+             node(6, 'o1', {2:1}, {}),
              node(7, '', {}, {}),
              node(8, 'd', {}, {}),
              node(9, '', {1:2, 2:5}, {}),
@@ -186,6 +185,8 @@ class Open_DigraphTest(unittest.TestCase):
         self.setUp()
 
     def test_remove(self):
+
+        self.setUp()
 
     def test_well_formed(self):
         self.assertEqual(self.g0.is_well_formed(), True)
