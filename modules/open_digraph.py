@@ -62,7 +62,7 @@ class node:
         return self.__parents.keys()
         
     @property
-    def children_ids(self):
+    def child_ids(self):
         return self.__children.keys()
         
     @id.setter
@@ -122,6 +122,35 @@ class node:
             self.__parents[i] += 1
         else:
             self.__parents[i] = 1
+       
+    def remove_parent_once(self, i):
+        if not isistance(i, int):
+            raise TypeError("Given argument must be an integer")
+        
+        if i in self.parent_ids:
+            if self.__parents[i] == 1: self.__parents.pop(i)
+            else: self.__parents[i] -= 1
+            
+    def remove_parent_id(self, i):
+        if not isistance(i, int):
+            raise TypeError("Given argument must be an integer")
+            
+        if i in self.parent_ids: self.__parents.pop(i)
+        
+    def remove_child_once(self, i):
+        if not isistance(i, int):
+            raise TypeError("Given argument must be an integer")
+        
+        if i in self.child_ids:
+            if self.__children[i] == 1: self.__children.pop(i)
+            else: self.__children[i] -= 1
+            
+    def remove_child_id(self, i):
+        if not isistance(i, int):
+            raise TypeError("Given argument must be an integer")
+            
+        if i in self.child_ids: self.__children.pop(i)
+        
     
 class open_digraph: # for open directed graph
     def __init__(self, inputs, outputs, nodes):
@@ -239,9 +268,29 @@ class open_digraph: # for open directed graph
         if (not src in self.node_ids || not tgt in self.node_ids):
             raise Exception(f'The node with id {src} or {tgt} does not exist.')
 
-        # non-orienté ? à demander
         self.node_by_id(src).add_child_id(tgt)
-        self.node_by_id(tgt).add_child_id(src)
+        self.node_by_id(tgt).add_parent_id(src)
+
+    def add_edges(self, edges):
+        for (src, tgt) in edges:
+            self.add_edge(src, tgt)
+            
+    def remove_edge(self, src, tgt):
+        if (not src in self.node_ids || not tgt in self.node_ids):
+            raise Exception(f'The node with id {src} or {tgt} does not exist.')
+
+        self.node_by_id(src).remove_child_once(tgt)
+        self.node_by_id(tgt).remove_parent_once(src)
+        
+    def remove_parallel_edges(self, src, tgt):
+        if (not src in self.node_ids || not tgt in self.node_ids):
+            raise Exception(f'The node with id {src} or {tgt} does not exist.')
+
+        self.node_by_id(src).remove_parent_id(tgt)
+        self.node_by_id(tgt).remove_child_id(src)
+
+    def remove_node_by_id(self, i):
+        
 
     def add_edges(self, edges):
         for (src, tgt) in edges:
