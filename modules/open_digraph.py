@@ -37,6 +37,8 @@ class node:
 
         self.__id = identity
         self.__label = label
+        
+        # to do : simplifier si la multiplicité est nulle
         self.__parents = parents
         self.__children = children
         
@@ -59,12 +61,20 @@ class node:
         
     @property
     def parent_ids(self):
-        return self.__parents.keys()
+        return list(self.__parents.keys())
         
     @property
     def child_ids(self):
-        return self.__children.keys()
+        return list(self.__children.keys())
+    
+    @property
+    def parents(self):
+        return self.__parents
         
+    @property
+    def children(self):
+        return self.__children
+    
     @id.setter
     def id(self, i):
         if not isistance(i, int):
@@ -201,11 +211,11 @@ class open_digraph: # for open directed graph
     
     @property
     def nodes(self):
-        return self.__nodes.values()
+        return list(self.__nodes.values())
         
     @property
     def node_ids(self):
-        return self.__nodes.keys()
+        return list(self.__nodes.keys())
         
     def node_by_id(self, i):
         if not isistance(i, int):
@@ -275,26 +285,48 @@ class open_digraph: # for open directed graph
         for (src, tgt) in edges:
             self.add_edge(src, tgt)
             
-    def remove_edge(self, src, tgt):
-        if (not src in self.node_ids || not tgt in self.node_ids):
-            raise Exception(f'The node with id {src} or {tgt} does not exist.')
+    def remove_edge(self, args):
+        def f(src, tgt):
+            if (not src in self.node_ids || not tgt in self.node_ids):
+                raise Exception(f'The node with id {src} or {tgt} does not exist.')
 
-        self.node_by_id(src).remove_child_once(tgt)
-        self.node_by_id(tgt).remove_parent_once(src)
+            self.node_by_id(src).remove_child_once(tgt)
+            self.node_by_id(tgt).remove_parent_once(src)
+            
         
-    def remove_parallel_edges(self, src, tgt):
-        if (not src in self.node_ids || not tgt in self.node_ids):
-            raise Exception(f'The node with id {src} or {tgt} does not exist.')
-
-        self.node_by_id(src).remove_parent_id(tgt)
-        self.node_by_id(tgt).remove_child_id(src)
-
-    def remove_node_by_id(self, i):
+        if isinstance(args, list):
+            for arg in args: f(arg[0],arg[1])
+        else: f(args[0],args[1])
         
+    def remove_parallel_edge(self, args):
+        def f(src, tgt):
+            if (not src in self.node_ids || not tgt in self.node_ids):
+                raise Exception(f'The node with id {src} or {tgt} does not exist.')
 
-    def add_edges(self, edges):
-        for (src, tgt) in edges:
-            self.add_edge(src, tgt)
+            self.node_by_id(src).remove_parent_id(tgt)
+            self.node_by_id(tgt).remove_child_id(src)
+            
+        if isinstance(args, list):
+            for arg in args: f(arg[0],arg[1])
+        else: f(args[0],args[1])
+
+    def remove_node_by_id(self, args):
+        def f(i):
+            for j in self.node_by_id(i).parent_ids:
+                self.remove_parallel_edges((j, i))
+                
+            for j in self.node_by_id(i).children_ids:
+                self.remove_parallel_edges((i, j))
+                
+            if i in self.input_ids: self.input_ids.remove(i)
+            if i in self.output_ids: self.output_ids.remove(i)
+            
+            self.__nodes.pop(i)
+        
+        if isinstance(args, list):
+            for arg in args: f(arg)
+        else: f(args)
+        
 
     def add_node(self, label = '', parents = None, children = None):
         for l in [parents, children]:
@@ -304,21 +336,28 @@ class open_digraph: # for open directed graph
                 notin = list(set(l.keys()) - set(self.node_ids))
                 for key in notin:
                     del l[key]
-        n = node(self.__new_id, label, parents, children)
+        n = node(self.__new_id, label, {}, {})
         self.__nodes[n.id] = n
         self.__new_id += 1
+        
+        self.add_edges( [ (i, n.id) for j in self.parents[i] for i in self.parent_ids ] )
+        self.add_edges( [ (n.id, i) for j in self.children[i] for i in self.children_ids ] )
 
         return n.id
 
     def add_input_node(self, label = '', children = None):
-        nodeId = self.add_node(label, None, children)
-        self.add_input_id(nodeId)
-        return nodeId
+        if (len(children.keys()) == 1 and children.keys()[0] in self.node_ids and children.values()[0] == 1):
+            nodeId = self.add_node(label, None, children)
+            self.add_input_id(nodeId)
+            return nodeId
+        else: raise Exception("LOL")
 
     def add_output_node(self, label = '', parents = None):
-        nodeId = self.add_node(label, parents, None)
-        self.add_output_id(nodeId)
-        return nodeId
+        if (len(parents.keys()) == 1 and parents.keys()[0] in self.node_ids and parents.values()[0] == 1):
+            nodeId = self.add_node(label, parents, None)
+            self.add_output_id(nodeId)
+            return nodeId
+        else: raise Exception("LOL")
 
     def __str__(self):
         V = [ v.__label for v in self.__nodes.values() ]
@@ -336,3 +375,22 @@ class open_digraph: # for open directed graph
         
     def copy(self):
         return self.__init__(self.__inputs, self.__outputs, self.__nodes.values())
+        
+    def is_well_formed(self):
+        b_inputs = all(item in self.node_ids for item in self.input_ids)
+        b_outputs = all(item in self.node_ids for item in self.output_ids)
+        b_inputs_only_one_child = all(len(n.child_ids) == 1 && n.children[n.child_ids[0]] == 1 for n in self.nodes_by_ids(self.input_ids).values())
+        b_outputs_only_one_child = all(len(n.parent_ids) == 1 && n.parents[n.parent_ids[0]] == 1 for n in self.nodes_by_ids(self.output_ids).values())
+        b_nodes = all(e for e in [ i == n.id for (i, n) in self.__nodes.items() ])
+        def assert_children(n):
+            return all(self.node_by_id(i).parents[n.id] == m for (i, m) in n.children.items())
+        def assert_parents(n):
+            return all(self.node_by_id(i).children[n.id] == m for (i, m) in n.parents.items())
+        b_mul = all(assert_children(n) && assert_parents(n) for n in self.nodes)
+        
+        return b_inputs && b_outputs && b_inputs_only_one_child && b_outputs_only_one_child && b_nodes && b_mul
+    
+    def assert_is_well_formed(self):
+        if self.is_well_formed(): return True
+        else: raise Exception("Graph is not well formed.")
+        
