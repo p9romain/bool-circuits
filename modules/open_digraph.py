@@ -41,12 +41,16 @@ class node:
         self.__parents = { p: m for (p, m) in parents.items() if m != 0 }
         self.__children = { c: m for (c, m) in children.items() if m != 0 }
         
+    
+
     def copy(self):
         """
         Overload copy operator
         """
         return self.__init__(self.__id, self.__label, self.__parents, self.__children)
     
+    
+
     @property
     def id(self) -> int :
         """
@@ -54,6 +58,8 @@ class node:
         """
         return self.__id
         
+    
+
     @property
     def label(self) -> str :
         """
@@ -61,6 +67,8 @@ class node:
         """
         return self.__label
         
+    
+
     @property
     def parent_ids(self) -> list[int] :
         """
@@ -68,13 +76,17 @@ class node:
         """
         return list(self.__parents.keys())
         
+    
+
     @property
-    def child_ids(self) -> list[int] :
+    def children_ids(self) -> list[int] :
         """
         Getter for the ids of the node's children
         """
         return list(self.__children.keys())
     
+    
+
     @property
     def parents(self) -> dict[int, int]:
         """
@@ -82,6 +94,8 @@ class node:
         """
         return self.__parents
         
+    
+
     @property
     def children(self) -> dict[int, int]:
         """
@@ -89,6 +103,8 @@ class node:
         """
         return self.__children
     
+    
+
     @id.setter
     def id(self, i : int) -> None :
         """
@@ -99,6 +115,8 @@ class node:
 
         self.__id = i
         
+    
+
     @label.setter
     def label(self, l : str) -> None :
         """
@@ -109,6 +127,8 @@ class node:
 
         self.__label = l
         
+    
+
     @parents.setter
     def parents(self, p : dict[int, int]) -> None :
         """
@@ -125,6 +145,8 @@ class node:
 
         self.__parents = p
         
+    
+
     @children.setter
     def children(self, c : dict[int, int]) -> None :
         """
@@ -141,24 +163,34 @@ class node:
 
         self.__children = c
         
+    
+
     def __str__(self) -> str :
         """
         Overload str conversion
         """
         return f"[Node] (id = {self.__id}, label = {self.__label}, parents = {self.__parents}, children = {self.__children})"
         
+    
+
     def __repr__(self) -> str :
         """
         Overload repr conversion (= str)
         """
         return self.__str__()
 
+    
+
     def __eq__(self, other) -> bool :
         return (self.id == other.id) and (self.label == other.label) and (self.parents == other.parents) and (self.children == other.children)
+
+    
 
     def __neq__(self, other) -> bool :
         return not self == other
         
+    
+
     def add_child_id(self, i : int) -> None :
         """
         Adds the child of id [i] to the node : if it's already a child, add 1 to the multiplicity, else it just adds the child
@@ -171,6 +203,8 @@ class node:
         else:
             self.children[i] = 1
             
+    
+
     def add_parent_id(self, i : int) -> None :
         """
         Adds the parent of id [i] to the node : if it's already a parent, add 1 to the multiplicity, else it just adds the parent
@@ -183,6 +217,8 @@ class node:
         else:
             self.parents[i] = 1
        
+    
+
     def remove_parent_once(self, i : int) -> None :
         """
         Removes one to the multiplicity of the parent of id [i] : if it drops to 0, we get rid of it
@@ -194,6 +230,8 @@ class node:
             if self.parents[i] == 1: self.parents.pop(i)
             else: self.parents[i] -= 1
             
+    
+
     def remove_parent_id(self, i : int) -> None :
         """
         Removes the parent of id [i]
@@ -203,6 +241,8 @@ class node:
             
         if i in self.parent_ids: self.parents.pop(i)
         
+    
+
     def remove_child_once(self, i : int) -> None :
         """
         Removes one to the multiplicity of the child of id [i] : if it drops to 0, we get rid of it
@@ -210,10 +250,12 @@ class node:
         if not isinstance(i, int):
             raise TypeError("Given argument must be an integer")
         
-        if i in self.child_ids:
+        if i in self.children_ids:
             if self.children[i] == 1: self.children.pop(i)
             else: self.children[i] -= 1
             
+    
+
     def remove_child_id(self, i: int) -> None :
         """
         Removes the child of id [i]
@@ -221,14 +263,14 @@ class node:
         if not isinstance(i, int):
             raise TypeError("Given argument must be an integer")
             
-        if i in self.child_ids: self.children.pop(i)
+        if i in self.children_ids: self.children.pop(i)
         
     
 class open_digraph: # for open directed graph
     def __init__(self, inputs : list[int], outputs : list[int], nodes : iter) -> None:
         '''
-        inputs_ids: int list; the ids of the input nodes
-        outputs_ids: int list; the ids of the output nodes
+        inputs: int list; the ids of the input nodes
+        outputs: int list; the ids of the output nodes
         nodes: node iter;
         '''
         # Comme pour les dictionnaires plus haut
@@ -236,13 +278,13 @@ class open_digraph: # for open directed graph
             raise TypeError("Inputs must be a list")
         types = set(type(k) for k in inputs)
         if len(types) >= 1 and list(types)[0] != int :
-            raise TypeError("Elements in inputs_ids must all be integers")
+            raise TypeError("Elements in inputs must all be integers")
 
         if not isinstance(outputs, list):
             raise TypeError("Outputs must be a list")
         types = set(type(k) for k in outputs)
         if len(types) >= 1 and list(types)[0] != int :
-            raise TypeError("Elements in outputs_ids must all be integers")
+            raise TypeError("Elements in outputs must all be integers")
 
         # On teste si c'est un itérateur quelconque
         try:
@@ -258,7 +300,10 @@ class open_digraph: # for open directed graph
         self.__outputs_ids = outputs
         self.__nodes = {node.id:node for node in nodes} # self.nodes: <int,node> dict
         self.__new_id = (max(list(self.__nodes.keys())) + 1) if self.__nodes != {} else 0
+ 
     
+
+    # can be useful maybe   
     @property
     def inputs(self) -> dict[int, node] :
         """
@@ -266,20 +311,28 @@ class open_digraph: # for open directed graph
         """
         return { i:self.__nodes[i] for i in self.__inputs_ids }
 
+    
+
+    # can be useful maybe
     @property
     def inputs_list(self) -> list[int] :
         """
         Getter for the graph's inputs
         """
-        return [ self.__nodes[i] for i in self.__inputs.ids]
+        return [ self.__nodes[i] for i in self.__inputs_ids ]
+
+    
 
     @property
     def inputs_ids(self) -> list[int] :
         """
-        Getter for the graph's inputs ids
+        Getter for the graph's input's ids
         """
         return self.__inputs_ids
+
     
+
+    # can be useful maybe    
     @property
     def outputs(self) -> dict[int, node] :
         """
@@ -287,20 +340,27 @@ class open_digraph: # for open directed graph
         """
         return { i:self.__nodes[i] for i in self.__outputs_ids }
 
+    
+
+    # can be useful maybe
     @property
     def outputs_list(self) -> list[int] :
         """
         Getter for the graph's outputs
         """
-        return [ self.__nodes[i] for i in self.__outputs.ids ]
+        return [ self.__nodes[i] for i in self.__outputs_ids ]
+
+    
 
     @property
     def outputs_ids(self) -> list[int] :
         """
-        Getter for the graph's outputs ids
+        Getter for the graph's output's ids
         """
         return self.__outputs_ids
     
+    
+
     # id_nodes_map rename
     @property
     def nodes(self) -> dict[int, node] :
@@ -309,6 +369,8 @@ class open_digraph: # for open directed graph
         """
         return self.__nodes
     
+    
+
     # nodes rename
     @property
     def nodes_list(self) -> list[node] :
@@ -317,6 +379,8 @@ class open_digraph: # for open directed graph
         """
         return list(self.nodes.values())
         
+    
+
     @property
     def nodes_ids(self) -> list[int] :
         """
@@ -324,6 +388,8 @@ class open_digraph: # for open directed graph
         """
         return list(self.nodes.keys())
  
+    
+
     @property
     def new_id(self) -> int :
         """
@@ -331,6 +397,8 @@ class open_digraph: # for open directed graph
         """
         self.__new_id += 1
         return self.__new_id - 1
+
+    
 
     @inputs_ids.setter
     def inputs_ids(self, i : list[int]) -> None :
@@ -340,8 +408,14 @@ class open_digraph: # for open directed graph
         if len(types) >= 1 and list(types)[0] != int :
             raise TypeError("Elements in the given argument must all be integers")
 
+        for k in i :
+            if not k in self.nodes_ids:
+                raise Exception("Given input isn't in the graph")
+
         self.__inputs_ids = i
         
+    
+
     @outputs_ids.setter
     def outputs_ids(self, o : list[int]) -> None :
         if not isinstance(o, list):
@@ -350,7 +424,13 @@ class open_digraph: # for open directed graph
         if len(types) >= 1 and list(types)[0] != int :
             raise TypeError("Elements in the given argument must all be integers")
 
+        for k in o :
+            if not k in self.nodes_ids:
+                raise Exception("Given output isn't in the graph")
+
         self.__outputs_ids = o
+
+    
 
     def node_by_id(self, i : int) -> node :
         """
@@ -361,6 +441,8 @@ class open_digraph: # for open directed graph
 
         return self.nodes[i]
         
+    
+
     def nodes_by_ids(self, l : list[int]) -> dict[int, node] :
         """
         ''Getter'' for the graph's nodes of ids [l]
@@ -375,6 +457,8 @@ class open_digraph: # for open directed graph
         # on renvoie un dictionnaire comme ça c'est plus simple pour retrouver 
         # le noeud d'id i, vu que c'est une hash table
     
+    
+
     def add_input_id(self, i : int) -> None :
         """
         Adds the node of id [i] as an input 
@@ -387,6 +471,8 @@ class open_digraph: # for open directed graph
         if not i in self.inputs_ids:
             self.inputs_ids.append(i)
             
+    
+
     def add_output_id(self, i : int) -> None:
         """
         Adds the node of id [i] as an output 
@@ -399,6 +485,8 @@ class open_digraph: # for open directed graph
         if not i in self.outputs_ids:
             self.outputs_ids.append(i)
 
+    
+
     @classmethod
     def empty(cls):
         """
@@ -406,129 +494,7 @@ class open_digraph: # for open directed graph
         """
         return cls([],[],{})
 
-    def add_edge(self, src : int, tgt : int) -> None :
-        """
-        Adds an edge from the node of id [src] to the node of id [tgt]
-
-        NON-ORIENTED GRAPH 
-        """
-        if not isinstance(src, int):
-            raise TypeError("Src must be an integer")
-        if not isinstance(tgt, int):
-            raise TypeError("Tgt must be an integer")
-
-        if (not src in self.nodes_ids or not tgt in self.nodes_ids):
-            raise Exception(f'The node with id {src} or {tgt} does not exist.')
-
-        self.node_by_id(src).add_child_id(tgt)
-        self.node_by_id(tgt).add_parent_id(src)
-
-    def add_edges(self, edges : list[(int, int)]) -> None :
-        """
-        Adds edges between several nodes list[(src node's id, tgt node's id)]
-
-        NON-ORIENTED GRAPH 
-        """
-        if not isinstance(edges, list):
-            raise TypeError("Given argument must be a list")
-        types = set(type(k) for k in edges)
-        if len(types) >= 1 and list(types)[0] != tuple :
-            raise TypeError("Elements in the given argument must all be tuples")
-        if len(edges[0]) != 2 or not isinstance(edges[0][0], int) or not isinstance(edges[0][1], int) :
-            raise TypeError("Elements in the given argument must all be tuples of two integers")
-
-        for (src, tgt) in edges:
-            self.add_edge(src, tgt)
     
-    # peut-être faire le truc des args dans add_edges too ?        
-    def remove_edge(self, args : list[(int, int)] or (int, int)) -> None :
-        """
-        Removes one edge between two or several nodes' pair (src -> tgt)
-
-        NON-ORIENTED GRAPH 
-        """
-        def f(src : int, tgt : int) -> None:
-            if (not src in self.nodes_ids or not tgt in self.nodes_ids):
-                raise Exception(f'The node with id {src} or {tgt} does not exist.')
-
-            self.node_by_id(src).remove_child_once(tgt)
-            self.node_by_id(tgt).remove_parent_once(src)
-            
-        
-        if isinstance(args, list) :
-            types = set(type(k) for k in args)
-            if len(types) >= 1 and list(types)[0] != tuple :
-                raise TypeError("Elements in the given argument must all be tuples")
-            if len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) :
-                raise TypeError("Elements in the given argument must all be tuples of two integers")
-            for arg in args: f(arg[0],arg[1])
-
-        elif isinstance(args, tuple) : 
-            if len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) :
-                raise TypeError("Given argument must all be tuples of two integers")
-            f(args[0],args[1])
-
-        else:
-            raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
-    
-    # peut-être faire le truc des args dans add_edges too ?    
-    def remove_parallel_edge(self, args : list[(int, int)] or (int, int)) -> None :
-        """
-        Removes all the edges between two or several nodes' pair (src -> tgt)
-
-        NON-ORIENTED GRAPH 
-        """
-        def f(src : int, tgt : int) -> None:
-            if (not src in self.nodes_ids or not tgt in self.nodes_ids):
-                raise Exception(f'The node with id {src} or {tgt} does not exist.')
-
-            self.node_by_id(src).remove_parent_id(tgt)
-            self.node_by_id(tgt).remove_child_id(src)
-            
-        if isinstance(args, list) :
-            types = set(type(k) for k in args)
-            if len(types) >= 1 and list(types)[0] != tuple :
-                raise TypeError("Elements in the given argument must all be tuples")
-            if len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) :
-                raise TypeError("Elements in the given argument must all be tuples of two integers")
-            for arg in args: f(arg[0],arg[1])
-
-        elif isinstance(args, tuple) : 
-            if len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) :
-                raise TypeError("Given argument must all be tuples of two integers")
-            f(args[0],args[1])
-
-        else:
-            raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
-
-    def remove_node_by_id(self, args : list[int] or int) -> None:
-        """
-        Removes the node of the give id (or several nodes with a id list) 
-        """
-        def f(i : int) -> None:
-            for j in self.node_by_id(i).parent_ids:
-                self.remove_parallel_edges((j, i))
-                
-            for j in self.node_by_id(i).child_ids:
-                self.remove_parallel_edges((i, j))
-                
-            if i in self.inputs_ids: self.inputs_ids.remove(i)
-            if i in self.outputs_ids: self.outputs_ids.remove(i)
-            
-            self.nodes.pop(i)
-        
-        if isinstance(args, list) :
-            types = set(type(k) for k in args)
-            if len(types) >= 1 and list(types)[0] != int :
-                raise TypeError("Elements in the given argument must all be integers")
-            for arg in args: f(arg)
-
-        elif isinstance(args, int) : 
-            f(args)
-
-        else:
-            raise TypeError("Given argument must be a list of integers, or just one integer")
-        
 
     def add_node(self, label : str = '', parents : dict[int, int] = None, children : dict[int, int] = None) -> int :
         """
@@ -557,22 +523,37 @@ class open_digraph: # for open directed graph
             if len(types) >= 1 and list(types)[0] != int :
                 raise TypeError("The values of children must all be integers")
 
-        for l in [parents, children]:
+        # ne fonctionne pas :(
+        #
+        # for l in [parents, children]:
+        #     if l is None: l = {}
+        #     else:
+        #         # par sécurité
+        #         notin = list(set(l.keys()) - set(self.nodes_ids))
+        #         for key in notin:
+        #             del l[key]
+        def f(l):
             if l is None: l = {}
             else:
                 # par sécurité
                 notin = list(set(l.keys()) - set(self.nodes_ids))
                 for key in notin:
                     del l[key]
+            return l
+
+        parents = f(parents)
+        children = f(children)
+
         n = node(self.new_id, label, {}, {})
         self.nodes[n.id] = n
         
-        self.add_edges( [ (i, n.id) for _ in range(parents[i]) for i in parents.keys() ] )
-        self.add_edges( [ (n.id, i) for _ in range(children[i]) for i in children.keys() ] )
+        self.add_edges( [ (i, n.id) for i in parents.keys() for _ in range(parents[i]) ] )
+        self.add_edges( [ (n.id, i) for i in children.keys() for _ in range(children[i]) ] )
 
         return n.id
 
-    # todo : better checking of conditions
+    
+
     def add_input_node(self, label : str = '', children : dict[int, int] = None) -> int :
         """
         Adds an intput node with given argument (label and its children)
@@ -589,19 +570,23 @@ class open_digraph: # for open directed graph
             types = set(type(k) for k in children.values())
             if len(types) >= 1 and list(types)[0] != int :
                 raise TypeError("The values of children must all be integers")
-
-        if len(children) != 1 :
-            raise Exception("Children must have one element")
-        if not children.keys()[0] in self.nodes_ids :
-            raise Exception("Given child must be in the graph")
-        if children.values()[0] != 1 :
-            raise Exception("Given child must have multiplicity of one")
+            
+            if len(children) > 1 :
+                raise Exception("Children must have at most one element")
+            if children != {}:
+                if not list(children.keys())[0] in self.nodes_ids :
+                    raise Exception("Given child must be in the graph")
+                if list(children.values())[0] != 1 :
+                    raise Exception("Given child must have multiplicity of one")
 
         nodeId = self.add_node(label, None, children)
         self.add_input_id(nodeId)
         return nodeId
 
-    # todo : better checking of conditions
+    
+
+    # oui oui le code ne fait que 3 lignes mais pas les tests de cohérence de
+    # type et des conditions........
     def add_output_node(self, label : str = '', parents : dict[int, int] = None) -> int :
         """
         Adds an output node with given argument (label and its parents)
@@ -619,16 +604,156 @@ class open_digraph: # for open directed graph
             if len(types) >= 1 and list(types)[0] != int :
                 raise TypeError("The values of parents must all be integers")
 
-        if len(parents) != 1 :
-            raise Exception("Parents must have one element")
-        if not parents.keys()[0] in self.nodes_ids :
-            raise Exception("Given parent must be in the graph")
-        if parents.values()[0] != 1 :
-            raise Exception("Given parent must have multiplicity of one")
+            if len(parents) > 1 :
+                raise Exception("Parents must have at most one element")
+            if parents != {} :
+                if not list(parents.keys())[0] in self.nodes_ids :
+                    raise Exception("Given parent must be in the graph")
+                if list(parents.values())[0] != 1 :
+                    raise Exception("Given parent must have multiplicity of one")
 
         nodeId = self.add_node(label, parents, None)
         self.add_output_id(nodeId)
         return nodeId
+
+    
+
+    def add_edge(self, src : int, tgt : int) -> None :
+        """
+        Adds an edge from the node of id [src] to the node of id [tgt]
+
+        NON-ORIENTED GRAPH 
+        """
+        if not isinstance(src, int):
+            raise TypeError("Src must be an integer")
+        if not isinstance(tgt, int):
+            raise TypeError("Tgt must be an integer")
+
+        if (not src in self.nodes_ids or not tgt in self.nodes_ids):
+            raise Exception(f'The node with id {src} or {tgt} does not exist.')
+
+        self.node_by_id(src).add_child_id(tgt)
+        self.node_by_id(tgt).add_parent_id(src)
+
+    
+
+    def add_edges(self, edges : list[(int, int)]) -> None :
+        """
+        Adds edges between several nodes list[(src node's id, tgt node's id)]
+
+        NON-ORIENTED GRAPH 
+        """
+        if not isinstance(edges, list):
+            raise TypeError("Given argument must be a list")
+        types = set(type(k) for k in edges)
+        if len(types) >= 1 and list(types)[0] != tuple :
+            raise TypeError("Elements in the given argument must all be tuples")
+        if edges != [] and ( len(edges[0]) != 2 or not isinstance(edges[0][0], int) or not isinstance(edges[0][1], int) ) :
+            raise TypeError("Elements in the given argument must all be tuples of two integers")
+
+        for (src, tgt) in edges:
+            self.add_edge(src, tgt)
+    
+    
+
+    # peut-être faire le truc des args dans add_edges too ?        
+    def remove_edge(self, args : list[(int, int)] or (int, int)) -> None :
+        """
+        Removes one edge between two or several nodes' pair (src -> tgt)
+
+        NON-ORIENTED GRAPH 
+        """
+        def f(src : int, tgt : int) -> None:
+            if (not src in self.nodes_ids or not tgt in self.nodes_ids):
+                raise Exception(f'The node with id {src} or {tgt} does not exist.')
+
+            self.node_by_id(src).remove_child_once(tgt)
+            self.node_by_id(tgt).remove_parent_once(src)
+        
+        if isinstance(args, list) :
+            types = set(type(k) for k in args)
+            if len(types) >= 1 and list(types)[0] != tuple :
+                raise TypeError("Elements in the given argument must all be tuples")
+            if args != [] and ( len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) ) :
+                raise TypeError("Elements in the given argument must all be tuples of two integers")
+            for arg in args: f(arg[0],arg[1])
+
+        elif isinstance(args, tuple) : 
+            if len(args) != 2 or not isinstance(args[0], int) or not isinstance(args[0], int) :
+                raise TypeError("Given argument must all be tuples of two integers")
+            f(args[0],args[1])
+
+        else:
+            raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
+    
+    
+
+    # peut-être faire le truc des args dans add_edges too ?    
+    def remove_parallel_edges(self, args : list[(int, int)] or (int, int)) -> None :
+        """
+        Removes all the edges between two or several nodes' pair (src -> tgt)
+
+        NON-ORIENTED GRAPH 
+        """
+        def f(src : int, tgt : int) -> None:
+            if (not src in self.nodes_ids or not tgt in self.nodes_ids):
+                raise Exception(f'The node with id {src} or {tgt} does not exist.')
+
+            self.node_by_id(src).remove_child_id(tgt)
+            self.node_by_id(tgt).remove_parent_id(src)
+            
+        if isinstance(args, list) :
+            types = set(type(k) for k in args)
+            if len(types) >= 1 and list(types)[0] != tuple :
+                raise TypeError("Elements in the given argument must all be tuples")
+            if args != [] and ( len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) ) :
+                raise TypeError("Elements in the given argument must all be tuples of two integers")
+            for arg in args: f(arg[0],arg[1])
+
+        elif isinstance(args, tuple) : 
+            if len(args) != 2 or not isinstance(args[0], int) or not isinstance(args[0], int) :
+                raise TypeError("Given argument must all be tuples of two integers")
+            f(args[0],args[1])
+
+        else:
+            raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
+
+    
+
+    def remove_node_by_id(self, args : list[int] or int) -> None:
+        """
+        Removes the node of the give id (or several nodes with a id list) 
+        """
+        def f(i : int) -> None:
+            for j in self.node_by_id(i).parent_ids:
+                self.remove_parallel_edges((j, i))
+                
+            for j in self.node_by_id(i).children_ids:
+                self.remove_parallel_edges((i, j))
+                
+            if i in self.inputs_ids: self.inputs_ids.remove(i)
+            if i in self.outputs_ids: self.outputs_ids.remove(i)
+            
+            self.nodes.pop(i)
+            if i+1 == self.__new_id : 
+                # -1 car on enlève le denier
+                self.__new_id -= 1 
+            # ici on utilise exceptionnellement pas le getter car comme il n'y a pas de setter, il faut accéder directement à l'attributs donc
+            # autant y accéder de base + le fait qu'il aurait fallu décrément à chaque fois car le getter incrémente
+        
+        if isinstance(args, list) :
+            types = set(type(k) for k in args)
+            if len(types) >= 1 and list(types)[0] != int :
+                raise TypeError("Elements in the given argument must all be integers")
+            for arg in args: f(arg)
+
+        elif isinstance(args, int) : 
+            f(args)
+
+        else:
+            raise TypeError("Given argument must be a list of integers, or just one integer")
+
+    
 
     def __str__(self) -> str :
         """
@@ -644,18 +769,24 @@ class open_digraph: # for open directed graph
                     E.append((n.label, self.nodes[key].label))
         return f"[Graph] (V = {V}, I = {I}, O = {O}, E = [{E}])"
 
+    
+
     def __repr__(self) -> str :
         """
         Overload repr conversion (= str)
         """
         return self.__str__()
         
+    
+
     def copy(self):
         """
         Overload copy operator
         """
         return self.__init__(self.inputs_ids, self.outputs_ids, self.nodes_list)
         
+    
+
     def is_well_formed(self) -> bool :
         """
         Check if a graph is well formed :
@@ -668,7 +799,7 @@ class open_digraph: # for open directed graph
         """
         b_inputs_ids = all(item in self.nodes_ids for item in self.inputs_ids)
         b_outputs_ids = all(item in self.nodes_ids for item in self.outputs_ids)
-        b_inputs_ids_only_one_child = all(len(n.child_ids) == 1 and n.children[n.child_ids[0]] == 1 for n in self.nodes_by_ids(self.inputs_ids).values())
+        b_inputs_ids_only_one_child = all(len(n.children_ids) == 1 and n.children[n.children_ids[0]] == 1 for n in self.nodes_by_ids(self.inputs_ids).values())
         b_outputs_ids_only_one_child = all(len(n.parent_ids) == 1 and n.parents[n.parent_ids[0]] == 1 for n in self.nodes_by_ids(self.outputs_ids).values())
         b_nodes = all(e for e in [ i == n.id for (i, n) in self.nodes.items() ])
         def assert_children(n):
@@ -679,6 +810,8 @@ class open_digraph: # for open directed graph
         
         return b_inputs_ids and b_outputs_ids and b_inputs_ids_only_one_child and b_outputs_ids_only_one_child and b_nodes and b_mul
     
+    
+
     def assert_is_well_formed(self) -> bool :
         """
         Return if a graph is well formed, else it throws an exception
