@@ -148,7 +148,7 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.setUp()
 
-        self.g0.add_edge(1, 3)
+        self.g0.add_edge((1, 3))
         self.assertEqual(self.g0.nodes_list, 
             [node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
              node(1, 'b', {0:3}, {2:2, 5:1, 3:1}),
@@ -159,8 +159,8 @@ class Open_DigraphTest(unittest.TestCase):
              node(6, 'o1', {2:1}, {})
              ])
 
-        self.g0.add_edges([(0, 0), (1, 3), (1, 5)])
-        self.g0.add_edges([])
+        self.g0.add_edge([(0, 0), (1, 3), (1, 5)])
+        self.g0.add_edge([])
         self.assertEqual(self.g0.nodes_list, 
             [node(0, 'a', {3:1, 4:1, 0:1}, {1:3, 2:1, 0:1}),
              node(1, 'b', {0:3}, {2:2, 5:2, 3:2}),

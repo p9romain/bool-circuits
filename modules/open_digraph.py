@@ -523,15 +523,6 @@ class open_digraph: # for open directed graph
             if len(types) >= 1 and list(types)[0] != int :
                 raise TypeError("The values of children must all be integers")
 
-        # ne fonctionne pas :(
-        #
-        # for l in [parents, children]:
-        #     if l is None: l = {}
-        #     else:
-        #         # par sécurité
-        #         notin = list(set(l.keys()) - set(self.nodes_ids))
-        #         for key in notin:
-        #             del l[key]
         def f(l):
             if l is None: l = {}
             else:
@@ -547,8 +538,8 @@ class open_digraph: # for open directed graph
         n = node(self.new_id, label, {}, {})
         self.nodes[n.id] = n
         
-        self.add_edges( [ (i, n.id) for i in parents.keys() for _ in range(parents[i]) ] )
-        self.add_edges( [ (n.id, i) for i in children.keys() for _ in range(children[i]) ] )
+        self.add_edge( [ (i, n.id) for i in parents.keys() for _ in range(parents[i]) ] )
+        self.add_edge( [ (n.id, i) for i in children.keys() for _ in range(children[i]) ] )
 
         return n.id
 
@@ -584,9 +575,6 @@ class open_digraph: # for open directed graph
         return nodeId
 
     
-
-    # oui oui le code ne fait que 3 lignes mais pas les tests de cohérence de
-    # type et des conditions........
     def add_output_node(self, label : str = '', parents : dict[int, int] = None) -> int :
         """
         Adds an output node with given argument (label and its parents)
@@ -615,51 +603,41 @@ class open_digraph: # for open directed graph
         nodeId = self.add_node(label, parents, None)
         self.add_output_id(nodeId)
         return nodeId
-
     
 
-    def add_edge(self, src : int, tgt : int) -> None :
+    def add_edge(self, args : list[(int, int)] or (int, int)) -> None :
         """
-        Adds an edge from the node of id [src] to the node of id [tgt]
+        Adds one edge between one or several nodes' pair (src -> tgt)
 
         NON-ORIENTED GRAPH 
         """
-        if not isinstance(src, int):
-            raise TypeError("Src must be an integer")
-        if not isinstance(tgt, int):
-            raise TypeError("Tgt must be an integer")
+        def f(src : int, tgt : int) -> None:
+            if (not src in self.nodes_ids or not tgt in self.nodes_ids):
+                raise Exception(f'The node with id {src} or {tgt} does not exist.')
 
-        if (not src in self.nodes_ids or not tgt in self.nodes_ids):
-            raise Exception(f'The node with id {src} or {tgt} does not exist.')
+            self.node_by_id(src).add_child_id(tgt)
+            self.node_by_id(tgt).add_parent_id(src)
+        
 
-        self.node_by_id(src).add_child_id(tgt)
-        self.node_by_id(tgt).add_parent_id(src)
+        if isinstance(args, list) :
+            types = set(type(k) for k in args)
+            if len(types) >= 1 and list(types)[0] != tuple :
+                raise TypeError("Elements in the given argument must all be tuples")
+            if args != [] and ( len(args[0]) != 2 or not isinstance(args[0][0], int) or not isinstance(args[0][1], int) ) :
+                raise TypeError("Elements in the given argument must all be tuples of two integers")
+            for arg in args: f(arg[0],arg[1])
 
-    
+        elif isinstance(args, tuple) : 
+            if len(args) != 2 or not isinstance(args[0], int) or not isinstance(args[0], int) :
+                raise TypeError("Given argument must all be tuples of two integers")
+            f(args[0],args[1])
 
-    def add_edges(self, edges : list[(int, int)]) -> None :
-        """
-        Adds edges between several nodes list[(src node's id, tgt node's id)]
-
-        NON-ORIENTED GRAPH 
-        """
-        if not isinstance(edges, list):
-            raise TypeError("Given argument must be a list")
-        types = set(type(k) for k in edges)
-        if len(types) >= 1 and list(types)[0] != tuple :
-            raise TypeError("Elements in the given argument must all be tuples")
-        if edges != [] and ( len(edges[0]) != 2 or not isinstance(edges[0][0], int) or not isinstance(edges[0][1], int) ) :
-            raise TypeError("Elements in the given argument must all be tuples of two integers")
-
-        for (src, tgt) in edges:
-            self.add_edge(src, tgt)
-    
-    
-
-    # peut-être faire le truc des args dans add_edges too ?        
+        else:
+            raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
+          
     def remove_edge(self, args : list[(int, int)] or (int, int)) -> None :
         """
-        Removes one edge between two or several nodes' pair (src -> tgt)
+        Removes one edge between one or several nodes' pair (src -> tgt)
 
         NON-ORIENTED GRAPH 
         """
@@ -686,12 +664,10 @@ class open_digraph: # for open directed graph
         else:
             raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
     
-    
-
-    # peut-être faire le truc des args dans add_edges too ?    
+       
     def remove_parallel_edges(self, args : list[(int, int)] or (int, int)) -> None :
         """
-        Removes all the edges between two or several nodes' pair (src -> tgt)
+        Removes all the edges between one or several nodes' pair (src -> tgt)
 
         NON-ORIENTED GRAPH 
         """
