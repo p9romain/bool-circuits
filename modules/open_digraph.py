@@ -1,5 +1,7 @@
+from typing import List, Dict, Tuple
+
 class node:
-    def __init__(self, identity : int, label : str, parents : dict[int, int], children : dict[int, int]) -> None :
+    def __init__(self, identity : int, label : str, parents : Dict[int, int], children : Dict[int, int]) -> None :
         '''
         identity: int; its unique id in the graph
         label: string;
@@ -70,7 +72,7 @@ class node:
     
 
     @property
-    def parent_ids(self) -> list[int] :
+    def parent_ids(self) -> List[int] :
         """
         Getter for the ids of the node's parents
         """
@@ -79,7 +81,7 @@ class node:
     
 
     @property
-    def children_ids(self) -> list[int] :
+    def children_ids(self) -> List[int] :
         """
         Getter for the ids of the node's children
         """
@@ -88,7 +90,7 @@ class node:
     
 
     @property
-    def parents(self) -> dict[int, int]:
+    def parents(self) -> Dict[int, int]:
         """
         Getter for the node's parents
         """
@@ -97,7 +99,7 @@ class node:
     
 
     @property
-    def children(self) -> dict[int, int]:
+    def children(self) -> Dict[int, int]:
         """
         Getter for the node's children
         """
@@ -130,7 +132,7 @@ class node:
     
 
     @parents.setter
-    def parents(self, p : dict[int, int]) -> None :
+    def parents(self, p : Dict[int, int]) -> None :
         """
         Setter for the node's parents (erase all the attributes with the new dict)
         """
@@ -148,7 +150,7 @@ class node:
     
 
     @children.setter
-    def children(self, c : dict[int, int]) -> None :
+    def children(self, c : Dict[int, int]) -> None :
         """
         Setter for the node's children (erase all the attributes with the new dict)
         """
@@ -267,7 +269,7 @@ class node:
         
     
 class open_digraph: # for open directed graph
-    def __init__(self, inputs : list[int], outputs : list[int], nodes : iter) -> None:
+    def __init__(self, inputs : List[int], outputs : List[int], nodes : iter) -> None:
         '''
         inputs: int list; the ids of the input nodes
         outputs: int list; the ids of the output nodes
@@ -305,7 +307,7 @@ class open_digraph: # for open directed graph
 
     # can be useful maybe   
     @property
-    def inputs(self) -> dict[int, node] :
+    def inputs(self) -> Dict[int, node] :
         """
         Getter for the graph's inputs (a dict {note id: node})
         """
@@ -315,7 +317,7 @@ class open_digraph: # for open directed graph
 
     # can be useful maybe
     @property
-    def inputs_list(self) -> list[int] :
+    def inputs_list(self) -> List[int] :
         """
         Getter for the graph's inputs
         """
@@ -324,7 +326,7 @@ class open_digraph: # for open directed graph
     
 
     @property
-    def inputs_ids(self) -> list[int] :
+    def inputs_ids(self) -> List[int] :
         """
         Getter for the graph's input's ids
         """
@@ -334,7 +336,7 @@ class open_digraph: # for open directed graph
 
     # can be useful maybe    
     @property
-    def outputs(self) -> dict[int, node] :
+    def outputs(self) -> Dict[int, node] :
         """
         Getter for the graph's outputs (a dict {note id: node})
         """
@@ -344,7 +346,7 @@ class open_digraph: # for open directed graph
 
     # can be useful maybe
     @property
-    def outputs_list(self) -> list[int] :
+    def outputs_list(self) -> List[int] :
         """
         Getter for the graph's outputs
         """
@@ -353,7 +355,7 @@ class open_digraph: # for open directed graph
     
 
     @property
-    def outputs_ids(self) -> list[int] :
+    def outputs_ids(self) -> List[int] :
         """
         Getter for the graph's output's ids
         """
@@ -363,7 +365,7 @@ class open_digraph: # for open directed graph
 
     # id_nodes_map rename
     @property
-    def nodes(self) -> dict[int, node] :
+    def nodes(self) -> Dict[int, node] :
         """
         Getter for the graph's nodes (a dict {note id: node})
         """
@@ -373,7 +375,7 @@ class open_digraph: # for open directed graph
 
     # nodes rename
     @property
-    def nodes_list(self) -> list[node] :
+    def nodes_list(self) -> List[node] :
         """
         Getter for the graph's nodes
         """
@@ -382,7 +384,7 @@ class open_digraph: # for open directed graph
     
 
     @property
-    def nodes_ids(self) -> list[int] :
+    def nodes_ids(self) -> List[int] :
         """
         Getter for the graph's nodes' id
         """
@@ -401,7 +403,7 @@ class open_digraph: # for open directed graph
     
 
     @inputs_ids.setter
-    def inputs_ids(self, i : list[int]) -> None :
+    def inputs_ids(self, i : List[int]) -> None :
         if not isinstance(i, list):
             raise TypeError("Given argument must be a list")
         types = set(type(k) for k in i)
@@ -417,7 +419,7 @@ class open_digraph: # for open directed graph
     
 
     @outputs_ids.setter
-    def outputs_ids(self, o : list[int]) -> None :
+    def outputs_ids(self, o : List[int]) -> None :
         if not isinstance(o, list):
             raise TypeError("Given argument must be a list")
         types = set(type(k) for k in o)
@@ -443,7 +445,7 @@ class open_digraph: # for open directed graph
         
     
 
-    def nodes_by_ids(self, l : list[int]) -> dict[int, node] :
+    def nodes_by_ids(self, l : List[int]) -> Dict[int, node] :
         """
         ''Getter'' for the graph's nodes of ids [l]
         """
@@ -496,7 +498,7 @@ class open_digraph: # for open directed graph
 
     
 
-    def add_node(self, label : str = '', parents : dict[int, int] = None, children : dict[int, int] = None) -> int :
+    def add_node(self, label : str = '', parents : Dict[int, int] = None, children : Dict[int, int] = None) -> int :
         """
         Adds a node with given argument (label and its parents and children)
         It also generates all the edges bewteen the node and its 'family'
@@ -545,7 +547,7 @@ class open_digraph: # for open directed graph
 
     
 
-    def add_input_node(self, label : str = '', children : dict[int, int] = None) -> int :
+    def add_input_node(self, label : str = '', children : Dict[int, int] = None) -> int :
         """
         Adds an intput node with given argument (label and its children)
         It also generates all the edges bewteen the node and its children
@@ -575,7 +577,7 @@ class open_digraph: # for open directed graph
         return nodeId
 
     
-    def add_output_node(self, label : str = '', parents : dict[int, int] = None) -> int :
+    def add_output_node(self, label : str = '', parents : Dict[int, int] = None) -> int :
         """
         Adds an output node with given argument (label and its parents)
         It also generates all the edges bewteen the node and its parents
@@ -605,7 +607,7 @@ class open_digraph: # for open directed graph
         return nodeId
     
 
-    def add_edge(self, args : list[(int, int)] or (int, int)) -> None :
+    def add_edge(self, args : List[Tuple[int, int]] or Tuple[int, int]) -> None :
         """
         Adds one edge between one or several nodes' pair (src -> tgt)
 
@@ -635,7 +637,7 @@ class open_digraph: # for open directed graph
         else:
             raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
           
-    def remove_edge(self, args : list[(int, int)] or (int, int)) -> None :
+    def remove_edge(self, args : List[Tuple[int, int]] or Tuple[int, int]) -> None :
         """
         Removes one edge between one or several nodes' pair (src -> tgt)
 
@@ -665,7 +667,7 @@ class open_digraph: # for open directed graph
             raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
     
        
-    def remove_parallel_edges(self, args : list[(int, int)] or (int, int)) -> None :
+    def remove_parallel_edges(self, args : List[Tuple[int, int]] or Tuple[int, int]) -> None :
         """
         Removes all the edges between one or several nodes' pair (src -> tgt)
 
@@ -696,7 +698,7 @@ class open_digraph: # for open directed graph
 
     
 
-    def remove_node_by_id(self, args : list[int] or int) -> None:
+    def remove_node_by_id(self, args : List[int] or int) -> None:
         """
         Removes the node of the give id (or several nodes with a id list) 
         """
