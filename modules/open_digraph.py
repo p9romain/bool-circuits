@@ -1,9 +1,13 @@
+import sys
+import os
+root = os.path.normpath(os.path.join(__file__, './../..'))
+sys.path.append(root) # allows us to fetch files from the project root
+
 from typing import List, Dict, Tuple
 import random as rd
 import numpy as np
 
-import node as nd
-import adjacency_matrix as am
+import modules.node as nd
 
 class open_digraph: # for open directed graph
     def __init__(self, inputs : List[int], outputs : List[int], nodes : iter) -> None:
@@ -236,7 +240,11 @@ class open_digraph: # for open directed graph
 
 
     @classmethod
-    def random(cls, n, bound, inputs = 0, outputs = 0, loop_free=False, DAG=False, oriented=False, undirected=False):
+    def random(cls, n : int, bound : int, inputs : int = 0, outputs : int = 0, loop_free : bool = False, DAG : bool = False, oriented : bool = False, undirected : bool = False):
+
+        # pour éviter les circular imports
+        import modules.adjacency_matrix as am
+
         M = am.random_matrix(n, bound, null_diag = loop_free, oriented = oriented, triangular = DAG, symetric = undirected)
         cls = am.graph_from_adjacency_matrix(M)
 
@@ -333,6 +341,7 @@ class open_digraph: # for open directed graph
         self.add_input_id(nodeId)
         return nodeId
 
+
     
     def add_output_node(self, label : str = '', parents : Dict[int, int] = None) -> int :
         """
@@ -362,7 +371,8 @@ class open_digraph: # for open directed graph
         nodeId = self.add_node(label, parents, None)
         self.add_output_id(nodeId)
         return nodeId
-    
+  
+
 
     def add_edge(self, args : List[Tuple[int, int]] or Tuple[int, int]) -> None :
         """
@@ -393,7 +403,9 @@ class open_digraph: # for open directed graph
 
         else:
             raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
-          
+    
+
+
     def remove_edge(self, args : List[Tuple[int, int]] or Tuple[int, int]) -> None :
         """
         Removes one edge between one or several nodes' pair (src -> tgt)
@@ -423,6 +435,7 @@ class open_digraph: # for open directed graph
         else:
             raise TypeError("Given argument must be a list of tuples of two integers, or just one tuple of two integers")
     
+
        
     def remove_parallel_edges(self, args : List[Tuple[int, int]] or Tuple[int, int]) -> None :
         """
@@ -562,7 +575,8 @@ class open_digraph: # for open directed graph
 
     
 
-    def adjacency_matrix(self):
+    def adjacency_matrix(self) -> np.ndarray :
+
         s = self.ids_for_adjacency_matrix()
         def f(i,j):
             c = self.node_by_id(s[i]).children

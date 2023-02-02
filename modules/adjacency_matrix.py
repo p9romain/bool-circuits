@@ -1,18 +1,28 @@
+import sys
+import os
+root = os.path.normpath(os.path.join(__file__, './../..'))
+sys.path.append(root) # allows us to fetch files from the project root
+
 from typing import List, Dict, Tuple
 import numpy as np
 
-import open_digraph as od
+import modules.open_digraph as od
 
-def random_int_matrix(n, bound, null_diag=True):
+def random_int_matrix(n : int, bound : int, null_diag : bool = False) -> np.ndarray :
     M = np.random.randint(0, bound+1, (n,n))
     if null_diag: return M - np.diag(M)@np.ones((n,n))
     else: return M
 
-def random_symetric_int_matrix(n, bound, null_diag=True):
+
+
+def random_symetric_int_matrix(n : int, bound : int, null_diag : bool = False) -> np.ndarray :
     M = random_int_matrix(n, bound, null_diag)
     return (M+M.T)/2
 
-def random_oriented_int_matrix(n, bound, null_diag=True):
+
+
+# j'enlève null_diag car oriented => null_diag (ça fait du taff en moins)
+def random_oriented_int_matrix(n : int, bound : int) -> np.ndarray :
     M = random_int_matrix(n, bound, True)
     for i in range(n):
         for j in range(i+1, n):
@@ -26,25 +36,32 @@ def random_oriented_int_matrix(n, bound, null_diag=True):
                 M[j,i] = tmp
     return M
 
-def random_triangular_int_matrix(n,bound,null_diag=True):
+
+
+def random_triangular_int_matrix(n : int, bound : int, null_diag : bool = True) -> np.ndarray :
     return np.triu(random_int_matrix(n, bound, null_diag))
 
-def random_matrix(n, bound, null_diag=False, symetric=False, oriented=False, triangular=False):
+
+
+def random_matrix(n : int, bound : int, null_diag : bool = False, symetric : bool = False, oriented : bool = False, triangular : bool = False) -> np.ndarray :
     if symetric and oriented:
         raise Exception("The matrix of an oriented graph can't be symetric")
     elif symetric and triangular:
-        raise Exception("The only")
+        raise Exception("A triangular matrix can'be symetric (exept null matrix and identity, but it's rare to get them with random)")
     
+    # dans cet ordre, car triangular => oriented
     if symetric:
         return random_symetric_int_matrix(n, bound, null_diag)
     elif triangular:
         return random_triangular_int_matrix(n, bound, null_diag)
     elif oriented:
-        return random_oriented_int_matrix(n, bound, null_diag)
+        return random_oriented_int_matrix(n, bound)
     else:
         return random_int_matrix(n, bound, null_diag)
 
-def graph_from_adjacency_matrix(M):
+
+
+def graph_from_adjacency_matrix(M : np.ndarray) -> od.open_digraph :
     g = od.open_digraph.empty()
     for i in range(M.shape[0]):
         g.add_node(label="n"+str(i))

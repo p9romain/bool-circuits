@@ -3,86 +3,19 @@ import os
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root) # allows us to fetch files from the project root
 import unittest
-from modules.open_digraph import *
-
-class NodeTest(unittest.TestCase):
-    def setUp(self):
-        self.n0 = node(0, 'i', {}, {1:2})
-        
-    def test_init(self):
-        # cf getters
-        # self.assertEqual(self.n0.id, 0)
-        # self.assertEqual(self.n0.label, 'i')
-        # self.assertEqual(self.n0.parents, {})
-        # self.assertEqual(self.n0.children, {1:2})
-
-        self.assertIsInstance(self.n0, node)
-        self.assertEqual(str(self.n0), f"[Node] (id = 0, label = i, parents = { {} }, children = { {1:2} })")
-        self.assertEqual(self.n0, node(0, 'i', {}, {1:2}))
-        
-    def test_copy(self):
-        self.assertIsNot(self.n0.copy(), self.n0)
-
-    def test_getters(self):
-        self.assertEqual(self.n0.id, 0)
-        self.assertEqual(self.n0.label, 'i')
-        self.assertEqual(self.n0.parent_ids, [])
-        self.assertEqual(self.n0.children_ids, [1])
-        self.assertEqual(self.n0.parents, {})
-        self.assertEqual(self.n0.children, {1:2})
-
-    def test_setters(self):
-        self.n0.id = 4
-        self.n0.label = "blouge"
-        self.n0.parents = {1:3, 5:1, 4:1}
-        self.n0.children = {7:29, 0:153, 2:0}
-
-        self.assertEqual(self.n0.id, 4)
-        self.assertEqual(self.n0.label, "blouge")
-        self.assertEqual(self.n0.parents, {1:3, 5:1, 4:1})
-        self.assertEqual(self.n0.children, {7:29, 0:153, 2:0})
-
-        self.setUp()
-
-    def test_add(self):
-        self.n0.add_parent_id(5)
-        self.n0.add_child_id(1)
-
-        self.assertEqual(self.n0.parent_ids, [5])
-        self.assertEqual(list(self.n0.parents.values()), [1])
-        self.assertEqual(self.n0.children_ids, [1])
-        self.assertEqual(list(self.n0.children.values()), [3])
-        
-        self.setUp()
-
-    def test_remove(self):
-        self.n0.parents = {1:3, 5:1, 4:1}
-        self.n0.children = {7:29, 0:153, 2:0}
-
-        self.n0.remove_parent_once(5)
-        self.n0.remove_child_once(7)
-
-        self.n0.remove_parent_id(1)
-        self.n0.remove_child_id(0)
-
-        self.assertEqual(self.n0.parent_ids, [4])
-        self.assertEqual(list(self.n0.parents.values()), [1])
-        self.assertEqual(self.n0.children_ids, [7, 2])
-        self.assertEqual(list(self.n0.children.values()), [28, 0])
-
-        self.setUp()
-
+import modules.node as nd
+import modules.open_digraph as od
 
 class Open_DigraphTest(unittest.TestCase):
     def setUp(self):
-        n0 = node(0, 'a', {3:1, 4:1}, {1:3, 2:1})
-        n1 = node(1, 'b', {0:3}, {2:2, 5:1})
-        n2 = node(2, 'c', {0:1, 1:2}, {6:1})
-        i0 = node(3, 'i0', {}, {0:1})
-        i1 = node(4, 'i1', {}, {0:1})
-        o0 = node(5, 'o0', {1:1}, {})
-        o1 = node(6, 'o1', {2:1}, {})
-        self.g0 = open_digraph([3,4], [5,6], [n0,n1,n2,i0,i1,o0,o1])
+        n0 = nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1})
+        n1 = nd.node(1, 'b', {0:3}, {2:2, 5:1})
+        n2 = nd.node(2, 'c', {0:1, 1:2}, {6:1})
+        i0 = nd.node(3, 'i0', {}, {0:1})
+        i1 = nd.node(4, 'i1', {}, {0:1})
+        o0 = nd.node(5, 'o0', {1:1}, {})
+        o1 = nd.node(6, 'o1', {2:1}, {})
+        self.g0 = od.open_digraph([3,4], [5,6], [n0,n1,n2,i0,i1,o0,o1])
         
     def test_init(self):
         # cf getters
@@ -90,10 +23,10 @@ class Open_DigraphTest(unittest.TestCase):
         # self.assertEqual(self.g0.outputs_ids, [5,6])
         # self.assertEqual(self.g0.nodes[0], node(0, 'a', {3:1, 4:1}, {1:1, 2:1}))
 
-        self.assertIsInstance(self.g0, open_digraph)
+        self.assertIsInstance(self.g0, od.open_digraph)
         
     def test_empty(self):
-        self.g0 = open_digraph.empty()
+        self.g0 = od.open_digraph.empty()
         self.assertEqual(self.g0.inputs_ids, [])
         self.assertEqual(self.g0.outputs_ids, [])
         self.assertEqual(self.g0.nodes, {})
@@ -104,26 +37,26 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertIsNot(self.g0.copy(), self.g0)
         
     def test_getters(self):
-        self.assertEqual(self.g0.inputs,{ 3 : node(3, 'i0', {}, {0:1}), 4 : node(4, 'i1', {}, {0:1}) })
-        self.assertEqual(self.g0.inputs_list, [ node(3, 'i0', {}, {0:1}), node(4, 'i1', {}, {0:1}) ])
+        self.assertEqual(self.g0.inputs,{ 3 : nd.node(3, 'i0', {}, {0:1}), 4 : nd.node(4, 'i1', {}, {0:1}) })
+        self.assertEqual(self.g0.inputs_list, [ nd.node(3, 'i0', {}, {0:1}), nd.node(4, 'i1', {}, {0:1}) ])
         self.assertEqual(self.g0.inputs_ids, [3,4])
 
-        self.assertEqual(self.g0.outputs, { 5 : node(5, 'o0', {1:1}, {}), 6 : node(6, 'o1', {2:1}, {}) } )
-        self.assertEqual(self.g0.outputs_list, [ node(5, 'o0', {1:1}, {}), node(6, 'o1', {2:1}, {}) ])
+        self.assertEqual(self.g0.outputs, { 5 : nd.node(5, 'o0', {1:1}, {}), 6 : nd.node(6, 'o1', {2:1}, {}) } )
+        self.assertEqual(self.g0.outputs_list, [ nd.node(5, 'o0', {1:1}, {}), nd.node(6, 'o1', {2:1}, {}) ])
         self.assertEqual(self.g0.outputs_ids, [5,6])
 
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
-             node(1, 'b', {0:3}, {2:2, 5:1}),
-             node(2, 'c', {0:1, 1:2}, {6:1}),
-             node(3, 'i0', {}, {0:1}),
-             node(4, 'i1', {}, {0:1}),
-             node(5, 'o0', {1:1}, {}),
-             node(6, 'o1', {2:1}, {})
+            [nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
+             nd.node(1, 'b', {0:3}, {2:2, 5:1}),
+             nd.node(2, 'c', {0:1, 1:2}, {6:1}),
+             nd.node(3, 'i0', {}, {0:1}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:1}, {}),
+             nd.node(6, 'o1', {2:1}, {})
              ])
         self.assertEqual(self.g0.nodes_ids, [ i for i in range(7) ])
-        self.assertEqual(self.g0.node_by_id(4), node(4, 'i1', {}, {0:1}))
-        self.assertEqual(self.g0.nodes_by_ids([1, 4, 0]), { 1 : node(1, 'b', {0:3}, {2:2, 5:1}), 4 : node(4, 'i1', {}, {0:1}), 0 : node(0, 'a', {3:1, 4:1}, {1:3, 2:1}) } )
+        self.assertEqual(self.g0.node_by_id(4), nd.node(4, 'i1', {}, {0:1}))
+        self.assertEqual(self.g0.nodes_by_ids([1, 4, 0]), { 1 : nd.node(1, 'b', {0:3}, {2:2, 5:1}), 4 : nd.node(4, 'i1', {}, {0:1}), 0 : nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1}) } )
 
         self.assertEqual(self.g0.new_id, 7)
 
@@ -150,25 +83,25 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.g0.add_edge((1, 3))
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
-             node(1, 'b', {0:3}, {2:2, 5:1, 3:1}),
-             node(2, 'c', {0:1, 1:2}, {6:1}),
-             node(3, 'i0', {1: 1}, {0:1}),
-             node(4, 'i1', {}, {0:1}),
-             node(5, 'o0', {1:1}, {}),
-             node(6, 'o1', {2:1}, {})
+            [nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
+             nd.node(1, 'b', {0:3}, {2:2, 5:1, 3:1}),
+             nd.node(2, 'c', {0:1, 1:2}, {6:1}),
+             nd.node(3, 'i0', {1: 1}, {0:1}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:1}, {}),
+             nd.node(6, 'o1', {2:1}, {})
              ])
 
         self.g0.add_edge([(0, 0), (1, 3), (1, 5)])
         self.g0.add_edge([])
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {3:1, 4:1, 0:1}, {1:3, 2:1, 0:1}),
-             node(1, 'b', {0:3}, {2:2, 5:2, 3:2}),
-             node(2, 'c', {0:1, 1:2}, {6:1}),
-             node(3, 'i0', {1: 2}, {0:1}),
-             node(4, 'i1', {}, {0:1}),
-             node(5, 'o0', {1:2}, {}),
-             node(6, 'o1', {2:1}, {})
+            [nd.node(0, 'a', {3:1, 4:1, 0:1}, {1:3, 2:1, 0:1}),
+             nd.node(1, 'b', {0:3}, {2:2, 5:2, 3:2}),
+             nd.node(2, 'c', {0:1, 1:2}, {6:1}),
+             nd.node(3, 'i0', {1: 2}, {0:1}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:2}, {}),
+             nd.node(6, 'o1', {2:1}, {})
              ])
 
         self.setUp()
@@ -185,18 +118,18 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(x, 11)
 
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {3:1, 4:1}, {1:3, 2:1, 11:1}),
-             node(1, 'b', {0:3, 10:1}, {2:2, 5:1, 9:2}),
-             node(2, 'c', {0:1, 1:2, 11:4}, {6:1, 9:5}),
-             node(3, 'i0', {}, {0:1, 11:1}),
-             node(4, 'i1', {10:1}, {0:1}),
-             node(5, 'o0', {1:1, 11:2}, {11:2}),
-             node(6, 'o1', {2:1}, {}),
-             node(7, '', {}, {}),
-             node(8, 'd', {}, {}),
-             node(9, '', {1:2, 2:5}, {}),
-             node(10, '', {}, {1:1, 4:1}),
-             node(11, 'e', {3:1, 5:2, 0:1}, {2:4, 5:2})
+            [nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1, 11:1}),
+             nd.node(1, 'b', {0:3, 10:1}, {2:2, 5:1, 9:2}),
+             nd.node(2, 'c', {0:1, 1:2, 11:4}, {6:1, 9:5}),
+             nd.node(3, 'i0', {}, {0:1, 11:1}),
+             nd.node(4, 'i1', {10:1}, {0:1}),
+             nd.node(5, 'o0', {1:1, 11:2}, {11:2}),
+             nd.node(6, 'o1', {2:1}, {}),
+             nd.node(7, '', {}, {}),
+             nd.node(8, 'd', {}, {}),
+             nd.node(9, '', {1:2, 2:5}, {}),
+             nd.node(10, '', {}, {1:1, 4:1}),
+             nd.node(11, 'e', {3:1, 5:2, 0:1}, {2:4, 5:2})
              ])
 
         self.assertEqual(self.g0.new_id, 12)
@@ -213,17 +146,17 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(x, 10)
 
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
-             node(1, 'b', {0:3}, {2:2, 5:1}),
-             node(2, 'c', {0:1, 1:2, 10:1}, {6:1}),
-             node(3, 'i0', {}, {0:1}),
-             node(4, 'i1', {}, {0:1}),
-             node(5, 'o0', {1:1}, {}),
-             node(6, 'o1', {2:1}, {}),
-             node(7, '', {}, {}),
-             node(8, 'd', {}, {}),
-             node(9, '', {}, {}),
-             node(10, 'e', {}, {2:1}),
+            [nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
+             nd.node(1, 'b', {0:3}, {2:2, 5:1}),
+             nd.node(2, 'c', {0:1, 1:2, 10:1}, {6:1}),
+             nd.node(3, 'i0', {}, {0:1}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:1}, {}),
+             nd.node(6, 'o1', {2:1}, {}),
+             nd.node(7, '', {}, {}),
+             nd.node(8, 'd', {}, {}),
+             nd.node(9, '', {}, {}),
+             nd.node(10, 'e', {}, {2:1}),
              ])
 
         self.assertEqual(self.g0.new_id, 11)
@@ -240,17 +173,17 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(x, 10)
 
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
-             node(1, 'b', {0:3}, {2:2, 5:1}),
-             node(2, 'c', {0:1, 1:2}, {6:1, 10:1}),
-             node(3, 'i0', {}, {0:1}),
-             node(4, 'i1', {}, {0:1}),
-             node(5, 'o0', {1:1}, {}),
-             node(6, 'o1', {2:1}, {}),
-             node(7, '', {}, {}),
-             node(8, 'd', {}, {}),
-             node(9, '', {}, {}),
-             node(10, 'e', {2:1}, {}),
+            [nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1}),
+             nd.node(1, 'b', {0:3}, {2:2, 5:1}),
+             nd.node(2, 'c', {0:1, 1:2}, {6:1, 10:1}),
+             nd.node(3, 'i0', {}, {0:1}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:1}, {}),
+             nd.node(6, 'o1', {2:1}, {}),
+             nd.node(7, '', {}, {}),
+             nd.node(8, 'd', {}, {}),
+             nd.node(9, '', {}, {}),
+             nd.node(10, 'e', {2:1}, {}),
              ])
 
         self.assertEqual(self.g0.new_id, 11)
@@ -267,13 +200,13 @@ class Open_DigraphTest(unittest.TestCase):
         self.g0.remove_parallel_edges([(3, 0), (3,6)])
 
         self.assertEqual(self.g0.nodes_list, 
-            [node(0, 'a', {4:1}, {1:2}),
-             node(1, 'b', {0:2}, {5:1}),
-             node(2, 'c', {}, {6:1}),
-             node(3, 'i0', {}, {}),
-             node(4, 'i1', {}, {0:1}),
-             node(5, 'o0', {1:1}, {}),
-             node(6, 'o1', {2:1}, {})
+            [nd.node(0, 'a', {4:1}, {1:2}),
+             nd.node(1, 'b', {0:2}, {5:1}),
+             nd.node(2, 'c', {}, {6:1}),
+             nd.node(3, 'i0', {}, {}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:1}, {}),
+             nd.node(6, 'o1', {2:1}, {})
              ])
 
         self.setUp()
@@ -283,10 +216,10 @@ class Open_DigraphTest(unittest.TestCase):
         self.g0.remove_node_by_id([3, 6])
 
         self.assertEqual(self.g0.nodes_list, 
-            [node(1, 'b', {}, {2:2, 5:1}),
-             node(2, 'c', {1:2}, {}),
-             node(4, 'i1', {}, {}),
-             node(5, 'o0', {1:1}, {})
+            [nd.node(1, 'b', {}, {2:2, 5:1}),
+             nd.node(2, 'c', {1:2}, {}),
+             nd.node(4, 'i1', {}, {}),
+             nd.node(5, 'o0', {1:1}, {})
              ])
         self.assertEqual(self.g0.new_id, 6)
 
