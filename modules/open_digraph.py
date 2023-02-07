@@ -9,6 +9,8 @@ import numpy as np
 
 import modules.node as nd
 
+import re
+
 class open_digraph: # for open directed graph
     def __init__(self, inputs : List[int], outputs : List[int], nodes : iter) -> None:
         '''
@@ -140,6 +142,15 @@ class open_digraph: # for open directed graph
         """
         self.__new_id += 1
         return self.__new_id - 1
+
+    @property
+    def edges(self) -> List[Tuple[int, int]]:
+        E = []
+        for n in self.nodes_list:
+            for key, value in n.children.items():
+                for _ in range(value):
+                    E.append((n.id, key))
+        return E
 
     
 
@@ -510,11 +521,7 @@ class open_digraph: # for open directed graph
         V = [ v.label for v in self.nodes_list ]
         I = [ self.nodes[i].label for i in self.inputs_ids ]
         O = [ self.nodes[i].label for i in self.outputs_ids ]
-        E = []
-        for n in self.nodes_list:
-            for key, value in n.children.items():
-                for i in range(value):
-                    E.append((n.label, self.nodes[key].label))
+        E = [ (a.label,b.label) for a,b in self.edges ]
         return f"[Graph] (V = {V}, I = {I}, O = {O}, E = [{E}])"
 
     
@@ -585,3 +592,60 @@ class open_digraph: # for open directed graph
             else:
                 return 0
         return np.fromfunction(f, (len(s), len(s)))
+
+    def save_as_dot_file(self, path, verbose=False):
+        f = open(path, 'a')
+        f.write("digraph G {\n")
+        # nodes
+        for n in self.nodes_list:
+            attr = f"[label=\"{n.label}"
+            if verbose:
+                attr += f" id: {n.id}"
+            attr += "\""
+            
+            if n in self.inputs_ids:
+                attr += ",shape=box"
+            if n in self.outputs_ids:
+                attr += ",shape=diamond"
+            
+            attr += "]"
+            f.write(f"n{n.id} {attr};\n")
+        #edges
+        for a,b in self.edges:
+            f.write(f"n{a}->n{b}\n")
+        f.write("}")
+        f.close()
+
+    @classmethod
+    def from_dot_file(cls, path):
+        g = cls.empty()
+
+        f = open(path, 'r')
+        lines = f.readlines()
+        for k in lines:
+            for l in k.split('\n'):
+                l = l.strip()
+                if l != "":
+                    regex_node = r'n([0-9]+) \[(.+)\]'
+                    regex_edge = r''
+                    
+                    res_node = re.findall(regex_node, l)
+                    if len(res_node) == 2:
+                        id = res_node[0]
+                        list_attr = res_node[1].split(',')
+                        attr = {}
+                        for a in list_attr:
+                            key,value = a.split('=')
+                            attr[key] = value
+
+                        if "label" in attr:
+                            # fix verbose
+                            if re.search(r'id:',attr["label"]):
+                                attr["label"] = attr["label"].split('id')[0].strip()
+
+                            
+                        else:
+                            raise Exception("Line for node is not in the right format : missing attr called 'label'.")
+
+                    else: raise Exception("Line for node is not in the right format : missing id or attr.")
+        
