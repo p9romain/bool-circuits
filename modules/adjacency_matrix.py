@@ -10,7 +10,7 @@ import modules.open_digraph as od
 
 def random_int_matrix(n : int, bound : int, null_diag : bool = False) -> np.ndarray :
     M = np.random.randint(0, bound+1, (n,n))
-    if null_diag: return M - np.diag(M)@np.ones((n,n))
+    if null_diag: return M - np.diag(M) * np.identity(n)
     else: return M
 
 
@@ -49,7 +49,7 @@ def random_matrix(n : int, bound : int, null_diag : bool = False, symetric : boo
     elif symetric and triangular:
         raise Exception("A triangular matrix can'be symetric (exept null matrix and identity, but it's rare to get them with random)")
     
-    # dans cet ordre, car triangular => oriented
+    # dans cet ordre, car triangular et oriented => triangular
     if symetric:
         return random_symetric_int_matrix(n, bound, null_diag)
     elif triangular:
