@@ -576,12 +576,11 @@ class open_digraph: # for open directed graph
     
 
     def adjacency_matrix(self) -> np.ndarray :
-
         s = self.ids_for_adjacency_matrix()
-        def f(i,j):
+        def f(i, j):
             c = self.node_by_id(s[i]).children
-            if j in c:
-                return c[j]
+            if s[j] in c:
+                return c[s[j]]
             else:
                 return 0
-        return np.fromfunction(f, (len(s), len(s)))
+        return np.array( [ [ f(i, j) for j in range(len(s)) ] for i in range(len(s)) ] )
