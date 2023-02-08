@@ -229,8 +229,14 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(self.g0.is_well_formed(), True)
         self.g0.assert_is_well_formed()
 
+    def test_dot_to_graph(self):
+        self.g0.save_as_dot_file("dot_files/graph2.dot", True)
+        g = od.open_digraph.from_dot_file("dot_files/graph2.dot")
+        g.display("dot_files/graph2.dot", True)
+
     def test_display(self):
         self.g0.display(verbose = True)
+
 
 
 if __name__ == '__main__': # the following code is called only when

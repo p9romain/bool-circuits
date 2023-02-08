@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root) # allows us to fetch files from the project root
 
@@ -368,7 +369,7 @@ class open_digraph: # for open directed graph
 
 
     @classmethod
-    def from_dot_file(cls, path : str) :
+    def from_dot_file(cls, path : str = "dot_files/graph.dot") :
         """
         Generates a graph from a .dot file
         """
@@ -722,22 +723,18 @@ class open_digraph: # for open directed graph
 
 
 
-    def save_as_dot_file(self, path : str, verbose : bool = False, add : bool = False) -> None :
+    def save_as_dot_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
         """
         Saves the graph in the dot file
         The verbose adds the id in the file, not only the label of a node
         The add argument says if we add the graph at the end of the file
         """
-
         if not isinstance(path, str):
             raise Exception("The path must be a string")
         if not isinstance(verbose, bool):
             raise Exception("The verbose must be a bool")
-        if not isinstance(add, bool):
-            raise Exception("The add must be a bool")
 
-        s = 'a' if add else 'w'
-        f = open(path, s)
+        f = open(path, 'w')
         f.write("digraph G {\n")
         # nodes
         for n in self.nodes_list:
@@ -759,24 +756,21 @@ class open_digraph: # for open directed graph
         f.write("}")
         f.close()
 
-    def display(self, path : str = "dot_files/graph.dot", verbose : bool = False, add : bool = False) -> None :
+    def display(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
         """
         Saves and display the graph in a pdf
         The verbose adds the id in the file, not only the label of a node
-        The add argument says if we add the graph at the end of the file
         """
         if not isinstance(path, str):
             raise Exception("The path must be a string")
         if not isinstance(verbose, bool):
             raise Exception("The verbose must be a bool")
-        if not isinstance(add, bool):
-            raise Exception("The add must be a bool")
 
         # On ne peut pas juste choper le point car si on est dans des répertoires .name, ça va tout casser donc on fait cette horreur :
         #   (on split avec les /, et on prend tout les éléments avant le dernier /) 
         # + (on split avec les /, on prendre le dernier (donc nom du fichier), et on remplace le .dot par .pdf)
         n_path = (''.join(str(e)+"/" for e in path.split("/")[:-1]))+"output/"+(path.split("/")[-1].split(".")[0]+".pdf")
 
-        self.save_as_dot_file(path, verbose, add)
+        self.save_as_dot_file(path, verbose)
         os.system(f"dot -Tpdf \"{path}\" -o \"{n_path}\"")
         os.system(f"xdg-open \"{n_path}\"")
