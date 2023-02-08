@@ -9,10 +9,8 @@ import numpy as np
 
 import modules.node as nd
 
-import re
-
 class open_digraph: # for open directed graph
-    def __init__(self, inputs : List[int], outputs : List[int], nodes : iter) -> None:
+    def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
         '''
         inputs: int list; the ids of the input nodes
         outputs: int list; the ids of the output nodes
@@ -44,9 +42,17 @@ class open_digraph: # for open directed graph
         self.__inputs_ids = inputs
         self.__outputs_ids = outputs
         self.__nodes = {node.id:node for node in nodes} # self.nodes: <int,node> dict
+        self.__desc = desc
         self.__new_id = (max(list(self.__nodes.keys())) + 1) if self.__nodes != {} else 0
  
     
+
+    @property
+    def desc(self) -> str :
+        """
+        Getter for the descrption of the graph
+        """
+        return self.__desc
 
     # can be useful maybe   
     @property
@@ -143,8 +149,14 @@ class open_digraph: # for open directed graph
         self.__new_id += 1
         return self.__new_id - 1
 
+
+
     @property
     def edges(self) -> List[Tuple[int, int]]:
+        """
+        Getter for all the edges in a list of (node id, node id)
+        A tuple can appear several times for each edge
+        """
         E = []
         for n in self.nodes_list:
             for key, value in n.children.items():
@@ -156,6 +168,9 @@ class open_digraph: # for open directed graph
 
     @inputs_ids.setter
     def inputs_ids(self, i : List[int]) -> None :
+        """
+        Setter for the inputs ids
+        """
         if not isinstance(i, list):
             raise TypeError("Given argument must be a list")
         types = set(type(k) for k in i)
@@ -166,12 +181,18 @@ class open_digraph: # for open directed graph
             if not k in self.nodes_ids:
                 raise Exception("Given input isn't in the graph")
 
+        # Tester s'ils sont corrects ?????
+        # (genre conserver la bonne forme du graph)
+
         self.__inputs_ids = i
         
     
 
     @outputs_ids.setter
     def outputs_ids(self, o : List[int]) -> None :
+        """
+        Setter for the outputs ids
+        """
         if not isinstance(o, list):
             raise TypeError("Given argument must be a list")
         types = set(type(k) for k in o)
@@ -182,8 +203,50 @@ class open_digraph: # for open directed graph
             if not k in self.nodes_ids:
                 raise Exception("Given output isn't in the graph")
 
+        # Tester s'ils sont corrects ?????
+        # (genre conserver la bonne forme du graph)
+
         self.__outputs_ids = o
 
+    
+    @desc.setter
+    def desc(self, desc : str) -> None :
+        """
+        Setter for the description of the grph
+        """
+        if not isinstance(desc, str):
+            raise Exception("The description must be a string")
+
+        self.__desc = desc
+
+
+    def __str__(self) -> str :
+        """
+        Overload str conversion
+        """
+        V = [ v.label for v in self.nodes_list ]
+        I = [ self.nodes[i].label for i in self.inputs_ids ]
+        O = [ self.nodes[i].label for i in self.outputs_ids ]
+        E = [ (self.node_by_id(a).label, self.node_by_id(b).label) for a, b in self.edges ]
+        desc = " : " + self.desc + " " if self.desc != "" else ""
+        return f"[Graph{desc}] (V = {V}, I = {I}, O = {O}, E = [{E}])"
+
+    
+
+    def __repr__(self) -> str :
+        """
+        Overload repr conversion (= str)
+        """
+        return self.__str__()
+        
+    
+
+    def copy(self):
+        """
+        Overload copy operator
+        """
+        return self.__init__(self.inputs_ids, self.outputs_ids, self.nodes_list)
+        
     
 
     def node_by_id(self, i : int) -> nd.node :
@@ -242,7 +305,7 @@ class open_digraph: # for open directed graph
     
 
     @classmethod
-    def empty(cls):
+    def empty(cls) :
         """
         Creates the empty graph
         """
@@ -251,7 +314,37 @@ class open_digraph: # for open directed graph
 
 
     @classmethod
-    def random(cls, n : int, bound : int, inputs : int = 0, outputs : int = 0, loop_free : bool = False, DAG : bool = False, oriented : bool = False, undirected : bool = False):
+    def random(cls, n : int, bound : int, inputs : int = 0, outputs : int = 0, loop_free : bool = False, DAG : bool = False, oriented : bool = False, undirected : bool = False) :
+        """
+        Generates a graph randomly, with [n] nodes, [inputs] inputs, [outputs] outputs and can have loop, DAG, oriented or undirected 
+        """
+        if not isinstance(n, int):
+            raise Exception("The number of nodes must be an integer")
+        if n < 0 :
+            raise Exception("The number of nodes must be positive or zero")
+        if not isinstance(bound, int):
+            raise Exception("The bound must be an integer")
+        if bound <= 0 :
+            raise Exception("The bound must be positive")
+        if not isinstance(inputs, int):
+            raise Exception("The inputs must be an integer")
+        if inputs < 0 :
+            raise Exception("The outputs must be positive or zero")
+        if not isinstance(outputs, int):
+            raise Exception("The inputs must be an integer")
+        if outputs < 0 :
+
+            raise Exception("The outputs must be positive or zero")
+        if not isinstance(loop_free, bool):
+            raise Exception("The loop_free must be a bool")
+        if not isinstance(DAG, bool):
+            raise Exception("The DAG must be a bool")
+        if not isinstance(oriented, bool):
+            raise Exception("The oriented must be a bool")
+        if not isinstance(undirected, bool):
+            raise Exception("The undirected must be a bool")
+
+        if n == 0 : return cls.empty()
 
         # pour éviter les circular imports
         import modules.adjacency_matrix as am
@@ -271,6 +364,63 @@ class open_digraph: # for open directed graph
             cls.add_output_node('o'+str(l), {i: 1})
 
         return cls
+
+
+
+    @classmethod
+    def from_dot_file(cls, path : str) :
+        """
+        Generates a graph from a .dot file
+        """
+        if not isinstance(path, str):
+            raise Exception("The path must be a string")
+
+        g = cls.empty()
+
+        f = open(path, 'r')
+        lines = f.readlines()
+        for k in lines:
+            for l in k.split('\n'):
+                l = l.strip()
+                if l != "":
+                    regex_node = r'n([0-9]+) \[(.+)\]'
+                    regex_edge = r'n([0-9]+)[ ]*->[ ]*n([0-9]+)'
+                    
+                    res_node = re.findall(regex_node, l)
+                    if len(res_node) == 2:
+                        id = int(res_node[0])
+                        list_attr = res_node[1].split(',')
+                        attr = {}
+                        for a in list_attr:
+                            key,value = a.split('=')
+                            attr[key] = value[1:-1]
+
+                        if "label" in attr:
+                            # fix verbose
+                            if re.search(r'id:',attr["label"]):
+                                attr["label"] = attr["label"].split('id')[0].strip()
+                        else:
+                            raise Exception("Line for node is not in the right format : missing attr called 'label'.")
+
+                        s = attr["shape"] if "shape" in attr else ""
+
+                        match s:
+                            case "box":
+                                g.add_input_node(attr["label"])
+                            case "diamond":
+                                g.add_output_node(attr["label"])
+                            case _:
+                                g.add_node(attr["label"])
+                    else: raise Exception("Line for node is not in the right format : missing id or attr.")
+
+                    res_edge = re.findall(regex_edge, l)
+                    if len(res_edge) == 2:
+                        id_p = int(res_edge[0])
+                        id_c = int(res_edge[1])
+
+                        g.add_edge((id_p, id_c))
+
+        return g
 
 
 
@@ -512,35 +662,7 @@ class open_digraph: # for open directed graph
         else:
             raise TypeError("Given argument must be a list of integers, or just one integer")
 
-    
 
-    def __str__(self) -> str :
-        """
-        Overload str conversion
-        """
-        V = [ v.label for v in self.nodes_list ]
-        I = [ self.nodes[i].label for i in self.inputs_ids ]
-        O = [ self.nodes[i].label for i in self.outputs_ids ]
-        E = [ (a.label,b.label) for a,b in self.edges ]
-        return f"[Graph] (V = {V}, I = {I}, O = {O}, E = [{E}])"
-
-    
-
-    def __repr__(self) -> str :
-        """
-        Overload repr conversion (= str)
-        """
-        return self.__str__()
-        
-    
-
-    def copy(self):
-        """
-        Overload copy operator
-        """
-        return self.__init__(self.inputs_ids, self.outputs_ids, self.nodes_list)
-        
-    
 
     def is_well_formed(self) -> bool :
         """
@@ -577,12 +699,18 @@ class open_digraph: # for open directed graph
 
 
     def ids_for_adjacency_matrix(self) -> Dict[int, int] :
+        """
+        Returns the ids of nodes who aren't inputs or outputs, where the result is a dict with { id node : new id in the matrix }
+        """
         s = set(self.nodes_ids) - set(self.inputs_ids) - set(self.outputs_ids)
         return { i:l for i,l in enumerate(list(s)) } # on inverse l'id du noeud et l'entier pour la fonction adjacency_matrix
 
     
 
     def adjacency_matrix(self) -> np.ndarray :
+        """
+        Returns the adjacency matrix of the graph
+        """
         s = self.ids_for_adjacency_matrix()
         def f(i, j):
             c = self.node_by_id(s[i]).children
@@ -592,19 +720,35 @@ class open_digraph: # for open directed graph
                 return 0
         return np.array( [ [ f(i, j) for j in range(len(s)) ] for i in range(len(s)) ] )
 
-    def save_as_dot_file(self, path, verbose=False):
-        f = open(path, 'a')
+
+
+    def save_as_dot_file(self, path : str, verbose : bool = False, add : bool = False) -> None :
+        """
+        Saves the graph in the dot file
+        The verbose adds the id in the file, not only the label of a node
+        The add argument says if we add the graph at the end of the file
+        """
+
+        if not isinstance(path, str):
+            raise Exception("The path must be a string")
+        if not isinstance(verbose, bool):
+            raise Exception("The verbose must be a bool")
+        if not isinstance(add, bool):
+            raise Exception("The add must be a bool")
+
+        s = 'a' if add else 'w'
+        f = open(path, s)
         f.write("digraph G {\n")
         # nodes
         for n in self.nodes_list:
             attr = f"[label=\"{n.label}"
             if verbose:
-                attr += f" id: {n.id}"
+                attr += f"\\n id: {n.id}"
             attr += "\""
             
-            if n in self.inputs_ids:
+            if n.id in self.inputs_ids:
                 attr += ",shape=\"box\""
-            if n in self.outputs_ids:
+            if n.id in self.outputs_ids:
                 attr += ",shape=\"diamond\""
             
             attr += "]"
@@ -615,51 +759,24 @@ class open_digraph: # for open directed graph
         f.write("}")
         f.close()
 
-    @classmethod
-    def from_dot_file(cls, path):
-        g = cls.empty()
+    def display(self, path : str = "dot_files/graph.dot", verbose : bool = False, add : bool = False) -> None :
+        """
+        Saves and display the graph in a pdf
+        The verbose adds the id in the file, not only the label of a node
+        The add argument says if we add the graph at the end of the file
+        """
+        if not isinstance(path, str):
+            raise Exception("The path must be a string")
+        if not isinstance(verbose, bool):
+            raise Exception("The verbose must be a bool")
+        if not isinstance(add, bool):
+            raise Exception("The add must be a bool")
 
-        f = open(path, 'r')
-        lines = f.readlines()
-        for k in lines:
-            for l in k.split('\n'):
-                l = l.strip()
-                if l != "":
-                    regex_node = r'n([0-9]+) \[(.+)\]'
-                    regex_edge = r'n([0-9]+)[ ]*->[ ]*n([0-9]+)'
-                    
-                    res_node = re.findall(regex_node, l)
-                    if len(res_node) == 2:
-                        id = int(res_node[0])
-                        list_attr = res_node[1].split(',')
-                        attr = {}
-                        for a in list_attr:
-                            key,value = a.split('=')
-                            attr[key] = value[1:-1]
+        # On ne peut pas juste choper le point car si on est dans des répertoires .name, ça va tout casser donc on fait cette horreur :
+        #   (on split avec les /, et on prend tout les éléments avant le dernier /) 
+        # + (on split avec les /, on prendre le dernier (donc nom du fichier), et on remplace le .dot par .pdf)
+        n_path = (''.join(str(e)+"/" for e in path.split("/")[:-1]))+"output/"+(path.split("/")[-1].split(".")[0]+".pdf")
 
-                        if "label" in attr:
-                            # fix verbose
-                            if re.search(r'id:',attr["label"]):
-                                attr["label"] = attr["label"].split('id')[0].strip()
-                        else:
-                            raise Exception("Line for node is not in the right format : missing attr called 'label'.")
-
-                        s = attr["shape"] if "shape" in attr else ""
-
-                        match s:
-                            case "box":
-                                g.add_input_node(attr["label"])
-                            case "diamond":
-                                g.add_output_node(attr["label"])
-                            case _:
-                                g.add_node(attr["label"])
-                    else: raise Exception("Line for node is not in the right format : missing id or attr.")
-
-                    res_edge = re.findall(regex_edge, l)
-                    if len(res_edge) == 2:
-                        id_p = int(res_edge[0])
-                        id_c = int(res_edge[1])
-
-                        g.add_edge((id_p, id_c))
-
-        return g
+        self.save_as_dot_file(path, verbose, add)
+        os.system(f"dot -Tpdf \"{path}\" -o \"{n_path}\"")
+        os.system(f"xdg-open \"{n_path}\"")

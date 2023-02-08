@@ -229,6 +229,9 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(self.g0.is_well_formed(), True)
         self.g0.assert_is_well_formed()
 
+    def test_display(self):
+        self.g0.display(verbose = True)
+
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

@@ -10,7 +10,7 @@ import modules.open_digraph as od
 
 class Adjacency_MAtrixTest(unittest.TestCase):
     def setUp(self):
-        pass
+        self.g0 = od.open_digraph.empty()
 
     def test_randomMatrixes(self):
         try:
@@ -83,19 +83,19 @@ class Adjacency_MAtrixTest(unittest.TestCase):
                 if M[i][j] != 0 : self.assertEqual(M[j][i], 0)
 
     def test_adjacencyMatrix(self):
-        g = od.open_digraph.empty()
-        g.add_input_node("i0")
-        g.add_input_node("i1")
-        g.add_output_node("o0")
-        g.add_node("n0")
-        g.add_node("n1")
-        g.add_node("n2")
+        self.g0 = od.open_digraph.empty()
+        self.g0.add_input_node("i0")
+        self.g0.add_input_node("i1")
+        self.g0.add_output_node("o0")
+        self.g0.add_node("n0")
+        self.g0.add_node("n1")
+        self.g0.add_node("n2")
 
-        g.add_edge([(3,5), (3,5), (3,4), (4, 3), (4,5),(0,3), (1,4), (5,2)])
+        self.g0.add_edge([(3,5), (3,5), (3,4), (4, 3), (4,5),(0,3), (1,4), (5,2)])
 
-        print("\n",g,"\n")
+        print("\n",self.g0,"\n")
 
-        M = g.adjacency_matrix()
+        M = self.g0.adjacency_matrix()
         self.assertEqual(M.tolist(), [[0,1,2],[1,0,1],[0,0,0]])
 
 
@@ -110,6 +110,8 @@ class Adjacency_MAtrixTest(unittest.TestCase):
         g.add_edge([(3,0), (4,1), (2,5)])
 
         print("\n",g,"\n")
+
+        #self.assertEqual(self.g0, g)
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run
