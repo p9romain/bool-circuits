@@ -230,9 +230,12 @@ class Open_DigraphTest(unittest.TestCase):
         self.g0.assert_is_well_formed()
 
     def test_dot_to_graph(self):
-        self.g0.save_as_dot_file("dot_files/graph2.dot", True)
-        g = od.open_digraph.from_dot_file("dot_files/graph2.dot")
-        g.display("dot_files/graph2.dot", True)
+        self.g0.save_as_dot_file("dot_files/graph_g0.dot", True)
+        g0 = od.open_digraph.from_dot_file("dot_files/graph_g0.dot")
+        g0.display("dot_files/graph_g0.dot", True)
+
+        g1 = od.open_digraph.from_dot_file("dot_files/graph_g1.dot")
+        g1.display("dot_files/graph_g1.dot")
 
     def test_display(self):
         self.g0.display(verbose = True)

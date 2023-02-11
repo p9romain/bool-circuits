@@ -381,45 +381,50 @@ class open_digraph: # for open directed graph
         f = open(path, 'r')
         lines = f.readlines()
         for k in lines:
-            for l in k.split('\n'):
-                l = l.strip()
-                if l != "":
-                    regex_node = r'n([0-9]+) \[(.+)\]'
-                    regex_edge = r'n([0-9]+)[ ]*->[ ]*n([0-9]+)'
-                    
-                    res_node = re.findall(regex_node, l)
-                    if len(res_node) == 2:
-                        id = int(res_node[0])
-                        list_attr = res_node[1].split(',')
-                        attr = {}
-                        for a in list_attr:
-                            key,value = a.split('=')
-                            attr[key] = value[1:-1]
+            l = k.rstrip('\n').strip()
+            if l != "":
+                regex_node = r'n([0-9]+) \[(.+)\][ ]*;'
+                regex_edge = r'n([0-9]+)[ ]*->[ ]*n([0-9]+)[ ]*'
+                
+                res_node = re.findall(regex_node, l)
+                if res_node:
+                    for node in res_node:
+                        if len(node) == 2:
+                            id = int(node[0])
+                            list_attr = node[1].split(',')
+                            attr = {}
+                            for a in list_attr:
+                                key,value = a.split('=')
+                                attr[key] = value[1:-1]
 
-                        if "label" in attr:
-                            # fix verbose
-                            if re.search(r'id:',attr["label"]):
-                                attr["label"] = attr["label"].split('id')[0].strip()
-                        else:
-                            raise Exception("Line for node is not in the right format : missing attr called 'label'.")
+                            if "label" in attr:
+                                # fix verbose
+                                if re.search(r'id:',attr["label"]):
+                                    attr["label"] = attr["label"].split('id')[0].strip().rstrip('\\n').strip()
+                            else:
+                                raise Exception("Line for node is not in the right format : missing attr called 'label'.")
 
-                        s = attr["shape"] if "shape" in attr else ""
+                            s = attr["shape"] if "shape" in attr else ""
 
-                        match s:
-                            case "box":
+                            if s == "box":
                                 g.add_input_node(attr["label"])
-                            case "diamond":
+                            elif s == "diamond":
                                 g.add_output_node(attr["label"])
-                            case _:
+                            else:
                                 g.add_node(attr["label"])
-                    else: raise Exception("Line for node is not in the right format : missing id or attr.")
+                        else: raise Exception("Line for node is not in the right format : missing id or attr.")
 
-                    res_edge = re.findall(regex_edge, l)
-                    if len(res_edge) == 2:
-                        id_p = int(res_edge[0])
-                        id_c = int(res_edge[1])
+                res_edge = re.findall(regex_edge, l)
+                if res_edge:
+                    for edge in res_edge:
+                        if len(edge) == 2:
+                            id_p = int(edge[0])
+                            id_c = int(edge[1])
 
-                        g.add_edge((id_p, id_c))
+                            g.add_edge((id_p, id_c))
+                        else: raise Exception("Line for edge is not in the right format : missing src or dst")
+
+        f.close()
 
         return g
 
