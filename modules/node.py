@@ -266,3 +266,12 @@ class node:
             raise TypeError("Given argument must be an integer")
             
         if i in self.children_ids: self.children.pop(i)
+
+    def indegree(self):
+        return sum(self.parents.values())
+
+    def outdegree(self):
+        return sum(self.children.values())
+
+    def degree(self):
+        return self.indegree()+self.outdegree()

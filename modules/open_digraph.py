@@ -10,6 +10,8 @@ import numpy as np
 
 import modules.node as nd
 
+import generic_heap as gh
+
 class open_digraph: # for open directed graph
     def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
         '''
@@ -140,7 +142,14 @@ class open_digraph: # for open directed graph
         """
         return list(self.nodes.keys())
  
-    
+
+    @property
+    def min_id(self):
+        return min(self.nodes_ids)
+
+    @property
+    def max_id(self):
+        return max(self.nodes_ids)
 
     @property
     def new_id(self) -> int :
@@ -240,6 +249,14 @@ class open_digraph: # for open directed graph
         """
         return self.__str__()
         
+    def __eq__(self, g):
+        b1 = set(self.inputs_ids) == set(g.inputs_ids)
+        b2 = set(self.outputs_ids) == set(g.outputs_ids)
+        b3 = set(self.nodes_list) == set(g.nodes_list)
+        return b1 and b2 and b3
+
+    def __neq__(self, g):
+        return not(self == g)
     
 
     def copy(self):
@@ -777,5 +794,33 @@ class open_digraph: # for open directed graph
         n_path = (''.join(str(e)+"/" for e in path.split("/")[:-1]))+"output/"+(path.split("/")[-1].split(".")[0]+".pdf")
 
         self.save_as_dot_file(path, verbose)
-        os.system(f"dot -Tpdf \"{path}\" -o \"{n_path}\"")
+        os.system(f"dot -Tpdf \"{path}\" -Glabel=\"{self.desc}\" -o \"{n_path}\"")
         os.system(f"xdg-open \"{n_path}\"")
+
+    def is_cyclic(self):
+        heap = gh.Heap([ n.outdegree() for n in self.nodes_list])
+
+        def is_cyclic_bis(h):
+            if h.empty(): return False
+            elif h.peek() != 0: return True
+            else:
+                h.pop()
+                return is_cyclic_bis(h)
+
+        return is_cyclic_bis(heap)
+
+    def shift_indices(self, n):
+        if self.min_id+n < 0: raise Exception("")
+
+        self.inputs_ids = [ i+n for i in self.inputs_ids ]
+        self.outputs_ids = [ i+n for i in self.outputs_ids ]
+
+        def shift_indices_node(m):
+            m.id += n
+            m.parents = { k+n:v for (k,v) in m.parents.items() }
+            m.children = { k+n:v for (k,v) in m.children.items() }
+            return m
+
+        self.__nodes = { k+n:shift_indices_node(v) for (k,v) in self.__nodes.items() }
+
+        self.__new_id += n
