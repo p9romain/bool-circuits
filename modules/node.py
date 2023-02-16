@@ -8,7 +8,6 @@ class node:
         parents: int->int dict; maps a parent node's id to its multiplicity
         children: int->int dict; maps a child node's id to its multiplicity
         '''
-
         # Tests des cohérences de types, lol
         if not isinstance(identity, int):
             raise TypeError("The id must be an int")
@@ -49,7 +48,8 @@ class node:
         """
         Overload copy operator
         """
-        return self.__init__(self.__id, self.__label, self.__parents, self.__children)
+        cls = self.__init__(self.id, self.label, self.parents, self.children)
+        return 
     
     
 
@@ -145,7 +145,7 @@ class node:
         if len(types) >= 1 and list(types)[0] != int :
             raise TypeError("The values of the given argument must all be integers")
 
-        self.__parents = p
+        self.__parents = { p: m for (p, m) in p.items() if m != 0 }
         
     
 
@@ -163,7 +163,7 @@ class node:
         if len(types) >= 1 and list(types)[0] != int :
             raise TypeError("The values of the given argument must all be integers")
 
-        self.__children = c
+        self.__children = { c: m for (c, m) in c.items() if m != 0 }
         
     
 
@@ -184,11 +184,21 @@ class node:
     
 
     def __eq__(self, other) -> bool :
-        return (self.id == other.id) and (self.label == other.label) and (self.parents == other.parents) and (self.children == other.children)
+        """
+        Overload eq operator
+        """
+        b1 = self.id == other.id
+        b2 = self.label == other.label
+        b3 = self.parents == other.parents
+        b4 = self.children == other.children
+        return b1 and b2 and b3 and b4
 
     
 
     def __neq__(self, other) -> bool :
+        """
+        Overload neq operator
+        """
         return not self == other
         
     
@@ -267,11 +277,26 @@ class node:
             
         if i in self.children_ids: self.children.pop(i)
 
-    def indegree(self):
+
+
+    def indegree(self) -> int :
+        """
+        Returns the in-degree of the node
+        """
         return sum(self.parents.values())
 
-    def outdegree(self):
+
+
+    def outdegree(self) -> int :
+        """
+        Returns the out-degree of the node
+        """
         return sum(self.children.values())
 
-    def degree(self):
+
+
+    def degree(self) -> int :
+        """
+        Returns the degree of the node
+        """
         return self.indegree()+self.outdegree()

@@ -7,10 +7,10 @@ sys.path.append(root) # allows us to fetch files from the project root
 from typing import List, Dict, Tuple
 import random as rd
 import numpy as np
+import generic_heap as gh
 
 import modules.node as nd
 
-import generic_heap as gh
 
 class open_digraph: # for open directed graph
     def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
@@ -18,6 +18,8 @@ class open_digraph: # for open directed graph
         inputs: int list; the ids of the input nodes
         outputs: int list; the ids of the output nodes
         nodes: node iter;
+        desc: str;
+        new_id: int; an id not in the graph
         '''
         # Comme pour les dictionnaires plus haut
         if not isinstance(inputs, list):
@@ -143,13 +145,24 @@ class open_digraph: # for open directed graph
         return list(self.nodes.keys())
  
 
-    @property
-    def min_id(self):
-        return min(self.nodes_ids)
 
     @property
-    def max_id(self):
+    def min_id(self) -> int :
+        """
+        Getter for the minimal id in the graph
+        """
+        return min(self.nodes_ids)
+
+
+
+    @property
+    def max_id(self) -> int :
+        """
+        Getter for the maximal id in the graph
+        """
         return max(self.nodes_ids)
+
+
 
     @property
     def new_id(self) -> int :
@@ -219,6 +232,7 @@ class open_digraph: # for open directed graph
         self.__outputs_ids = o
 
     
+
     @desc.setter
     def desc(self, desc : str) -> None :
         """
@@ -228,6 +242,7 @@ class open_digraph: # for open directed graph
             raise Exception("The description must be a string")
 
         self.__desc = desc
+
 
 
     def __str__(self) -> str :
@@ -248,22 +263,33 @@ class open_digraph: # for open directed graph
         Overload repr conversion (= str)
         """
         return self.__str__()
+
+
         
-    def __eq__(self, g):
+    def __eq__(self, g) -> bool :
+        """
+        Overload eq operator
+        """
         b1 = set(self.inputs_ids) == set(g.inputs_ids)
         b2 = set(self.outputs_ids) == set(g.outputs_ids)
         b3 = set(self.nodes_list) == set(g.nodes_list)
         return b1 and b2 and b3
 
-    def __neq__(self, g):
+
+
+    def __neq__(self, g) -> bool :
+        """
+        Overload beq operator
+        """
         return not(self == g)
-    
+ 
+
 
     def copy(self):
         """
         Overload copy operator
         """
-        return self.__init__(self.inputs_ids, self.outputs_ids, self.nodes_list)
+        return self.__init__(self.inputs_ids, self.outputs_ids, self.nodes_list, self.desc)
         
     
 
@@ -327,14 +353,14 @@ class open_digraph: # for open directed graph
         """
         Creates the empty graph
         """
-        return cls([],[],{})
+        return cls([],[],{}, "")
 
 
 
     @classmethod
-    def random(cls, n : int, bound : int, inputs : int = 0, outputs : int = 0, loop_free : bool = False, DAG : bool = False, oriented : bool = False, undirected : bool = False) :
+    def random(cls, n : int, bound : int, inputs : int = 0, outputs : int = 0, desc : str = "", loop_free : bool = False, DAG : bool = False, oriented : bool = False, undirected : bool = False) :
         """
-        Generates a graph randomly, with [n] nodes, [inputs] inputs, [outputs] outputs and can have loop, DAG, oriented or undirected 
+        Generates a graph randomly, with [n] nodes, [inputs] inputs, [outputs] outputs and can have loop, DAG, oriented or undirected. [bound] indicates the number maximal of edges between two nodes
         """
         if not isinstance(n, int):
             raise Exception("The number of nodes must be an integer")
@@ -369,6 +395,7 @@ class open_digraph: # for open directed graph
 
         M = am.random_matrix(n, bound, null_diag = loop_free, oriented = oriented, triangular = DAG, symetric = undirected)
         cls = am.graph_from_adjacency_matrix(M)
+        cls.desc = desc 
 
         if inputs > n or outputs > n :
             raise Exception("Can't have more inputs ou outputs than nodes in the graph")
@@ -440,7 +467,6 @@ class open_digraph: # for open directed graph
 
                             g.add_edge((id_p, id_c))
                         else: raise Exception("Line for edge is not in the right format : missing src or dst")
-
         f.close()
 
         return g
@@ -689,7 +715,7 @@ class open_digraph: # for open directed graph
 
     def is_well_formed(self) -> bool :
         """
-        Check if a graph is well formed :
+        Check if the graph is well formed :
         - each inputs_ids and outputs_ids nodes must be in the graph, i.e in [self.__nodes]
         - each inputs_ids must have only one child
         - each outputs_ids must have only one parent
@@ -778,6 +804,8 @@ class open_digraph: # for open directed graph
         f.write("}")
         f.close()
 
+
+
     def display(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
         """
         Saves and display the graph in a pdf
@@ -797,7 +825,13 @@ class open_digraph: # for open directed graph
         os.system(f"dot -Tpdf \"{path}\" -Glabel=\"{self.desc}\" -o \"{n_path}\"")
         os.system(f"xdg-open \"{n_path}\"")
 
-    def is_cyclic(self):
+
+
+    def is_cyclic(self) -> bool :
+        """
+        """
+
+
         heap = gh.Heap([ n.outdegree() for n in self.nodes_list])
 
         def is_cyclic_bis(h):
@@ -809,7 +843,13 @@ class open_digraph: # for open directed graph
 
         return is_cyclic_bis(heap)
 
-    def shift_indices(self, n):
+
+
+    def shift_indices(self, n : int) -> None :
+        """
+        """
+
+
         if self.min_id+n < 0: raise Exception("")
 
         self.inputs_ids = [ i+n for i in self.inputs_ids ]

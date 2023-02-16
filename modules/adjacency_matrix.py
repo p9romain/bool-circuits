@@ -156,5 +156,5 @@ def graph_from_adjacency_matrix(M : np.ndarray) -> od.open_digraph :
         g.add_node(label="n"+str(i))
     for i in range(M.shape[0]):
         for j in range(M.shape[1]):
-            g.add_edge([ (i,j) for _ in range(M[i,j]) ])
+            g.add_edge([ (i,j) for _ in range(int(M[i,j])) ])
     return g
