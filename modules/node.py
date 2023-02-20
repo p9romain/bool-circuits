@@ -1,5 +1,6 @@
 from typing import List, Dict, Tuple
 import copy as cp
+import sys
 
 class node:
     def __init__(self, identity : int, label : str, parents : Dict[int, int], children : Dict[int, int]) -> None :
@@ -165,6 +166,12 @@ class node:
 
         self.__children = { c: m for (c, m) in c.items() if m != 0 }
         
+
+
+    #pour les sets
+    def __hash__(self) -> hash :
+        return hash(self.label*sys.getsizeof(self))
+
     
 
     def __str__(self) -> str :

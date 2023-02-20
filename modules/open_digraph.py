@@ -260,6 +260,12 @@ class open_digraph: # for open directed graph
         desc = " : " + self.desc + " " if self.desc != "" else ""
         return f"[Graph{desc}] (V = {V}, I = {I}, O = {O}, E = [{E}])"
 
+
+
+    #pour les sets
+    def __hash__(self) -> hash :
+        return hash(self.desc*sys.getsizeof(self))
+
     
 
     def __repr__(self) -> str :
