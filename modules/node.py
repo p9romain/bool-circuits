@@ -48,8 +48,8 @@ class node:
         """
         Overload copy operator
         """
-        cls = self.__init__(self.id, self.label, self.parents, self.children)
-        return 
+        n = node(self.id, self.label, self.parents, self.children)
+        return n
     
     
 

@@ -44,6 +44,9 @@ class open_digraph: # for open directed graph
         if len(types) >= 1 and list(types)[0] != nd.node :
             raise TypeError("Elements in nodes must all be nodes")
 
+        if not isinstance(desc, str):
+            raise TypeError("Description must be a string")
+
         self.__inputs_ids = inputs
         self.__outputs_ids = outputs
         self.__nodes = {node.id:node for node in nodes} # self.nodes: <int,node> dict
@@ -289,7 +292,8 @@ class open_digraph: # for open directed graph
         """
         Overload copy operator
         """
-        return self.__init__(self.inputs_ids, self.outputs_ids, self.nodes_list, self.desc)
+        g = open_digraph(self.inputs_ids, self.outputs_ids, self.nodes_list, self.desc)
+        return g
         
     
 

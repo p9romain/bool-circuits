@@ -55,8 +55,8 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_copy(self):
-        self.assertIsNot(self.g0.copy(), self.g0)
-        self.assertEqual(self.g0.copy(), self.g0)
+        self.assertIsNot(od.open_digraph.copy(self.g0), self.g0)
+        self.assertEqual(od.open_digraph.copy(self.g0), self.g0)
 
 
         
@@ -85,7 +85,7 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(sorted(self.g0.edges, key = lambda a : a[0]), sorted([ (0, 1), (0, 1), (0, 1), (0, 2), (1, 2), (1, 2), (1, 5), (2, 6), (3, 0), (4, 0) ], key = lambda a : a[0]))
 
         self.assertEqual(self.g0.min_id, 0)
-        self.assertEqual(self.g0.max_id, 7)
+        self.assertEqual(self.g0.max_id, 6)
 
         self.assertEqual(self.g0.new_id, 7)
 
@@ -97,7 +97,8 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_setters(self):
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
+        print("setter", g)
 
         g.inputs_ids = [1, 0, 5]
         g.outputs_ids = []
@@ -109,7 +110,7 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_add(self):
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         g.add_input_id(1)
         g.add_output_id(0)
@@ -117,7 +118,7 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(g.inputs_ids, [3, 4, 1])
         self.assertEqual(g.outputs_ids, [5, 6, 0])
 
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         g.add_edge((1, 3))
         self.assertEqual(g.nodes_list, 
@@ -142,7 +143,7 @@ class Open_DigraphTest(unittest.TestCase):
              nd.node(6, 'o1', {2:1}, {})
              ])
 
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         x = g.add_node()
         self.assertEqual(x, 7)
@@ -172,7 +173,7 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.assertEqual(g.new_id, 12)
 
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         x = g.add_input_node()
         self.assertEqual(x, 7)
@@ -199,7 +200,7 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.assertEqual(g.new_id, 11)
 
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         x = g.add_output_node()
         self.assertEqual(x, 7)
@@ -229,7 +230,7 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_remove(self):
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         g.remove_edge((0, 2))
         g.remove_edge([])
@@ -249,7 +250,7 @@ class Open_DigraphTest(unittest.TestCase):
              nd.node(6, 'o1', {2:1}, {})
              ])
 
-        g = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
 
         g0.remove_node_by_id(0)
         g.remove_node_by_id([])
@@ -292,7 +293,7 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_shift_indices(self):
-        g1 = self.g0.copy()
+        g = od.open_digraph.copy(self.g0)
         g1.shift_indices(20)
         self.assertEqual(g1.nodes_ids, [ i + 20 for i in range(7) ])
         g1.shift_indices(-20)

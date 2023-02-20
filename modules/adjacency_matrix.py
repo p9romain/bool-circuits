@@ -49,7 +49,7 @@ def random_symetric_int_matrix(n : int, bound : int, null_diag : bool = False) -
         raise Exception("The null_diag must be a bool")
 
     M = random_int_matrix(n, bound, null_diag)
-    return (M+M.T)/2
+    return (M+M.T)//2
 
 
 
