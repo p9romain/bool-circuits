@@ -12,7 +12,6 @@ import copy as cp
 
 import modules.node as nd
 
-
 class open_digraph: # for open directed graph
     def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
         '''
@@ -62,6 +61,8 @@ class open_digraph: # for open directed graph
         Getter for the descrption of the graph
         """
         return self.__desc
+
+
 
     # can be useful maybe   
     @property
@@ -857,6 +858,7 @@ class open_digraph: # for open directed graph
 
     def is_cyclic(self) -> bool :
         """
+        Check if the graph is cyclic or not
         """
         g = self.copy()
         heap = gh.Heap([ (n.outdegree(), n.id) for n in g.nodes_list])
@@ -875,10 +877,11 @@ class open_digraph: # for open directed graph
 
     def shift_indices(self, n : int) -> None :
         """
+        Shifts all the ids of [n] (postive or negative)
         """
 
 
-        if self.min_id+n < 0: raise Exception("")
+        if self.min_id+n < 0: raise Exception("All the ids must be positive, even after the shift")
 
         def shift_indices_node(m):
             m.id += n
