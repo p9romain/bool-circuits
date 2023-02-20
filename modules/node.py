@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple
+import copy as cp
 
 class node:
     def __init__(self, identity : int, label : str, parents : Dict[int, int], children : Dict[int, int]) -> None :
@@ -48,8 +49,7 @@ class node:
         """
         Overload copy operator
         """
-        n = node(self.id, self.label, self.parents, self.children)
-        return n
+        return cp.deepcopy(self)
     
     
 

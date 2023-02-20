@@ -50,13 +50,13 @@ class Open_DigraphTest(unittest.TestCase):
 
         for desc, loop_free, DAG, oriented, undirected in l :
             g = od.open_digraph.random(6, 3, 2, 2, desc, loop_free, DAG, oriented, undirected)
-            g.display(path = f"dot_files/random/{desc}_graph.dot")
+            g.save_as_pdf_file(path = f"dot_files/random/{desc}_graph.dot")
 
 
 
     def test_copy(self):
-        self.assertIsNot(od.open_digraph.copy(self.g0), self.g0)
-        self.assertEqual(od.open_digraph.copy(self.g0), self.g0)
+        self.assertIsNot(self.g0.copy(), self.g0)
+        self.assertEqual(self.g0.copy(), self.g0)
 
 
         
@@ -97,8 +97,7 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_setters(self):
-        g = od.open_digraph.copy(self.g0)
-        print("setter", g)
+        g = self.g0.copy()
 
         g.inputs_ids = [1, 0, 5]
         g.outputs_ids = []
@@ -110,7 +109,7 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_add(self):
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
         g.add_input_id(1)
         g.add_output_id(0)
@@ -118,7 +117,7 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(g.inputs_ids, [3, 4, 1])
         self.assertEqual(g.outputs_ids, [5, 6, 0])
 
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
         g.add_edge((1, 3))
         self.assertEqual(g.nodes_list, 
@@ -143,7 +142,7 @@ class Open_DigraphTest(unittest.TestCase):
              nd.node(6, 'o1', {2:1}, {})
              ])
 
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
         x = g.add_node()
         self.assertEqual(x, 7)
@@ -173,7 +172,7 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.assertEqual(g.new_id, 12)
 
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
         x = g.add_input_node()
         self.assertEqual(x, 7)
@@ -200,7 +199,7 @@ class Open_DigraphTest(unittest.TestCase):
 
         self.assertEqual(g.new_id, 11)
 
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
         x = g.add_output_node()
         self.assertEqual(x, 7)
@@ -230,7 +229,7 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_remove(self):
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
         g.remove_edge((0, 2))
         g.remove_edge([])
@@ -250,18 +249,18 @@ class Open_DigraphTest(unittest.TestCase):
              nd.node(6, 'o1', {2:1}, {})
              ])
 
-        g = od.open_digraph.copy(self.g0)
+        g = self.g0.copy()
 
-        g0.remove_node_by_id(0)
+        g.remove_node_by_id(0)
         g.remove_node_by_id([])
         g.remove_node_by_id([3, 6])
 
         self.assertEqual(g.nodes_list, 
             [nd.node(1, 'b', {}, {2:2, 5:1}),
-             nd.node(2, 'c', {1:2}, {}),
-             nd.node(4, 'i1', {}, {}),
-             nd.node(5, 'o0', {1:1}, {})
-             ])
+            nd.node(2, 'c', {1:2}, {}),
+            nd.node(4, 'i1', {}, {}),
+            nd.node(5, 'o0', {1:1}, {})
+            ])
         self.assertEqual(g.new_id, 6)
 
   
@@ -277,8 +276,8 @@ class Open_DigraphTest(unittest.TestCase):
         g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
         self.assertEqual(self.g0, g)
 
-        g1 = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
-        g1.display("dot_files/graph_test_from_file_without_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
+        g.display("dot_files/graph_test_from_file_without_verbose.dot")
 
     
 
@@ -293,11 +292,11 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_shift_indices(self):
-        g = od.open_digraph.copy(self.g0)
-        g1.shift_indices(20)
-        self.assertEqual(g1.nodes_ids, [ i + 20 for i in range(7) ])
-        g1.shift_indices(-20)
-        self.assertEqual(self.g0, g1)
+        g = self.g0.copy()
+        g.shift_indices(20)
+        self.assertEqual(g.nodes_ids, [ i + 20 for i in range(7) ])
+        g.shift_indices(-20)
+        self.assertEqual(self.g0, g)
 
 
 

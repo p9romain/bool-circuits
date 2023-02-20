@@ -8,6 +8,7 @@ from typing import List, Dict, Tuple
 import random as rd
 import numpy as np
 import generic_heap as gh
+import copy as cp
 
 import modules.node as nd
 
@@ -292,8 +293,7 @@ class open_digraph: # for open directed graph
         """
         Overload copy operator
         """
-        g = open_digraph(self.inputs_ids, self.outputs_ids, self.nodes_list, self.desc)
-        return g
+        return cp.deepcopy(self)
         
     
 
@@ -517,7 +517,7 @@ class open_digraph: # for open directed graph
         children = f(children)
 
         n = nd.node(self.new_id, label, {}, {})
-        self.nodes[n.id] = n
+        self.__nodes[n.id] = n
         
         self.add_edge( [ (i, n.id) for i in parents.keys() for _ in range(parents[i]) ] )
         self.add_edge( [ (n.id, i) for i in children.keys() for _ in range(children[i]) ] )
@@ -696,7 +696,7 @@ class open_digraph: # for open directed graph
             if i in self.inputs_ids: self.inputs_ids.remove(i)
             if i in self.outputs_ids: self.outputs_ids.remove(i)
             
-            self.nodes.pop(i)
+            self.__nodes.pop(i)
             if i+1 == self.__new_id : 
                 # -1 car on enlève le denier
                 self.__new_id -= 1 
@@ -777,7 +777,7 @@ class open_digraph: # for open directed graph
 
     def save_as_dot_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
         """
-        Saves the graph in the dot file
+        Saves the graph in a dot file
         The verbose adds the id in the file, not only the label of a node
         The add argument says if we add the graph at the end of the file
         """
@@ -810,6 +810,24 @@ class open_digraph: # for open directed graph
 
 
 
+    def save_as_pdf_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
+        """
+        Saves the graph in a pdf file
+        The verbose adds the id in the file, not only the label of a node
+        The add argument says if we add the graph at the end of the file
+        """
+        if not isinstance(path, str):
+            raise Exception("The path must be a string")
+        if not isinstance(verbose, bool):
+            raise Exception("The verbose must be a bool")
+
+        n_path = (''.join(str(e)+"/" for e in path.split("/")[:-1]))+"output/"+(path.split("/")[-1].split(".")[0]+".pdf") 
+
+        self.save_as_dot_file(path, verbose)
+        os.system(f"dot -Tpdf \"{path}\" -Glabel=\"{self.desc}\" -o \"{n_path}\"")
+
+
+
     def display(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
         """
         Saves and display the graph in a pdf
@@ -834,15 +852,15 @@ class open_digraph: # for open directed graph
     def is_cyclic(self) -> bool :
         """
         """
-
-
-        heap = gh.Heap([ n.outdegree() for n in self.nodes_list])
+        g = self.copy()
+        heap = gh.Heap([ (n.outdegree(), n.id) for n in g.nodes_list])
 
         def is_cyclic_bis(h):
             if h.empty(): return False
-            elif h.peek() != 0: return True
-            else:
-                h.pop()
+            elif h.peek()[0] != 0: return True
+            else: 
+                g.remove_node_by_id(h.pop()[1])
+                h = gh.Heap([ (n.outdegree(), n.id) for n in g.nodes_list])
                 return is_cyclic_bis(h)
 
         return is_cyclic_bis(heap)
@@ -856,9 +874,6 @@ class open_digraph: # for open directed graph
 
         if self.min_id+n < 0: raise Exception("")
 
-        self.inputs_ids = [ i+n for i in self.inputs_ids ]
-        self.outputs_ids = [ i+n for i in self.outputs_ids ]
-
         def shift_indices_node(m):
             m.id += n
             m.parents = { k+n:v for (k,v) in m.parents.items() }
@@ -866,5 +881,8 @@ class open_digraph: # for open directed graph
             return m
 
         self.__nodes = { k+n:shift_indices_node(v) for (k,v) in self.__nodes.items() }
+
+        self.inputs_ids = [ i+n for i in self.inputs_ids ]
+        self.outputs_ids = [ i+n for i in self.outputs_ids ]
 
         self.__new_id += n

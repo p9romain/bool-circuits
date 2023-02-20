@@ -51,7 +51,7 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(n0.id, 4)
         self.assertEqual(n0.label, "blouge")
         self.assertEqual(n0.parents, {1:3, 5:1, 4:1})
-        self.assertEqual(n0.children, {7:29, 0:153, 2:0})
+        self.assertEqual(n0.children, {7:29, 0:153})
 
 
 
