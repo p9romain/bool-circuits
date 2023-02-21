@@ -76,7 +76,7 @@ class open_digraph: # for open directed graph
 
     # can be useful maybe
     @property
-    def inputs_list(self) -> List[int] :
+    def inputs_list(self) -> List[nd.node] :
         """
         Getter for the graph's inputs
         """
@@ -714,7 +714,8 @@ class open_digraph: # for open directed graph
             types = set(type(k) for k in args)
             if len(types) >= 1 and list(types)[0] != int :
                 raise TypeError("Elements in the given argument must all be integers")
-            for arg in args: f(arg)
+            
+            for arg in args.copy(): f(arg)
 
         elif isinstance(args, int) : 
             f(args)
@@ -877,7 +878,7 @@ class open_digraph: # for open directed graph
 
     def shift_indices(self, n : int) -> None :
         """
-        Shifts all the ids of [n] (postive or negative)
+        Shifts all the ids of [n] (positive or negative)
         """
 
 
@@ -895,3 +896,88 @@ class open_digraph: # for open directed graph
         self.outputs_ids = [ i+n for i in self.outputs_ids ]
 
         self.__new_id += n
+        
+    def iparallel(self, g):
+        g_copy = g.copy()
+        g_copy.shift_indices(self.max_id-g_copy.min_id+1)
+        
+        self.desc = "Parallèle : " + self.desc + " & " + g_copy.desc
+        self.__nodes.update(g_copy.nodes)
+        self.inputs_ids += g_copy.inputs_ids
+        self.outputs_ids += g_copy.outputs_ids
+        self.__new_id = g_copy.max_id + 1
+        
+    
+    @classmethod
+    def parallel(cls,g1,g2):
+        g1_copy = g1.copy()
+        g2_copy = g2.copy()
+        g1_copy.iparallel(g2_copy)
+        return g1_copy
+    
+    def icompose(self, f):
+        if len(self.inputs_ids) != len(f.outputs_ids):
+            raise Exception("Les nombres d'entrées et de sorties ne correspondent pas.")
+            
+        f_copy = f.copy()
+        f_copy.shift_indices(self.max_id-f_copy.min_id+1)
+        self.__nodes.update(f_copy.nodes)
+        self.__new_id = f_copy.max_id + 1
+        
+        for k,idk in enumerate(f_copy.outputs_ids):
+            id_depart = self.node_by_id(idk).parent_ids[0]
+            id_arrivee = self.node_by_id(self.inputs_ids[k]).children_ids[0]
+            self.add_edge((id_depart,id_arrivee))
+                
+        self.remove_node_by_id(f_copy.outputs_ids)
+        self.remove_node_by_id(self.inputs_ids)
+        print(self.nodes_ids)
+        self.inputs_ids = f_copy.inputs_ids
+        
+    @classmethod
+    def compose(cls,g1,g2):
+        g1_copy = g1.copy()
+        g2_copy = g2.copy()
+        g1_copy.icompose(g2_copy)
+        return g1_copy
+        
+    @classmethod
+    def identity(cls, n):
+        g = cls.empty()
+        
+        for k in range(2*n):
+            g.add_node()
+        for k in range(n):
+            g.add_edge((k,k+n))
+            
+        g.inputs_ids = list(range(n))
+        g.outputs_ids = list(range(n,2*n))
+
+        return g
+        
+    def connected_components(self):
+        comp = {}
+        nodes_dict = self.nodes.copy()
+        
+        def pop_and_search(i, k):
+            if i in nodes_dict:
+                key_ids = set(list(nodes_dict.keys()))
+                p_ids = nodes_dict[i].parent_ids
+                p_ids = list(set(p_ids) & key_ids)
+                c_ids = nodes_dict[i].children_ids
+                c_ids = list(set(c_ids) & key_ids)
+                del nodes_dict[i]
+                comp[i] = k
+                for t in p_ids: pop_and_search(t,k)
+                for t in c_ids: pop_and_search(t,k)
+        
+        k = 0
+        while len(nodes_dict) > 0:
+            #ind = rd.choice(list(nodes_dict.keys())) (sûrement mieux mais pas possible pour les tests)
+            ind = list(nodes_dict.keys())[0]
+            pop_and_search(ind, k)
+            k += 1
+        
+        return comp
+        
+        

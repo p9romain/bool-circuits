@@ -33,6 +33,7 @@ class bool_circ(od.open_digraph):
     if not od.open_digraph.is_well_formed(self) : return False
 
     def node_well_formed(n):
+        
       match n.label:
         case '&' | '&&' :
           return n.outdegree() == 1
