@@ -371,7 +371,7 @@ class open_digraph: # for open directed graph
     @classmethod
     def random(cls, n : int, bound : int, inputs : int = 0, outputs : int = 0, desc : str = "", loop_free : bool = False, DAG : bool = False, oriented : bool = False, undirected : bool = False) :
         """
-        Generates a graph randomly, with [n] nodes, [inputs] inputs, [outputs] outputs and can have loop, DAG, oriented or undirected. [bound] indicates the number maximal of edges between two nodes
+        Creates a graph randomly, with [n] nodes, [inputs] inputs, [outputs] outputs and can have loop, DAG, oriented or undirected. [bound] indicates the number maximal of edges between two nodes
         """
         if not isinstance(n, int):
             raise Exception("The number of nodes must be an integer")
@@ -426,7 +426,7 @@ class open_digraph: # for open directed graph
     @classmethod
     def from_dot_file(cls, path : str = "dot_files/graph.dot") :
         """
-        Generates a graph from a .dot file
+        Creates a graph from a .dot file
         """
         if not isinstance(path, str):
             raise Exception("The path must be a string")
@@ -896,7 +896,10 @@ class open_digraph: # for open directed graph
     
 
 
-    def iparallel(self, g):
+    def iparallel(self, g) -> None :
+        """
+        Adds the graph [g] in parallel of [self]
+        """
         g_copy = g.copy()
         g_copy.shift_indices(self.max_id-g_copy.min_id+1)
         
@@ -909,7 +912,10 @@ class open_digraph: # for open directed graph
     
 
     @classmethod
-    def parallel(cls,g1,g2):
+    def parallel(cls, g1, g2):
+        """
+        Creates a graph with [g1] in parallel of [g2]
+        """
         g1_copy = g1.copy()
         g2_copy = g2.copy()
         g1_copy.iparallel(g2_copy)
@@ -917,9 +923,13 @@ class open_digraph: # for open directed graph
     
 
 
-    def icompose(self, f):
+    def icompose(self, f) -> None:
+        """
+        Composes the graph [f] in [self].
+        Graphs must have the same number of inputs and ouputs ([self] comes after [f])
+        """
         if len(self.inputs_ids) != len(f.outputs_ids):
-            raise Exception("Les nombres d'entrées et de sorties ne correspondent pas.")
+            raise Exception("Number of inputs and outputs don't match")
             
         f_copy = f.copy()
         f_copy.shift_indices(self.max_id-f_copy.min_id+1)
@@ -938,16 +948,27 @@ class open_digraph: # for open directed graph
 
 
     @classmethod
-    def compose(cls,g1,g2):
+    def compose(cls, g1, g2):
+        """
+        Creates a graph [g1] composed with [g2].
+        Graphs must have the same number of inputs and ouputs ([g2] comes after [g1])
+        """
         g1_copy = g1.copy()
         g2_copy = g2.copy()
-        g1_copy.icompose(g2_copy)
-        return g1_copy
+        g2_copy.icompose(g1_copy)
+        return g2_copy
     
 
 
     @classmethod
-    def identity(cls, n):
+    def identity(cls, n : int):
+        """
+        Creates the identity graph of size [n]
+        It's [n] pairs of one input with one output
+        """
+        if not isinstance(n, int):
+            raise TypeError("Given argument must be an int")
+
         g = cls.empty()
         
         for k in range(2*n):
@@ -963,9 +984,13 @@ class open_digraph: # for open directed graph
 
 
     def connected_components(self):
+        """
+        Lists all the connected components of a graph. The dict looks like this :
+        { node_id : 0, ..., node_id : 0, node_id : 1, ...., node_id : n }
+        where 0, ..., n represents the id of the subgraph with nodes node_id, ..., node_id
+        """
         comp = {}
         nodes_dict = self.nodes.copy()
-        print(nodes_dict)
         
         def pop_and_search(i, k):
             if i in nodes_dict:
@@ -991,6 +1016,9 @@ class open_digraph: # for open directed graph
 
 
     def connected_graphs(self):
+        """
+        Returns all the connected subgraphs in a list of graphs
+        """
         comp = self.connected_components()
         l = []
         for k in list(set(comp.values())):

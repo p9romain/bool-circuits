@@ -277,12 +277,12 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(self.g0, g)
 
         g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
-        g.display("dot_files/graph_test_from_file_without_verbose.dot")
+        g.save_as_pdf_file("dot_files/graph_test_from_file_without_verbose.dot")
 
     
 
-    def test_display(self):
-        self.g0.display(verbose = True)
+    def test_save_as_pdf_file(self):
+        self.g0.save_as_pdf_file(verbose = True)
 
 
 
@@ -305,7 +305,7 @@ class Open_DigraphTest(unittest.TestCase):
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
         g1.iparallel(g2)
-        g1.display("dot_files/g1_iparallel_g2.dot")
+        g1.save_as_pdf_file("dot_files/g1_iparallel_g2.dot")
         
 
 
@@ -314,15 +314,15 @@ class Open_DigraphTest(unittest.TestCase):
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
         g_parallel = od.open_digraph.parallel(g1,g2)
-        g_parallel.display("dot_files/g1_parallel_g2.dot", verbose=True)
+        g_parallel.save_as_pdf_file("dot_files/g1_parallel_g2.dot", verbose=True)
         
 
 
     def test_icompose(self):
         g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")        
-        g2.icompose(g1)
-        g2.display("dot_files/g1_icompose_g2.dot", verbose=True)
+        g2.icompose(g1) #g2 après g1
+        g2.save_as_pdf_file("dot_files/g1_icompose_g2.dot", verbose=True)
         
 
 
@@ -331,30 +331,30 @@ class Open_DigraphTest(unittest.TestCase):
         g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
-        g_compose = od.open_digraph.compose(g2,g1)
-        g_compose.display("dot_files/g1_compose_g2.dot", verbose=True)
+        g_compose = od.open_digraph.compose(g1,g2) #g2 après g1
+        g_compose.save_as_pdf_file("dot_files/g1_compose_g2.dot", verbose=True)
         
     
 
     def test_identity(self):
         g = od.open_digraph.identity(5)
-        g.display("dot_files/g_identity_5.dot", verbose=True)
+        g.save_as_pdf_file("dot_files/g_identity_5.dot", verbose=True)
         
 
 
     def test_connected_components(self):
-        self.test_parallel() # sinon il trouve pas le fichier ?
+        self.test_parallel() # sinon il trouve pas le fichier
         g = od.open_digraph.from_dot_file("dot_files/g1_parallel_g2.dot")
         self.assertEqual(g.connected_components(), {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:1,8:1,9:1,10:1,11:1,12:1,13:1})
 
 
 
     def test_connected_graphs(self):
-        self.test_parallel() # sinon il trouve pas le fichier ?
+        self.test_parallel() # par sécurité, pareil
         g = od.open_digraph.from_dot_file("dot_files/g1_parallel_g2.dot")
         l = g.connected_graphs()
         for i, g in enumerate(l) :
-            g.display(path = f"dot_files/connected_graph_{i}.dot", verbose = True)
+            g.save_as_pdf_file(path = f"dot_files/connected_graph_{i}.dot", verbose = True)
 
 
 if __name__ == '__main__': # the following code is called only when
