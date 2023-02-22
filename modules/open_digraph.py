@@ -987,3 +987,15 @@ class open_digraph: # for open directed graph
             k += 1
         
         return comp
+
+
+
+    def connected_graphs(self):
+        comp = self.connected_components()
+        l = []
+        for k in list(set(comp.values())):
+            nodes = [ self.node_by_id(i) for i, v in comp.items() if v == k ]
+            inputs = [ i for i, v in comp.items() if v == k and i in self.inputs ]
+            outputs = [ i for i, v in comp.items() if v == k and i in self.outputs ]
+            l.append(open_digraph(inputs, outputs, nodes))
+        return l 

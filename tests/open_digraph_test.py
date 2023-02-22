@@ -349,5 +349,13 @@ class Open_DigraphTest(unittest.TestCase):
 
 
 
+    def test_connected_graphs(self):
+        self.test_parallel() # sinon il trouve pas le fichier ?
+        g = od.open_digraph.from_dot_file("dot_files/g1_parallel_g2.dot")
+        l = g.connected_graphs()
+        for i, g in enumerate(l) :
+            g.display(path = f"dot_files/connected_graph_{i}.dot", verbose = True)
+
+
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run
