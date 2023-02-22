@@ -818,11 +818,12 @@ class open_digraph: # for open directed graph
 
 
 
-    def save_as_pdf_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
+    def save_as_pdf_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> str :
         """
         Saves the graph in a pdf file
         The verbose adds the id in the file, not only the label of a node
         The add argument says if we add the graph at the end of the file
+        Returns the path of the pdf_file (useful for display)
         """
         if not isinstance(path, str):
             raise Exception("The path must be a string")
@@ -833,6 +834,7 @@ class open_digraph: # for open directed graph
 
         self.save_as_dot_file(path, verbose)
         os.system(f"dot -Tpdf \"{path}\" -Glabel=\"{self.desc}\" -o \"{n_path}\"")
+        return n_path
 
 
 
@@ -846,13 +848,7 @@ class open_digraph: # for open directed graph
         if not isinstance(verbose, bool):
             raise Exception("The verbose must be a bool")
 
-        # On ne peut pas juste choper le point car si on est dans des répertoires .name, ça va tout casser donc on fait cette horreur :
-        #   (on split avec les /, et on prend tout les éléments avant le dernier /) 
-        # + (on split avec les /, on prendre le dernier (donc nom du fichier), et on remplace le .dot par .pdf)
-        n_path = (''.join(str(e)+"/" for e in path.split("/")[:-1]))+"output/"+(path.split("/")[-1].split(".")[0]+".pdf")
-
-        self.save_as_dot_file(path, verbose)
-        os.system(f"dot -Tpdf \"{path}\" -Glabel=\"{self.desc}\" -o \"{n_path}\"")
+        n_path = self.save_as_pdf_file(path, verbose)
         os.system(f"xdg-open \"{n_path}\"")
 
 
@@ -880,7 +876,8 @@ class open_digraph: # for open directed graph
         """
         Shifts all the ids of [n] (positive or negative)
         """
-
+        if not isinstance(n, int):
+            raise TypeError("Given argument must be an int")
 
         if self.min_id+n < 0: raise Exception("All the ids must be positive, even after the shift")
 
@@ -896,7 +893,9 @@ class open_digraph: # for open directed graph
         self.outputs_ids = [ i+n for i in self.outputs_ids ]
 
         self.__new_id += n
-        
+    
+
+
     def iparallel(self, g):
         g_copy = g.copy()
         g_copy.shift_indices(self.max_id-g_copy.min_id+1)
@@ -908,6 +907,7 @@ class open_digraph: # for open directed graph
         self.__new_id = g_copy.max_id + 1
         
     
+
     @classmethod
     def parallel(cls,g1,g2):
         g1_copy = g1.copy()
@@ -915,6 +915,8 @@ class open_digraph: # for open directed graph
         g1_copy.iparallel(g2_copy)
         return g1_copy
     
+
+
     def icompose(self, f):
         if len(self.inputs_ids) != len(f.outputs_ids):
             raise Exception("Les nombres d'entrées et de sorties ne correspondent pas.")
@@ -931,16 +933,19 @@ class open_digraph: # for open directed graph
                 
         self.remove_node_by_id(f_copy.outputs_ids)
         self.remove_node_by_id(self.inputs_ids)
-        print(self.nodes_ids)
         self.inputs_ids = f_copy.inputs_ids
-        
+    
+
+
     @classmethod
     def compose(cls,g1,g2):
         g1_copy = g1.copy()
         g2_copy = g2.copy()
         g1_copy.icompose(g2_copy)
         return g1_copy
-        
+    
+
+
     @classmethod
     def identity(cls, n):
         g = cls.empty()
@@ -954,10 +959,13 @@ class open_digraph: # for open directed graph
         g.outputs_ids = list(range(n,2*n))
 
         return g
-        
+     
+
+
     def connected_components(self):
         comp = {}
         nodes_dict = self.nodes.copy()
+        print(nodes_dict)
         
         def pop_and_search(i, k):
             if i in nodes_dict:
@@ -979,5 +987,3 @@ class open_digraph: # for open directed graph
             k += 1
         
         return comp
-        
-        

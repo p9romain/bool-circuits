@@ -271,69 +271,81 @@ class Open_DigraphTest(unittest.TestCase):
 
     
 
-    # def test_dot_to_graph(self):
-        # self.g0.save_as_dot_file("dot_files/graph_test_save_file.dot", True)
-        # g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
-        # self.assertEqual(self.g0, g)
+    def test_dot_to_graph(self):
+        self.g0.save_as_dot_file("dot_files/graph_test_save_file.dot", True)
+        g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
+        self.assertEqual(self.g0, g)
 
-        # g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
-        # g.display("dot_files/graph_test_from_file_without_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
+        g.display("dot_files/graph_test_from_file_without_verbose.dot")
 
     
 
-    # def test_display(self):
-        # self.g0.display(verbose = True)
+    def test_display(self):
+        self.g0.display(verbose = True)
 
 
 
-    # def test_cyclic(self):
-        # self.assertEqual(self.g0.is_cyclic(), False)
+    def test_cyclic(self):
+        self.assertEqual(self.g0.is_cyclic(), False)
 
 
 
-    # def test_shift_indices(self):
-        # g = self.g0.copy()
-        # g.shift_indices(20)
-        # self.assertEqual(g.nodes_ids, [ i + 20 for i in range(7) ])
-        # g.shift_indices(-20)
-        # self.assertEqual(self.g0, g)
+    def test_shift_indices(self):
+        g = self.g0.copy()
+        g.shift_indices(20)
+        self.assertEqual(g.nodes_ids, [ i + 20 for i in range(7) ])
+        g.shift_indices(-20)
+        self.assertEqual(self.g0, g)
         
-    # def test_iparallel(self):
-        # g1 = od.open_digraph.from_dot_file("dot_files/g1.dot")
-        # g2 = od.open_digraph.from_dot_file("dot_files/g2.dot")
+
+
+    def test_iparallel(self):
+        g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
+        g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
-        # g1.iparallel(g2)
-        # g1.display("dot_files/g1_iparallel_g2.dot")
+        g1.iparallel(g2)
+        g1.display("dot_files/g1_iparallel_g2.dot")
         
-    # def test_parallel(self):
-        # g1 = od.open_digraph.from_dot_file("dot_files/g1.dot")
-        # g2 = od.open_digraph.from_dot_file("dot_files/g2.dot")
+
+
+    def test_parallel(self):
+        g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
+        g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
-        # g_parallel = od.open_digraph.parallel(g1,g2)
-        # g_parallel.display("dot_files/g1_parallel_g2.dot", verbose=True)
+        g_parallel = od.open_digraph.parallel(g1,g2)
+        g_parallel.display("dot_files/g1_parallel_g2.dot", verbose=True)
         
-    # def test_icompose(self):
-        # g1 = od.open_digraph.from_dot_file("dot_files/g1.dot")
-        # g2 = od.open_digraph.from_dot_file("dot_files/g2.dot")        
+
+
+    def test_icompose(self):
+        g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
+        g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")        
+        g2.icompose(g1)
+        g2.display("dot_files/g1_icompose_g2.dot", verbose=True)
         
-        # g1.icompose(g2)
-        # g1.display("dot_files/g1_icompose_g2.dot", verbose=True)
+
+
+
+    def test_compose(self):
+        g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
+        g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
-    # def test_compose(self):
-        # g1 = od.open_digraph.from_dot_file("dot_files/g1.dot")
-        # g2 = od.open_digraph.from_dot_file("dot_files/g2.dot")
-        
-        # g_compose = od.open_digraph.compose(g1,g2)
-        # g_compose.display("dot_files/g1_compose_g2.dot", verbose=True)
+        g_compose = od.open_digraph.compose(g2,g1)
+        g_compose.display("dot_files/g1_compose_g2.dot", verbose=True)
         
     
-    # def test_identity(self):
-        # g = od.open_digraph.identity(5)
-        # g.display("dot_files/g_identity_5.dot", verbose=True)
+
+    def test_identity(self):
+        g = od.open_digraph.identity(5)
+        g.display("dot_files/g_identity_5.dot", verbose=True)
         
+
+
     def test_connected_components(self):
+        self.test_parallel() # sinon il trouve pas le fichier ?
         g = od.open_digraph.from_dot_file("dot_files/g1_parallel_g2.dot")
-        self.assertEqual(g.connected_components(), {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1})
+        self.assertEqual(g.connected_components(), {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:1,8:1,9:1,10:1,11:1,12:1,13:1})
 
 
 

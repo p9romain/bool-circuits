@@ -57,22 +57,30 @@ class bool_circ(od.open_digraph):
     return not self.is_cyclic()
 
 
+  def save_as_dot_file(self, path : str = "dot_files/bool_circ.dot", verbose : bool = False) -> None :
+    """
+    Saves the graph in a dot file
+    The verbose adds the id in the file, not only the label of a node
+    The add argument says if we add the graph at the end of the file
+    """
+    od.open_digraph.save_as_dot_file(self, path, verbose)   
+
+
+
+  def save_as_pdf_file(self, path : str = "dot_files/bool_circ.dot", verbose : bool = False) -> str :
+    """
+    Saves the graph in a pdf file
+    The verbose adds the id in the file, not only the label of a node
+    The add argument says if we add the graph at the end of the file
+    Returns the path of the pdf_file (useful for display)
+    """
+    od.open_digraph.save_as_pdf_file(self, path, verbose)
+
+
 
   def display(self, path : str = "dot_files/bool_circ.dot", verbose : bool = False) -> None :
-        """
-        Saves and display the graph in a pdf
-        The verbose adds the id in the file, not only the label of a node
-        """
-        if not isinstance(path, str):
-            raise Exception("The path must be a string")
-        if not isinstance(verbose, bool):
-            raise Exception("The verbose must be a bool")
-
-        # On ne peut pas juste choper le point car si on est dans des répertoires .name, ça va tout casser donc on fait cette horreur :
-        #   (on split avec les /, et on prend tout les éléments avant le dernier /) 
-        # + (on split avec les /, on prendre le dernier (donc nom du fichier), et on remplace le .dot par .pdf)
-        n_path = (''.join(str(e)+"/" for e in path.split("/")[:-1]))+"output/"+(path.split("/")[-1].split(".")[0]+".pdf")
-
-        self.save_as_dot_file(path, verbose)
-        os.system(f"dot -Tpdf \"{path}\" -Glabel=\"{self.desc}\" -o \"{n_path}\"")
-        os.system(f"xdg-open \"{n_path}\"")
+    """
+    Saves and display the graph in a pdf
+    The verbose adds the id in the file, not only the label of a node
+    """
+    od.open_digraph.display(self, path, verbose)
