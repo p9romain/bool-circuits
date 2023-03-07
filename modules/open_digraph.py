@@ -1034,7 +1034,7 @@ class open_digraph: # for open directed graph
 
 
 
-    def dijkstra(self, src : nd.node, direction : int = None) -> Tuple[Dict[int, int], Dict[int, int]] :
+    def dijkstra(self, src : int, direction : int = None, tgt : int = None) -> Tuple[Dict[int, int], Dict[int, int]] :
         """
         """
 
@@ -1052,4 +1052,22 @@ class open_digraph: # for open directed graph
                 if (not v in dist) or (dist[v] > dist[u] + 1):
                     dist[v] = dist[u] + 1
                     prev[v] = u
+        # if tgt != None :
+        #     if not tgt in dist:
+        #         raise Exception("Target node hasn't be reached by Dijkstra")
+
+        #     dist = { tgt : dist[tgt] }
+        #     n_prev = {}
+        #     while src != tgt :
+        #         tmp = list(prev.keys())[list(prev.values()).index(src)]
+        #         print(prev, src, tmp)
+        #         n_prev[tmp] = src
+        #         src = tmp
+        #     prev = n_prev
         return dist, prev
+
+
+
+    def shortest_path(self, src : int, tgt : int) -> Dict[int, int] :
+        """
+        """
