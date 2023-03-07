@@ -3,7 +3,7 @@ import copy as cp
 import sys
 
 class node:
-    def __init__(self, identity : int, label : str, parents : Dict[int, int], children : Dict[int, int]) -> None :
+    def __init__(self, id: int, label : str, parents : Dict[int, int], children : Dict[int, int]) -> None :
         '''
         identity: int; its unique id in the graph
         label: string;
@@ -11,7 +11,7 @@ class node:
         children: int->int dict; maps a child node's id to its multiplicity
         '''
         # Tests des cohérences de types, lol
-        if not isinstance(identity, int):
+        if not isinstance(id, int):
             raise TypeError("The id must be an int")
         if not isinstance(label, str):
             raise TypeError("The label must be a string")
@@ -38,7 +38,7 @@ class node:
         if len(types) >= 1 and list(types)[0] != int :
             raise TypeError("The values of children must all be integers")
 
-        self.__id = identity
+        self.__id = id
         self.__label = label
         
         self.__parents = { p: m for (p, m) in parents.items() if m != 0 }

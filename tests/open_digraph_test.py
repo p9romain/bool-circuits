@@ -261,7 +261,7 @@ class Open_DigraphTest(unittest.TestCase):
             nd.node(4, 'i1', {}, {}),
             nd.node(5, 'o0', {1:1}, {})
             ])
-        self.assertEqual(g.new_id, 6)
+        self.assertEqual(g.new_id, 3)
 
   
 
@@ -356,6 +356,23 @@ class Open_DigraphTest(unittest.TestCase):
         for i, g in enumerate(l) :
             g.save_as_pdf_file(path = f"dot_files/connected_graph_{i}.dot", verbose = True)
 
+
+
+    def test_dijkstra(self):
+        self.test_icompose()  # sinon il trouve pas le fichier
+        g = od.open_digraph.from_dot_file("dot_files/g1_icompose_g2.dot")
+
+        dist, prev = g.dijkstra(1, -1)
+        self.assertEqual(dist, {1:0, 9:1, 0:1, 2:1, 8:2, 7:2, 10:3, 11:3})
+        self.assertEqual(prev, {0: 1, 2: 1, 9: 1, 8: 0, 7: 9, 10: 7, 11: 7})
+
+        dist, prev = g.dijkstra(6, 1)
+        self.assertEqual(dist, {6: 0})
+        self.assertEqual(prev, {})
+
+        dist, prev = g.dijkstra(2)
+        self.assertEqual(dist, {2:0, 6:2, 3:1, 1:1, 0:2, 9:2, 8:3, 7:3, 10:4, 11:4})
+        self.assertEqual(prev, {0: 1, 9: 1, 8: 0, 7: 9, 10: 7, 11: 7, 1: 2, 6: 3, 3: 2})
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

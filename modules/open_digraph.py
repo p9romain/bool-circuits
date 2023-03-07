@@ -51,7 +51,6 @@ class open_digraph: # for open directed graph
         self.__outputs_ids = outputs
         self.__nodes = {node.id:node for node in nodes} # self.nodes: <int,node> dict
         self.__desc = desc
-        self.__new_id = (max(list(self.__nodes.keys())) + 1) if self.__nodes != {} else 0
  
     
 
@@ -156,6 +155,9 @@ class open_digraph: # for open directed graph
         """
         Getter for the minimal id in the graph
         """
+        if self.nodes_ids == []:
+            raise Exception("Graph hasn't any nodes")
+
         return min(self.nodes_ids)
 
 
@@ -165,6 +167,9 @@ class open_digraph: # for open directed graph
         """
         Getter for the maximal id in the graph
         """
+        if self.nodes_ids == []:
+            raise Exception("Graph hasn't any nodes")
+
         return max(self.nodes_ids)
 
 
@@ -174,8 +179,7 @@ class open_digraph: # for open directed graph
         """
         Getter for an id which isn't in the graph
         """
-        self.__new_id += 1
-        return self.__new_id - 1
+        return list(set(range(self.min_id, self.max_id+2))-set(self.nodes_ids))[0] if self.nodes_ids != [] else 0
 
 
 
@@ -462,11 +466,11 @@ class open_digraph: # for open directed graph
                             s = attr["shape"] if "shape" in attr else ""
 
                             if s == "box":
-                                g.add_input_node(attr["label"])
+                                g.add_input_node(attr["label"], id = id)
                             elif s == "diamond":
-                                g.add_output_node(attr["label"])
+                                g.add_output_node(attr["label"], id = id)
                             else:
-                                g.add_node(attr["label"])
+                                g.add_node(attr["label"], id = id)
                         else: raise Exception("Line for node is not in the right format : missing id or attr.")
 
                 res_edge = re.findall(regex_edge, l)
@@ -484,11 +488,16 @@ class open_digraph: # for open directed graph
 
 
 
-    def add_node(self, label : str = '', parents : Dict[int, int] = None, children : Dict[int, int] = None) -> int :
+    def add_node(self, label : str = '', parents : Dict[int, int] = None, children : Dict[int, int] = None, id : int = None) -> int :
         """
         Adds a node with given argument (label and its parents and children)
         It also generates all the edges bewteen the node and its 'family'
         """
+        if id != None and not isinstance(id, int):
+            raise TypeError("Label must be a string")
+        if id in self.nodes_ids:
+            raise Exception("Given id must not already be in the graph")
+
         if not isinstance(label, str):
             raise TypeError("Label must be a string")
         if parents != None :
@@ -523,7 +532,8 @@ class open_digraph: # for open directed graph
         parents = f(parents)
         children = f(children)
 
-        n = nd.node(self.new_id, label, {}, {})
+        id = self.new_id if id == None else id
+        n = nd.node(id, label, {}, {})
         self.__nodes[n.id] = n
         
         self.add_edge( [ (i, n.id) for i in parents.keys() for _ in range(parents[i]) ] )
@@ -533,7 +543,7 @@ class open_digraph: # for open directed graph
 
     
 
-    def add_input_node(self, label : str = '', children : Dict[int, int] = None) -> int :
+    def add_input_node(self, label : str = '', children : Dict[int, int] = None, id : int = None) -> int :
         """
         Adds an intput node with given argument (label and its children)
         It also generates all the edges bewteen the node and its children
@@ -558,13 +568,13 @@ class open_digraph: # for open directed graph
                 if list(children.values())[0] != 1 :
                     raise Exception("Given child must have multiplicity of one")
 
-        nodeId = self.add_node(label, None, children)
+        nodeId = self.add_node(label, None, children, id)
         self.add_input_id(nodeId)
         return nodeId
 
 
     
-    def add_output_node(self, label : str = '', parents : Dict[int, int] = None) -> int :
+    def add_output_node(self, label : str = '', parents : Dict[int, int] = None, id : int = None) -> int :
         """
         Adds an output node with given argument (label and its parents)
         It also generates all the edges bewteen the node and its parents
@@ -589,7 +599,7 @@ class open_digraph: # for open directed graph
                 if list(parents.values())[0] != 1 :
                     raise Exception("Given parent must have multiplicity of one")
 
-        nodeId = self.add_node(label, parents, None)
+        nodeId = self.add_node(label, parents, None, id)
         self.add_output_id(nodeId)
         return nodeId
   
@@ -602,8 +612,11 @@ class open_digraph: # for open directed graph
         NON-ORIENTED GRAPH 
         """
         def f(src : int, tgt : int) -> None:
-            if (not src in self.nodes_ids or not tgt in self.nodes_ids):
-                raise Exception(f'The node with id {src} or {tgt} does not exist.')
+            if not src in self.nodes_ids :
+                raise Exception(f'The source node with id {src} does not exist.')
+            if not tgt in self.nodes_ids:
+                raise Exception(f'The target node with id {tgt} does not exist.')
+
 
             self.node_by_id(src).add_child_id(tgt)
             self.node_by_id(tgt).add_parent_id(src)
@@ -704,11 +717,6 @@ class open_digraph: # for open directed graph
             if i in self.outputs_ids: self.outputs_ids.remove(i)
             
             self.__nodes.pop(i)
-            if i+1 == self.__new_id : 
-                # -1 car on enlève le denier
-                self.__new_id -= 1 
-            # ici on utilise exceptionnellement pas le getter car comme il n'y a pas de setter, il faut accéder directement à l'attributs donc
-            # autant y accéder de base + le fait qu'il aurait fallu décrément à chaque fois car le getter incrémente
         
         if isinstance(args, list) :
             types = set(type(k) for k in args)
@@ -891,8 +899,6 @@ class open_digraph: # for open directed graph
 
         self.inputs_ids = [ i+n for i in self.inputs_ids ]
         self.outputs_ids = [ i+n for i in self.outputs_ids ]
-
-        self.__new_id += n
     
 
 
@@ -907,7 +913,6 @@ class open_digraph: # for open directed graph
         self.__nodes.update(g_copy.nodes)
         self.inputs_ids += g_copy.inputs_ids
         self.outputs_ids += g_copy.outputs_ids
-        self.__new_id = g_copy.max_id + 1
         
     
 
@@ -934,7 +939,6 @@ class open_digraph: # for open directed graph
         f_copy = f.copy()
         f_copy.shift_indices(self.max_id-f_copy.min_id+1)
         self.__nodes.update(f_copy.nodes)
-        self.__new_id = f_copy.max_id + 1
         
         for k,idk in enumerate(f_copy.outputs_ids):
             id_depart = self.node_by_id(idk).parent_ids[0]
@@ -1027,3 +1031,25 @@ class open_digraph: # for open directed graph
             outputs = [ i for i, v in comp.items() if v == k and i in self.outputs ]
             l.append(open_digraph(inputs, outputs, nodes))
         return l 
+
+
+
+    def dijkstra(self, src : nd.node, direction : int = None) -> Tuple[Dict[int, int], Dict[int, int]] :
+        """
+        """
+
+        Q = [ src ]
+        dist = { src : 0 }
+        prev = {}
+        while Q != []:
+            u = min(Q, key=(lambda x: dist[x]))
+            Q.remove(u)
+            neighbours = []
+            if direction == None or direction == -1 : neighbours += self.node_by_id(u).parent_ids
+            if direction == None or direction == 1 : neighbours += self.node_by_id(u).children_ids
+            for v in neighbours:
+                if not v in dist : Q.append(v)
+                if (not v in dist) or (dist[v] > dist[u] + 1):
+                    dist[v] = dist[u] + 1
+                    prev[v] = u
+        return dist, prev
