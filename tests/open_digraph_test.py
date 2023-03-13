@@ -374,21 +374,16 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(dist, {2:0, 6:2, 3:1, 1:1, 0:2, 9:2, 8:3, 7:3, 10:4, 11:4})
         self.assertEqual(prev, {0: 1, 9: 1, 8: 0, 7: 9, 10: 7, 11: 7, 1: 2, 6: 3, 3: 2})
 
+        self.assertEqual(g.shortest_path(6, 6), {})
+        self.assertEqual(g.shortest_path(0, 6), { 6 : 3, 3 : 2, 2 : 1, 1 : 0 })
         try:
-            _ = g.dijkstra(8, -1, 6)
+            _ = g.shortest_path(3, 8)
         except Exception:
             self.assertEqual("", "")
-        dist, prev = g.dijkstra(6, -1, 6)
-        self.assertEqual(dist, { 6 : 0 })
-        self.assertEqual(prev, {})
 
-        dist, prev = g.dijkstra(7, 1, 1)
-        self.assertEqual(dist, { 1 : 2 })
-        self.assertEqual(prev, { 9 : 7, 1 : 9 })
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        self.assertEqual(g.shortest_path(10, 20), {20:17, 17:14, 14:12, 12:11, 11:10})
 
-        dist, prev = g.dijkstra(7, None, 1)
-        self.assertEqual(dist, { 1 : 2 })
-        self.assertEqual(prev, { 9 : 7, 1 : 9 })
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

@@ -1036,7 +1036,23 @@ class open_digraph: # for open directed graph
 
     def dijkstra(self, src : int, direction : int = None, tgt : int = None) -> Tuple[Dict[int, int], Dict[int, int]] :
         """
+        Returns the distace of all nodes from source node. Direction tells us to look only in the children's source node (1), parent's (-1) or both (None).
+        Target node only look at path between src and tgt (can have several paths !!!)
         """
+        if not isinstance(src, int):
+            raise TypeError("Source node must be an integer (the id)")
+        if direction != None and not isinstance(direction, int):
+            raise TypeError("Direction must be an int")
+        if direction != None and direction != -1 and direction != 1:
+            raise Exception("Direction must be None, -1 or 1")
+
+        if tgt != None and not isinstance(tgt, int):
+            raise TypeError("Target node must be an integer (the id)")
+
+        if not src in self.nodes_ids :
+            raise Exception("Source node must be in the graph") 
+        if tgt != None and not tgt in self.nodes_ids :
+            raise Exception("Target node must be in the graph")
 
         Q = [ src ]
         dist = { src : 0 }
@@ -1044,6 +1060,8 @@ class open_digraph: # for open directed graph
         while Q != []:
             u = min(Q, key=(lambda x: dist[x]))
             Q.remove(u)
+            if tgt != None and tgt == u : return dist, prev
+
             neighbours = []
             if direction == None or direction == -1 : neighbours += self.node_by_id(u).parent_ids
             if direction == None or direction == 1 : neighbours += self.node_by_id(u).children_ids
@@ -1052,22 +1070,28 @@ class open_digraph: # for open directed graph
                 if (not v in dist) or (dist[v] > dist[u] + 1):
                     dist[v] = dist[u] + 1
                     prev[v] = u
-        # if tgt != None :
-        #     if not tgt in dist:
-        #         raise Exception("Target node hasn't be reached by Dijkstra")
-
-        #     dist = { tgt : dist[tgt] }
-        #     n_prev = {}
-        #     while src != tgt :
-        #         tmp = list(prev.keys())[list(prev.values()).index(src)]
-        #         print(prev, src, tmp)
-        #         n_prev[tmp] = src
-        #         src = tmp
-        #     prev = n_prev
         return dist, prev
 
 
 
     def shortest_path(self, src : int, tgt : int) -> Dict[int, int] :
         """
+        Returns the shortest path between [src] and [tgt] like this : { node : prec_node, [...] }
         """
+        if not isinstance(src, int):
+            raise TypeError("Source node must be an integer (the id)")
+        if not isinstance(tgt, int):
+            raise TypeError("Target node must be an integer (the id)")
+
+        if src == tgt : return {}
+
+        dist, prev = self.dijkstra(src, 1, tgt) # 1 pour forcer src -> tgt
+        if not tgt in prev : 
+            raise Exception("Target node must be accesible from source node (maybe your graph is oriented ?)")
+
+        path = {}
+        while tgt != src :
+            path[tgt] = prev[tgt]
+            tgt = prev[tgt]
+        return path
+             

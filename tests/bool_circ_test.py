@@ -36,6 +36,7 @@ class Bool_CircTest(unittest.TestCase):
 
     def test_init(self):
         self.b0.save_as_pdf_file()
+        self.b0.save_as_pdf_file("dot_files/bool_circ_verbose.dot", verbose=True)
 
 
 if __name__ == '__main__': # the following code is called only when
