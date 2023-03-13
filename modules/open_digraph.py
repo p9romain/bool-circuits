@@ -1085,7 +1085,7 @@ class open_digraph: # for open directed graph
 
         if src == tgt : return {}
 
-        dist, prev = self.dijkstra(src, 1, tgt) # 1 pour forcer src -> tgt
+        dist, prev = self.dijkstra(src, None, tgt)
         if not tgt in prev : 
             raise Exception("Target node must be accesible from source node (maybe your graph is oriented ?)")
 

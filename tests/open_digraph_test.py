@@ -382,7 +382,7 @@ class Open_DigraphTest(unittest.TestCase):
             self.assertEqual("", "")
 
         g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
-        self.assertEqual(g.shortest_path(10, 20), {20:17, 17:14, 14:12, 12:11, 11:10})
+        self.assertEqual(g.shortest_path(20, 10), {10:11, 11:12, 12:14, 14:17, 17:20})
 
 
 if __name__ == '__main__': # the following code is called only when
