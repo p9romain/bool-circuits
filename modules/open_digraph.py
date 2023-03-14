@@ -4,7 +4,7 @@ import re
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root) # allows us to fetch files from the project root
 
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Set
 import random as rd
 import numpy as np
 import generic_heap as gh
@@ -1074,7 +1074,7 @@ class open_digraph: # for open directed graph
 
 
 
-    def shortest_path(self, src : int, tgt : int) -> Dict[int, int] :
+    def shortest_path(self, src : int, tgt : int) -> Tuple[int, Dict[int, int]] :
         """
         Returns the shortest path between [src] and [tgt] like this : { node : prec_node, [...] }
         """
@@ -1083,9 +1083,9 @@ class open_digraph: # for open directed graph
         if not isinstance(tgt, int):
             raise TypeError("Target node must be an integer (the id)")
 
-        if src == tgt : return {}
+        if src == tgt : return 0, {}
 
-        prev = self.dijkstra(src, None, tgt)[1]
+        dist, prev = self.dijkstra(src, None, tgt)
         if not tgt in prev : 
             raise Exception("Target node must be accesible from source node (maybe your graph is oriented ?)")
 
@@ -1093,7 +1093,7 @@ class open_digraph: # for open directed graph
         while tgt != src :
             path[tgt] = prev[tgt]
             tgt = prev[tgt]
-        return path
+        return len(path), path
 
 
 
@@ -1112,4 +1112,85 @@ class open_digraph: # for open directed graph
         common_ancestors = list(set(prev_src.keys()).intersection(set(prev_tgt.keys())))
 
         return { n : (dist_src[n], dist_tgt[n]) for n in common_ancestors }
+        
+        
+        
+    def topologic_sort(self) -> List[Set[int]] :
+        """
+        """
+        g = self.copy()
+        g.remove_node_by_id(g.outputs_ids + g.inputs_ids)
+        heap = gh.Heap([ (n.indegree(), n.id) for n in g.nodes_list])
+
+        res = []
+
+        def bis(h):
+            if h.empty(): return res
+            else:
+                s = set()
+                while not h.empty() and h.peek()[0] == 0:
+                    s.add(h.peek()[1])
+                    g.remove_node_by_id(h.pop()[1])
+                if not s and not g.empty(): raise Exception("The graph is cycli")
+                res.append(s)
+                h = gh.Heap([ (n.indegree(), n.id) for n in g.nodes_list])
+                return bis(h)
+        return bis(heap)
+    
+    
+    def node_depth(self, id: int) -> int :
+        """
+        """
+        if not isinstance(id, int):
+            raise TypeError("Given argument must be an int")
             
+        for i, li in enumerate(self.topologic_sort()):
+            if id in li : return i
+        raise Exception("Given node must be in the graph")
+        
+        
+        
+    def longest_path(self, src : int, tgt : int) -> Tuple[int, Dict[int, int]] :
+        """
+        """
+        
+        if not src in self.nodes_ids :
+            raise Exception("Source node must be in the graph") 
+        if not tgt in self.nodes_ids :
+            raise Exception("Target node must be in the graph")
+        
+        l = self.topologic_sort()
+        k_src = self.node_depth(src)
+        k_tgt = self.node_depth(tgt)
+        
+        dist = { src : 0 }
+        prev = {}
+        
+        for k in range(k_src+1, k_tgt+1):
+            for w_id in l[k]:
+                p_ids = self.node_by_id(w_id).parent_ids
+                t = [ (i,dist[i]) for i in p_ids if i in dist ]
+                if t:
+                    m_id, dist_max = max(t, key=(lambda x: x[1]))
+                    dist[w_id] = dist_max + 1
+                    prev[w_id] = m_id
+        if prev == {} : return 0, {}
+        
+        path = {}
+        while tgt != src :
+            path[tgt] = prev[tgt]
+            tgt = prev[tgt]
+        return len(path), path
+        
+# # init src
+# dist = {0:0}
+# prev = {}
+# # l1
+# dist = {0:0,3:1}
+# prev = {3:0}
+# # l2
+# dist = {0:0,3:1,5:2,6:2}
+# prev = {3:0,5:3,6:3}
+# # l3
+# dist = {0:0,3:1,5:2,6:2,7:3}
+# prev = {3:0,5:3,6:3,7:5}

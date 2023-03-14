@@ -374,15 +374,17 @@ class Open_DigraphTest(unittest.TestCase):
         self.assertEqual(dist, {2:0, 6:2, 3:1, 1:1, 0:2, 9:2, 8:3, 7:3, 10:4, 11:4})
         self.assertEqual(prev, {0: 1, 9: 1, 8: 0, 7: 9, 10: 7, 11: 7, 1: 2, 6: 3, 3: 2})
 
-        self.assertEqual(g.shortest_path(6, 6), {})
-        self.assertEqual(g.shortest_path(0, 6), { 6 : 3, 3 : 2, 2 : 1, 1 : 0 })
+        self.assertEqual(g.shortest_path(6, 6), (0, {}))
+        self.assertEqual(g.shortest_path(0, 6), (4, { 6 : 3, 3 : 2, 2 : 1, 1 : 0 }))
         try:
             _ = g.shortest_path(3, 8)
         except Exception:
             self.assertEqual("", "")
 
         g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
-        self.assertEqual(g.shortest_path(20, 10), {10:11, 11:12, 12:14, 14:17, 17:20})
+        self.assertEqual(g.shortest_path(20, 10), (5, {10:11, 11:12, 12:14, 14:17, 17:20}))
+
+
 
     def test_common_ancestors(self):
          g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
@@ -394,6 +396,38 @@ class Open_DigraphTest(unittest.TestCase):
          self.assertEqual(g.common_ancestors(3, 4), {})
          self.assertEqual(g.common_ancestors(13, 11), {5 : (3, 1), 10 : (3, 1), 9: (4, 2), 7: (4, 2), 1: (5, 3), 6: (5, 3), 0: (6, 4)})
 
+
+
+    def test_topologic_sort(self):
+        self.test_icompose()  # sinon il trouve pas le fichier
+        g = od.open_digraph.from_dot_file("dot_files/g1_icompose_g2.dot")
+        try:
+            _ = g.topologic_sort()
+        except Exception:
+            self.assertEqual("", "")
+            
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        self.assertEqual(g.topologic_sort(), [set([6,7,5,4]), set([9,8]), set([10]), set([11]), set([12]), set([13,14]), set([15,16]), set([17,18]), set([19]), set([20])])
+
+
+
+    def test_node_depth(self):
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        try:
+            _ = g.node_depth(58)
+        except Exception:
+            self.assertEqual("", "")
+            
+        self.assertEqual(g.node_depth(12),4)
+        self.assertEqual(g.node_depth(6),0)
+        
+        
+    
+    def test_longest_path(self):
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        self.assertEqual(g.longest_path(13, 14), (0, {}))
+        self.assertEqual(g.longest_path(20, 10), (0, {}))
+        self.assertEqual(g.longest_path(10, 20), (7, {20: 19, 19: 18, 18: 15, 15: 13, 13: 12, 12: 11, 11: 10}))
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

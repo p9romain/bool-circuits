@@ -33,21 +33,19 @@ class bool_circ(od.open_digraph):
     if not od.open_digraph.is_well_formed(self) : return False
 
     def node_well_formed(n):
-        
-      match n.label:
-        case '&' | '&&' :
+        if n.label == '&' or n.label == '&&' :
           return n.outdegree() == 1
-        case '|' | '||' :
+        if n.label == '|' or n.label == '||' :
           return n.outdegree() == 1
-        case '^' :
+        if n.label == '^' :
           return n.outdegree() == 1
-        case '~' | '!' :
+        if n.label == '~' or n.label == '!' :
           return n.indegree() == 1 and n.outdegree() == 1
-        case '' :
+        if n.label == '' :
           return n.indegree() == 1
-        case '0' | '1' :
+        if n.label == '0' or n.label == '1' :
           return n.indegree() == 0
-        case _ :
+        else :
           return False
 
     # j'enlève les inputs et outputs
