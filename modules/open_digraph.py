@@ -1085,7 +1085,7 @@ class open_digraph: # for open directed graph
 
         if src == tgt : return {}
 
-        dist, prev = self.dijkstra(src, None, tgt)
+        prev = self.dijkstra(src, None, tgt)[1]
         if not tgt in prev : 
             raise Exception("Target node must be accesible from source node (maybe your graph is oriented ?)")
 
@@ -1094,4 +1094,22 @@ class open_digraph: # for open directed graph
             path[tgt] = prev[tgt]
             tgt = prev[tgt]
         return path
-             
+
+
+
+    def common_ancestors(self, src : int, tgt : int) -> Dict[int, Tuple[int, int]] :
+        """
+        Returns the common ancestors with the distance from source and targer nodes { id_acestor : (dist from src, dist from tgt), [...] }
+        """
+        if not isinstance(src, int):
+            raise TypeError("Source node must be an integer (the id)")
+        if not isinstance(tgt, int):
+            raise TypeError("Target node must be an integer (the id)")
+
+        dist_src, prev_src = self.dijkstra(src, -1)
+        dist_tgt, prev_tgt = self.dijkstra(tgt, -1)
+
+        common_ancestors = list(set(prev_src.keys()).intersection(set(prev_tgt.keys())))
+
+        return { n : (dist_src[n], dist_tgt[n]) for n in common_ancestors }
+            

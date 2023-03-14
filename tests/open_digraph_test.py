@@ -384,6 +384,16 @@ class Open_DigraphTest(unittest.TestCase):
         g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
         self.assertEqual(g.shortest_path(20, 10), {10:11, 11:12, 12:14, 14:17, 17:20})
 
+    def test_common_ancestors(self):
+         g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+
+         self.assertEqual(g.common_ancestors(8, 9), {6 : (1, 1), 0 : (2, 2)})
+         self.assertEqual(g.common_ancestors(8, 8), {4: (1, 1), 6 : (1, 1), 0 : (2, 2)})
+         self.assertEqual(g.common_ancestors(3, 6), {0 : (9, 1)})
+         self.assertEqual(g.common_ancestors(0, 0), {})
+         self.assertEqual(g.common_ancestors(3, 4), {})
+         self.assertEqual(g.common_ancestors(13, 11), {5 : (3, 1), 10 : (3, 1), 9: (4, 2), 7: (4, 2), 1: (5, 3), 6: (5, 3), 0: (6, 4)})
+
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run
