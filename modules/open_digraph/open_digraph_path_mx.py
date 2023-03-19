@@ -44,7 +44,7 @@ class open_digraph_path_mx:
 
   def shortest_path(self, src : int, tgt : int) -> Tuple[int, Dict[int, int]] :
     """
-    Returns the shortest path between [src] and [tgt] like this : { node : prec_node, [...] }
+    Returns the distance and the shortest path between [src] and [tgt] like this : { node : prec_node, [...] }
     """
     if not isinstance(src, int):
         raise TypeError("Source node must be an integer (the id)")
@@ -125,7 +125,7 @@ class open_digraph_path_mx:
       
   def longest_path(self, src : int, tgt : int) -> Tuple[int, Dict[int, int]] :
     """
-    Returns the longest path between [src] and [tgt] nodes
+    Returns the distance and the longest path between [src] and [tgt] nodes
     """
     if not isinstance(src, int):
         raise TypeError("Source node must be an integer (the id)")
