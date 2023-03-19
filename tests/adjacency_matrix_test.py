@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 import modules.adjacency_matrix as am
-import modules.open_digraph as od
+import modules.open_digraph.open_digraph as od
 
 class Adjacency_MAtrixTest(unittest.TestCase):
     def setUp(self):

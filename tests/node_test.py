@@ -3,7 +3,7 @@ import os
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root) # allows us to fetch files from the project root
 import unittest
-import modules.node as nd
+import modules.node.node as nd
 
 class NodeTest(unittest.TestCase):
     def setUp(self):

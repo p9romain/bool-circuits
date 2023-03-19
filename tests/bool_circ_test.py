@@ -3,8 +3,8 @@ import os
 root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root) # allows us to fetch files from the project root
 import unittest
-import modules.node as nd
-import modules.open_digraph as od
+import modules.node.node as nd
+import modules.open_digraph.open_digraph as od
 import modules.bool_circ as bc
 
 class Bool_CircTest(unittest.TestCase):
