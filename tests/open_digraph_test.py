@@ -381,13 +381,13 @@ class Open_DigraphTest(unittest.TestCase):
         except Exception:
             self.assertEqual("", "")
 
-        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ/bool_circ_verbose.dot")
         self.assertEqual(g.shortest_path(20, 10), (5, {10:11, 11:12, 12:14, 14:17, 17:20}))
 
 
 
     def test_common_ancestors(self):
-         g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+         g = od.open_digraph.from_dot_file("dot_files/bool_circ/bool_circ_verbose.dot")
 
          self.assertEqual(g.common_ancestors(8, 9), {6 : (1, 1), 0 : (2, 2)})
          self.assertEqual(g.common_ancestors(8, 8), {4: (1, 1), 6 : (1, 1), 0 : (2, 2)})
@@ -406,13 +406,13 @@ class Open_DigraphTest(unittest.TestCase):
         except Exception:
             self.assertEqual("", "")
             
-        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ/bool_circ_verbose.dot")
         self.assertEqual(g.topologic_sort(), [set([6,7,5,4]), set([9,8]), set([10]), set([11]), set([12]), set([13,14]), set([15,16]), set([17,18]), set([19]), set([20])])
 
 
 
     def test_node_depth(self):
-        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ/bool_circ_verbose.dot")
         try:
             _ = g.node_depth(58)
         except Exception:
@@ -424,10 +424,32 @@ class Open_DigraphTest(unittest.TestCase):
         
     
     def test_longest_path(self):
-        g = od.open_digraph.from_dot_file("dot_files/bool_circ_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/bool_circ/bool_circ_verbose.dot")
         self.assertEqual(g.longest_path(13, 14), (0, {}))
         self.assertEqual(g.longest_path(20, 10), (0, {}))
         self.assertEqual(g.longest_path(10, 20), (7, {20: 19, 19: 18, 18: 15, 15: 13, 13: 12, 12: 11, 11: 10}))
+
+
+
+    def test_merge_nodes(self):
+        # n0 = nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1})
+        # n1 = nd.node(1, 'b', {0:3}, {2:2, 5:1})
+        # n2 = nd.node(2, 'c', {0:1, 1:2}, {6:1})
+        # i0 = nd.node(3, 'i0', {}, {0:1})
+        # i1 = nd.node(4, 'i1', {}, {0:1})
+        # o0 = nd.node(5, 'o0', {1:1}, {})
+        # o1 = nd.node(6, 'o1', {2:1}, {})
+        g = self.g0.copy()
+
+        g.merge_nodes([1, 2])
+        self.assertEqual(g.nodes_list, 
+            [nd.node(0, 'a', {3:1, 4:1}, {1:4}),
+             nd.node(1, 'b', {0:4, 1:2}, {5:1, 6:1, 1:2}),
+             nd.node(3, 'i0', {}, {0:1}),
+             nd.node(4, 'i1', {}, {0:1}),
+             nd.node(5, 'o0', {1:1}, {}),
+             nd.node(6, 'o1', {1:1}, {})
+             ])
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

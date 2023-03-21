@@ -55,7 +55,7 @@ class bool_circ(od.open_digraph):
     return not self.is_cyclic()
 
 
-  def save_as_dot_file(self, path : str = "dot_files/bool_circ.dot", verbose : bool = False) -> None :
+  def save_as_dot_file(self, path : str = "dot_files/bool_circ/bool_circ.dot", verbose : bool = False) -> None :
     """
     Saves the graph in a dot file
     The verbose adds the id in the file, not only the label of a node
@@ -65,20 +65,72 @@ class bool_circ(od.open_digraph):
 
 
 
-  def save_as_pdf_file(self, path : str = "dot_files/bool_circ.dot", verbose : bool = False) -> str :
+  def save_as_pdf_file(self, path : str = "dot_files/bool_circ/bool_circ.dot", verbose : bool = False) -> str :
     """
     Saves the graph in a pdf file
     The verbose adds the id in the file, not only the label of a node
     The add argument says if we add the graph at the end of the file
     Returns the path of the pdf_file (useful for display)
     """
-    od.open_digraph.save_as_pdf_file(self, path, verbose)
+    return od.open_digraph.save_as_pdf_file(self, path, verbose)
 
 
 
-  def display(self, path : str = "dot_files/bool_circ.dot", verbose : bool = False) -> None :
+  def display(self, path : str = "dot_files/bool_circ/bool_circ.dot", verbose : bool = False) -> None :
     """
     Saves and display the graph in a pdf
     The verbose adds the id in the file, not only the label of a node
     """
     od.open_digraph.display(self, path, verbose)
+
+
+
+  @classmethod
+  def from_str(cls, *args) :
+    """
+    """
+    if len(args) == 0: raise Exception("")
+    
+    def f(s):
+      g = cls.empty()
+      g.add_output_node(id=0)
+      g.add_node(children={0:1})
+      g.desc = s
+
+      cn = 1
+      s_tmp = ''
+      for c in s:
+        if c == '(':
+          g.node_by_id(cn).label += s_tmp
+          cn = g.add_node('',{},{cn:1})
+          s_tmp = ''
+        elif c == ')':
+          g.node_by_id(cn).label += s_tmp
+          cn = g.node_by_id(cn).children_ids[0]
+          s_tmp = ''
+        else:
+          s_tmp += c
+    graphs = []
+    for i in range(len(args)):
+      graphs += [f(i)]
+    
+    graphs[0].iparallel(graphs[1:])
+    g = graphs[0]
+
+    char = ["&", "&&", "|", "||", "~", "!", "^", "0", "1", " "]
+    merge_list = {}
+
+    for n in g.nodes_list :
+      if not n.label in char:
+        if n.label in merge_list : merge_list[n.label] += [n.id]
+        else: merge_list[n.label] = [n.id]
+    
+    for i in merge_list:
+      if len(merge_list[i]) > 1:
+        od.open_digraph.merge_nodes(cls, merge_list[i])
+
+      id_node = merge_list[i][0]
+      g.node_by_id(id_node).label = ' '
+      g.add_input_node(i,{id_node:1})
+
+    return g, merge_list.keys()

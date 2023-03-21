@@ -34,10 +34,17 @@ class Bool_CircTest(unittest.TestCase):
         n14 = nd.node(20, "&&", {19:2, 17:1}, {3:1})
         self.b0 = bc.bool_circ([0, 1], [2, 3], [i0, i1, o0, o1, c0, c1, n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14], "bool_circ_test")
 
+
+
     def test_init(self):
         self.b0.save_as_pdf_file()
-        self.b0.save_as_pdf_file("dot_files/bool_circ_verbose.dot", verbose=True)
+        self.b0.save_as_pdf_file("dot_files/bool_circ/bool_circ_verbose.dot", verbose=True)
+        
 
-
+    def test_from_str(self):
+        b = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
+        #b.save_as_pdf_file("dot_files/bool_circ/from_str.dot")
+        b.display("dot_files/bool_circ/from_str.dot")
+        
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

@@ -279,3 +279,25 @@ class open_digraph_add_remove_mx:
 
     else:
       raise TypeError("Given argument must be a list of integers, or just one integer")
+    
+
+
+  def merge_nodes(self, ids : List[int]) -> None :
+    """
+    """
+    print(ids)
+    if len(ids) < 2: raise Exception("")
+
+    def f(id1, id2):
+      if id1 in self.inputs_ids or id1 in self.outputs_ids or id2 in self.inputs_ids or id2 in self.outputs_ids :
+        raise Exception("")
+
+      n1 = self.node_by_id(id1)
+      n2 = self.node_by_id(id2)
+
+      self.add_edge([ (n, id1) for n, m in n2.parents.items() for _ in range(m) ]+[ (id1, n) for n, m in n2.children.items() for _ in range(m) ])
+      self.remove_node_by_id(id2)
+
+    f(ids[0], ids[1])
+    l = [ids[0]] + ids[2:]
+    if len(l) > 1 : self.merge_nodes(l)

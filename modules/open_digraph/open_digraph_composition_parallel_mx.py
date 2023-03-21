@@ -21,17 +21,29 @@ class open_digraph_composition_parallel_mx:
 
 
 
-  def iparallel(self, g) -> None :
+  def iparallel(self, *args) -> None :
     """
     Adds the graph [g] in parallel of [self]
     """
-    g_copy = g.copy()
-    g_copy.shift_indices(self.max_id-g_copy.min_id+1)
-    
-    self.desc = "Parallèle : " + self.desc + " & " + g_copy.desc
-    self.nodes.update(g_copy.nodes)
-    self.inputs_ids += g_copy.inputs_ids
-    self.outputs_ids += g_copy.outputs_ids
+
+    if len(args) == 0: raise Exception("")
+
+    def f(g):
+      g_copy = g.copy()
+      g_copy.shift_indices(self.max_id-g_copy.min_id+1)
+      
+      self.desc = "Parallèle : " + self.desc + " & " + g_copy.desc
+      self.nodes.update(g_copy.nodes)
+      self.inputs_ids += g_copy.inputs_ids
+      self.outputs_ids += g_copy.outputs_ids
+
+    def fusion_list(l):
+      for g in l:
+        f(g)
+
+    for arg in args:
+      if (type(arg) == list): fusion_list(arg)
+      else: fusion_list([arg])
   
 
 
