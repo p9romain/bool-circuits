@@ -26,7 +26,7 @@ class open_digraph_composition_parallel_mx:
     Adds the graph [g] in parallel of [self]
     """
 
-    if len(args) == 0: raise Exception("")
+    if len(args) == 0: raise Exception("An argument has to be given")
 
     def f(g):
       g_copy = g.copy()

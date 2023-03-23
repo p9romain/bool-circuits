@@ -1,7 +1,7 @@
 import os
 
 class open_digraph_save_mx:
-  def save_as_dot_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
+  def save_as_dot_file(self, path : str = "dot_files/open_digraph/graph.dot", verbose : bool = False) -> None :
     """
     Saves the graph in a dot file
     The verbose adds the id in the file, not only the label of a node
@@ -36,7 +36,7 @@ class open_digraph_save_mx:
 
 
 
-  def save_as_pdf_file(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> str :
+  def save_as_pdf_file(self, path : str = "dot_files/open_digraph/graph.dot", verbose : bool = False) -> str :
       """
       Saves the graph in a pdf file
       The verbose adds the id in the file, not only the label of a node
@@ -56,7 +56,7 @@ class open_digraph_save_mx:
 
 
 
-  def display(self, path : str = "dot_files/graph.dot", verbose : bool = False) -> None :
+  def display(self, path : str = "dot_files/open_digraph/graph.dot", verbose : bool = False) -> None :
       """
       Saves and display the graph in a pdf
       The verbose adds the id in the file, not only the label of a node

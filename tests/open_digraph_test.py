@@ -39,18 +39,18 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_random(self):
-        l = [ ("random", False, False, False, False), 
-              ("random_loop_free", True, False, False, False), 
-              ("random_undirected", False, False, False, True), 
-              ("random_undirected_loop_free", True, False, False, True), 
-              ("random_DAG", False, True, False, False), 
-              ("random_DAG_loop_free", True, True, False, False), 
-              ("random_oriented", False, False, True, False), 
-              ("random_oriented_loop_free", True, False, True, False) ]
+        l = [ ("", False, False, False, False), 
+              ("loop_free_", True, False, False, False), 
+              ("undirected_", False, False, False, True), 
+              ("undirected_loop_free_", True, False, False, True), 
+              ("DAG_", False, True, False, False), 
+              ("DAG_loop_free_", True, True, False, False), 
+              ("oriented_", False, False, True, False), 
+              ("oriented_loop_free_", True, False, True, False) ]
 
         for desc, loop_free, DAG, oriented, undirected in l :
             g = od.open_digraph.random(6, 3, 2, 2, desc, loop_free, DAG, oriented, undirected)
-            g.save_as_pdf_file(path = f"dot_files/random/{desc}_graph.dot")
+            g.save_as_pdf_file(path = f"dot_files/random_graph/{desc}graph.dot")
 
 
 
@@ -272,12 +272,12 @@ class Open_DigraphTest(unittest.TestCase):
     
 
     def test_dot_to_graph(self):
-        self.g0.save_as_dot_file("dot_files/graph_test_save_file.dot", True)
-        g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
+        self.g0.save_as_dot_file("dot_files/open_digraph/test_save_file_w_verbose.dot", True)
+        g = od.open_digraph.from_dot_file("dot_files/open_digraph/test_save_file_w_verbose.dot")
         self.assertEqual(self.g0, g)
 
-        g = od.open_digraph.from_dot_file("dot_files/graph_test_save_file.dot")
-        g.save_as_pdf_file("dot_files/graph_test_from_file_without_verbose.dot")
+        g = od.open_digraph.from_dot_file("dot_files/open_digraph/test_save_file_w_verbose.dot")
+        g.save_as_pdf_file("dot_files/open_digraph/test_from_file.dot")
 
     
 
@@ -305,7 +305,7 @@ class Open_DigraphTest(unittest.TestCase):
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
         g1.iparallel(g2)
-        g1.save_as_pdf_file("dot_files/g1_iparallel_g2.dot")
+        g1.save_as_pdf_file("dot_files/open_digraph/g1_iparallel_g2.dot")
         
 
 
@@ -314,7 +314,7 @@ class Open_DigraphTest(unittest.TestCase):
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
         g_parallel = od.open_digraph.parallel(g1,g2)
-        g_parallel.save_as_pdf_file("dot_files/g1_parallel_g2.dot", verbose=True)
+        g_parallel.save_as_pdf_file("dot_files/open_digraph/g1_parallel_g2.dot", verbose=True)
         
 
 
@@ -322,7 +322,7 @@ class Open_DigraphTest(unittest.TestCase):
         g1 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g1.dot")
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")        
         g2.icompose(g1) #g2 après g1
-        g2.save_as_pdf_file("dot_files/g1_icompose_g2.dot", verbose=True)
+        g2.save_as_pdf_file("dot_files/open_digraph/g1_icompose_g2.dot", verbose=True)
         
 
 
@@ -332,35 +332,35 @@ class Open_DigraphTest(unittest.TestCase):
         g2 = od.open_digraph.from_dot_file("dot_files/do_not_delete/g2.dot")
         
         g_compose = od.open_digraph.compose(g1,g2) #g2 après g1
-        g_compose.save_as_pdf_file("dot_files/g1_compose_g2.dot", verbose=True)
+        g_compose.save_as_pdf_file("dot_files/open_digraph/g1_compose_g2.dot", verbose=True)
         
     
 
     def test_identity(self):
         g = od.open_digraph.identity(5)
-        g.save_as_pdf_file("dot_files/g_identity_5.dot", verbose=True)
+        g.save_as_pdf_file("dot_files/open_digraph/g_identity_5.dot", verbose=True)
         
 
 
     def test_connected_components(self):
         self.test_parallel() # sinon il trouve pas le fichier
-        g = od.open_digraph.from_dot_file("dot_files/g1_parallel_g2.dot")
+        g = od.open_digraph.from_dot_file("dot_files/open_digraph/g1_parallel_g2.dot")
         self.assertEqual(g.connected_components(), {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:1,8:1,9:1,10:1,11:1,12:1,13:1})
 
 
 
     def test_connected_graphs(self):
         self.test_parallel() # par sécurité, pareil
-        g = od.open_digraph.from_dot_file("dot_files/g1_parallel_g2.dot")
+        g = od.open_digraph.from_dot_file("dot_files/open_digraph/g1_parallel_g2.dot")
         l = g.connected_graphs()
         for i, g in enumerate(l) :
-            g.save_as_pdf_file(path = f"dot_files/connected_graph_{i}.dot", verbose = True)
+            g.save_as_pdf_file(path = f"dot_files/open_digraph/connected_graph_{i}.dot", verbose = True)
 
 
 
     def test_dijkstra(self):
         self.test_icompose()  # sinon il trouve pas le fichier
-        g = od.open_digraph.from_dot_file("dot_files/g1_icompose_g2.dot")
+        g = od.open_digraph.from_dot_file("dot_files/open_digraph/g1_icompose_g2.dot")
 
         dist, prev = g.dijkstra(1, -1)
         self.assertEqual(dist, {1:0, 9:1, 0:1, 2:1, 8:2, 7:2, 10:3, 11:3})
@@ -400,7 +400,7 @@ class Open_DigraphTest(unittest.TestCase):
 
     def test_topologic_sort(self):
         self.test_icompose()  # sinon il trouve pas le fichier
-        g = od.open_digraph.from_dot_file("dot_files/g1_icompose_g2.dot")
+        g = od.open_digraph.from_dot_file("dot_files/open_digraph/g1_icompose_g2.dot")
         try:
             _ = g.topologic_sort()
         except Exception:
@@ -432,13 +432,6 @@ class Open_DigraphTest(unittest.TestCase):
 
 
     def test_merge_nodes(self):
-        # n0 = nd.node(0, 'a', {3:1, 4:1}, {1:3, 2:1})
-        # n1 = nd.node(1, 'b', {0:3}, {2:2, 5:1})
-        # n2 = nd.node(2, 'c', {0:1, 1:2}, {6:1})
-        # i0 = nd.node(3, 'i0', {}, {0:1})
-        # i1 = nd.node(4, 'i1', {}, {0:1})
-        # o0 = nd.node(5, 'o0', {1:1}, {})
-        # o1 = nd.node(6, 'o1', {2:1}, {})
         g = self.g0.copy()
 
         g.merge_nodes([1, 2])

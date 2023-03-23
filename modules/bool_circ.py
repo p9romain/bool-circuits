@@ -90,7 +90,7 @@ class bool_circ(od.open_digraph):
   def from_str(cls, *args) :
     """
     """
-    if len(args) == 0: raise Exception("")
+    if len(args) == 0: raise Exception("An argument has to be given")
     
     def f(s):
       g = cls.empty()

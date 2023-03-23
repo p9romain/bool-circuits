@@ -285,11 +285,11 @@ class open_digraph_add_remove_mx:
   def merge_nodes(self, ids : List[int]) -> None :
     """
     """
-    if len(ids) < 2: raise Exception("")
+    if len(ids) < 2: raise Exception("At least two arguments must be given")
 
     def f(id1, id2):
       if id1 in self.inputs_ids or id1 in self.outputs_ids or id2 in self.inputs_ids or id2 in self.outputs_ids :
-        raise Exception("")
+        raise Exception("Given ids must not be an input or an output")
 
       n1 = self.node_by_id(id1)
       n2 = self.node_by_id(id2)
