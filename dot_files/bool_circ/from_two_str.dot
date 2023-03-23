@@ -8,20 +8,30 @@ n5 [label=" \n id: 5"];
 n6 [label=" \n id: 6"];
 n7 [label="&\n id: 7"];
 n9 [label="~\n id: 9"];
-n11 [label="x0\n id: 11",shape="box"];
+n11 [label="o\n id: 11",shape="diamond"];
+n12 [label="|\n id: 12"];
+n13 [label="&\n id: 13"];
+n15 [label="~\n id: 15"];
+n18 [label="x0\n id: 18",shape="box"];
 n8 [label="x1\n id: 8",shape="box"];
 n10 [label="x2\n id: 10",shape="box"];
 n1 -> n0
 n2 -> n1
 n3 -> n2
+n3 -> n13
 n4 -> n2
 n5 -> n4
 n5 -> n7
+n5 -> n15
 n6 -> n4
 n6 -> n9
+n6 -> n12
 n7 -> n1
 n9 -> n7
-n11 -> n3
+n12 -> n11
+n13 -> n12
+n15 -> n13
+n18 -> n3
 n8 -> n5
 n10 -> n6
 }

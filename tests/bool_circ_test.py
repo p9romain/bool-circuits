@@ -42,9 +42,13 @@ class Bool_CircTest(unittest.TestCase):
         
 
     def test_from_str(self):
-        b = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
-        #b.save_as_pdf_file("dot_files/bool_circ/from_str.dot")
-        b.display("dot_files/bool_circ/from_str.dot")
+        b0, l0 = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
+        b0.save_as_pdf_file("dot_files/bool_circ/from_one_str.dot", True)
+        self.assertEqual(l0, ['x0', 'x1', 'x2'])
+
+        b1, l1 = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))", "((x0)&(~(x1)))|(x2)")
+        b1.save_as_pdf_file("dot_files/bool_circ/from_two_str.dot", True)
+        self.assertEqual(l1, ['x0', 'x1', 'x2'])
         
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

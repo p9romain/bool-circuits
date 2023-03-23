@@ -55,6 +55,7 @@ class bool_circ(od.open_digraph):
     return not self.is_cyclic()
 
 
+
   def save_as_dot_file(self, path : str = "dot_files/bool_circ/bool_circ.dot", verbose : bool = False) -> None :
     """
     Saves the graph in a dot file
@@ -93,7 +94,7 @@ class bool_circ(od.open_digraph):
     
     def f(s):
       g = cls.empty()
-      g.add_output_node(id=0)
+      g.add_output_node(label="o",id=0)
       g.add_node(children={0:1})
       g.desc = s
 
@@ -110,27 +111,29 @@ class bool_circ(od.open_digraph):
           s_tmp = ''
         else:
           s_tmp += c
+      return g
+
     graphs = []
-    for i in range(len(args)):
-      graphs += [f(i)]
-    
-    graphs[0].iparallel(graphs[1:])
+    for s in args:
+      graphs += [f(s)]
+
+    if len(graphs) > 1 : graphs[0].iparallel(graphs[1:])
     g = graphs[0]
 
-    char = ["&", "&&", "|", "||", "~", "!", "^", "0", "1", " "]
+    char = ["&", "&&", "|", "||", "~", "!", "^", "0", "1", " ", "o"] # j'ai rajouté le nom de l'output qu'on avait oublié de préciser
     merge_list = {}
 
     for n in g.nodes_list :
       if not n.label in char:
         if n.label in merge_list : merge_list[n.label] += [n.id]
         else: merge_list[n.label] = [n.id]
-    
+
     for i in merge_list:
       if len(merge_list[i]) > 1:
-        od.open_digraph.merge_nodes(cls, merge_list[i])
+        g.merge_nodes(merge_list[i])
 
       id_node = merge_list[i][0]
       g.node_by_id(id_node).label = ' '
       g.add_input_node(i,{id_node:1})
 
-    return g, merge_list.keys()
+    return g, list(merge_list.keys())

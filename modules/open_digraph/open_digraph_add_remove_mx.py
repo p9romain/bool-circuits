@@ -285,7 +285,6 @@ class open_digraph_add_remove_mx:
   def merge_nodes(self, ids : List[int]) -> None :
     """
     """
-    print(ids)
     if len(ids) < 2: raise Exception("")
 
     def f(id1, id2):
