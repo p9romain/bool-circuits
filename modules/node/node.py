@@ -79,7 +79,7 @@ class node(nd_mx.node_add_remove_mx):
 
 
   @property
-  def parent_ids(self) -> List[int] :
+  def parents_ids(self) -> List[int] :
     """
     Getter for the ids of the node's parents
     """

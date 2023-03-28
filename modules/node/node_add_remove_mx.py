@@ -34,7 +34,7 @@ class node_add_remove_mx:
     if not isinstance(i, int):
       raise TypeError("Given argument must be an integer")
     
-    if i in self.parent_ids:
+    if i in self.parents_ids:
       if self.parents[i] == 1: self.parents.pop(i)
       else: self.parents[i] -= 1
           
@@ -47,7 +47,7 @@ class node_add_remove_mx:
     if not isinstance(i, int):
       raise TypeError("Given argument must be an integer")
         
-    if i in self.parent_ids: self.parents.pop(i)
+    if i in self.parents_ids: self.parents.pop(i)
       
   
 

@@ -60,7 +60,7 @@ class open_digraph_composition_parallel_mx:
     self.nodes.update(f_copy.nodes)
     
     for k,idk in enumerate(f_copy.outputs_ids):
-      id_depart = self.node_by_id(idk).parent_ids[0]
+      id_depart = self.node_by_id(idk).parents_ids[0]
       id_arrivee = self.node_by_id(self.inputs_ids[k]).children_ids[0]
       self.add_edge((id_depart,id_arrivee))
             
@@ -82,7 +82,7 @@ class open_digraph_composition_parallel_mx:
     def pop_and_search(i, k):
       if i in nodes_dict:
         key_ids = set(list(nodes_dict.keys()))
-        p_ids = nodes_dict[i].parent_ids
+        p_ids = nodes_dict[i].parents_ids
         p_ids = list(set(p_ids) & key_ids)
         c_ids = nodes_dict[i].children_ids
         c_ids = list(set(c_ids) & key_ids)

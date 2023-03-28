@@ -4,8 +4,10 @@ root = os.path.normpath(os.path.join(__file__, './../..'))
 sys.path.append(root) # allows us to fetch files from the project root
 
 from typing import List
+import random as rd
 
 import modules.open_digraph.open_digraph as od
+import modules.adjacency_matrix as am
 
 class bool_circ(od.open_digraph):
   def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
@@ -49,7 +51,7 @@ class bool_circ(od.open_digraph):
         return False
 
     # j'enlève les inputs et outputs
-    for n in list(set(self.nodes_list) - set(self.outputs.values()) - set(self.inputs.values())):
+    for n in list(set(self.nodes_list) - set(self.outputs_list) - set(self.inputs_list)):
       if not node_well_formed(n): return False
       
     return not self.is_cyclic()
@@ -137,3 +139,80 @@ class bool_circ(od.open_digraph):
       g.add_input_node(i,{id_node:1})
 
     return g, list(merge_list.keys())
+
+
+
+  @classmethod
+  def random(cls, n: int, bound : int, input : int, output : int) :
+    """
+    """
+    # tester si bound < 2
+
+    M = am.random_matrix(n, bound, null_diag = True, triangular = True)
+    cls = am.graph_from_adjacency_matrix(M)
+
+    # Inputs
+
+    no_parents = [ n.id for n in cls.nodes_list if n.indegree() == 0 ]
+    for id in no_parents :
+      cls.add_input_node(children = {id:1})
+
+    l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
+    if input > len(no_parents) :
+      for _ in range(input-len(no_parents)):
+        cls.add_input_node(children = {rd.sample(l, 1)[0].id : 1})
+
+    def fi(id1, id2):
+      idc1 = cls.node_by_id(id1).children_ids[0]
+      idc2 = cls.node_by_id(id2).children_ids[0]
+
+      id_cp = cls.add_node(children = {idc1:1, idc2:1}, parents = {id1: 1})
+      cls.node_by_id(id1).children = {id_cp: 1}
+      cls.remove_node_by_id(id2)
+
+    while ( len(cls.inputs_ids) > input) :
+      l = rd.sample(cls.inputs_ids, 2)
+      fi(l[0], l[1])
+
+    # Outputs
+
+    no_children = [ n.id for n in cls.nodes_list if n.outdegree() == 0 ]
+    for id in no_children :
+      cls.add_output_node(parents = {id:1})
+    
+    l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
+    if output > len(no_children) :
+      for _ in range(output-len(no_children)):
+        cls.add_output_node(parents = {rd.sample(l, 1)[0].id : 1})
+
+    def fo(id1, id2):
+      idc1 = cls.node_by_id(id1).parents_ids[0]
+      idc2 = cls.node_by_id(id2).parents_ids[0]
+
+      id_bin = cls.add_node(parents = {idc1:1, idc2:1}, children = {id1: 1})
+      cls.node_by_id(id1).parents = {id_bin: 1}
+      cls.remove_node_by_id(id2)
+
+    while ( len(cls.outputs_ids) > output) :
+      l = rd.sample(cls.outputs_ids, 2)
+      fo(l[0], l[1])
+
+    # Labels
+
+    l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
+    for n in l :
+      in_deg = n.indegree()
+      out_deg = n.outdegree()
+
+      if in_deg == 1 and out_deg == 1 :
+        n.label = '!'
+      elif in_deg == 1 and out_deg > 1 :
+        n.label = ' '
+      elif in_deg > 1 and out_deg == 1 :
+        n.label = rd.sample(['&&', '||', '^'], 1)[0]
+      elif in_deg > 1 and out_deg > 1 :
+        id_cp = cls.add_node(label = ' ', parents = {n.id : 1}, children = n.children.copy())
+        n.children = {id_cp : 1}
+        n.label = rd.sample(['&&', '||', '^'], 1)[0]
+
+    return cls

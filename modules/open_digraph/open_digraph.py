@@ -367,7 +367,7 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
     b_inputs_ids = all(item in self.nodes_ids for item in self.inputs_ids)
     b_outputs_ids = all(item in self.nodes_ids for item in self.outputs_ids)
     b_inputs_ids_only_one_child = all(len(n.children_ids) == 1 and n.children[n.children_ids[0]] == 1 for n in self.nodes_by_ids(self.inputs_ids).values())
-    b_outputs_ids_only_one_child = all(len(n.parent_ids) == 1 and n.parents[n.parent_ids[0]] == 1 for n in self.nodes_by_ids(self.outputs_ids).values())
+    b_outputs_ids_only_one_child = all(len(n.parents_ids) == 1 and n.parents[n.parents_ids[0]] == 1 for n in self.nodes_by_ids(self.outputs_ids).values())
     b_nodes = all(e for e in [ i == n.id for (i, n) in self.nodes.items() ])
     def assert_children(n):
       return all(self.node_by_id(i).parents[n.id] == m for (i, m) in n.children.items())

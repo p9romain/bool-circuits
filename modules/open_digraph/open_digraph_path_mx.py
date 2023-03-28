@@ -31,7 +31,7 @@ class open_digraph_path_mx:
         if tgt != None and tgt == u : return dist, prev
 
         neighbours = []
-        if direction == None or direction == -1 : neighbours += self.node_by_id(u).parent_ids
+        if direction == None or direction == -1 : neighbours += self.node_by_id(u).parents_ids
         if direction == None or direction == 1 : neighbours += self.node_by_id(u).children_ids
         for v in neighbours:
             if not v in dist : Q.append(v)
@@ -146,7 +146,7 @@ class open_digraph_path_mx:
     
     for k in range(k_src+1, k_tgt+1):
         for w_id in l[k]:
-            p_ids = self.node_by_id(w_id).parent_ids
+            p_ids = self.node_by_id(w_id).parents_ids
             t = [ (i,dist[i]) for i in p_ids if i in dist ]
             if t:
                 m_id, dist_max = max(t, key=(lambda x: x[1]))

@@ -33,7 +33,7 @@ class NodeTest(unittest.TestCase):
     def test_getters(self):
         self.assertEqual(self.n0.id, 0)
         self.assertEqual(self.n0.label, 'i')
-        self.assertEqual(self.n0.parent_ids, [])
+        self.assertEqual(self.n0.parents_ids, [])
         self.assertEqual(self.n0.children_ids, [1])
         self.assertEqual(self.n0.parents, {})
         self.assertEqual(self.n0.children, {1:2})
@@ -61,7 +61,7 @@ class NodeTest(unittest.TestCase):
         n0.add_parent_id(5)
         n0.add_child_id(1)
 
-        self.assertEqual(n0.parent_ids, [5])
+        self.assertEqual(n0.parents_ids, [5])
         self.assertEqual(list(n0.parents.values()), [1])
         self.assertEqual(n0.children_ids, [1])
         self.assertEqual(list(n0.children.values()), [3])
@@ -80,7 +80,7 @@ class NodeTest(unittest.TestCase):
         n0.remove_parent_id(1)
         n0.remove_child_id(0)
 
-        self.assertEqual(n0.parent_ids, [4])
+        self.assertEqual(n0.parents_ids, [4])
         self.assertEqual(list(n0.parents.values()), [1])
         self.assertEqual(n0.children_ids, [7])
         self.assertEqual(list(n0.children.values()), [28])

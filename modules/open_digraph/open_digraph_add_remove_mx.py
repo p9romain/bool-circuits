@@ -256,7 +256,7 @@ class open_digraph_add_remove_mx:
     Removes the node of the give id (or several nodes with a id list) 
     """
     def f(i : int) -> None:
-      for j in self.node_by_id(i).parent_ids:
+      for j in self.node_by_id(i).parents_ids:
           self.remove_parallel_edges((j, i))
           
       for j in self.node_by_id(i).children_ids:

@@ -49,6 +49,12 @@ class Bool_CircTest(unittest.TestCase):
         b1, l1 = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))", "((x0)&(~(x1)))|(x2)")
         b1.save_as_pdf_file("dot_files/bool_circ/from_two_str.dot", True)
         self.assertEqual(l1, ['x0', 'x1', 'x2'])
+
+
+
+    def test_random(self):
+        b0 = bc.bool_circ.random(7, 1, 1, 2)
+        b0.display("dot_files/bool_circ/random.dot")
         
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run
