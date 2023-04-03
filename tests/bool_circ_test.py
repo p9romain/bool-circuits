@@ -54,7 +54,11 @@ class Bool_CircTest(unittest.TestCase):
 
     def test_random(self):
         b0 = bc.bool_circ.random(7, 1, 1, 2)
-        b0.display("dot_files/bool_circ/random.dot")
+        b0.save_as_pdf_file("dot_files/bool_circ/random.dot")
+
+    def test_adder(self):
+        b0 = bc.bool_circ.adder(5)
+        b0.display("dot_files/bool_circ/adder.dot", True)
         
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

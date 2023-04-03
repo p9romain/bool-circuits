@@ -86,7 +86,19 @@ class bool_circ(od.open_digraph):
     """
     od.open_digraph.display(self, path, verbose)
 
+  def __str__(self) -> str :
+    """
+    Overload str conversion
+    """
+    return od.open_digraph.__str__(self)
 
+
+
+  def __repr__(self) -> str :
+    """
+    Overload repr conversion (= str)
+    """
+    return self.__str__()
 
   @classmethod
   def from_str(cls, *args) :
@@ -94,11 +106,10 @@ class bool_circ(od.open_digraph):
     """
     if len(args) == 0: raise Exception("An argument has to be given")
     
-    def f(s):
+    def f(s, i):
       g = cls.empty()
-      g.add_output_node(label="o",id=0)
+      g.add_output_node(label="o"+str(i),id=0)
       g.add_node(children={0:1})
-      g.desc = s
 
       cn = 1
       s_tmp = ''
@@ -116,17 +127,18 @@ class bool_circ(od.open_digraph):
       return g
 
     graphs = []
-    for s in args:
-      graphs += [f(s)]
+    for i, s in enumerate(args):
+      graphs += [f(s, i)]
 
     if len(graphs) > 1 : graphs[0].iparallel(graphs[1:])
     g = graphs[0]
+    g.desc = ""
 
-    char = ["&", "&&", "|", "||", "~", "!", "^", "0", "1", " ", "o"] # j'ai rajouté le nom de l'output qu'on avait oublié de préciser
+    char = ["&", "&&", "|", "||", "~", "!", "^", "0", "1", " "] # j'ai rajouté le nom de l'output qu'on avait oublié de préciser
     merge_list = {}
 
     for n in g.nodes_list :
-      if not n.label in char:
+      if not n.label in char and n.label[0] != "o":
         if n.label in merge_list : merge_list[n.label] += [n.id]
         else: merge_list[n.label] = [n.id]
 
@@ -215,4 +227,46 @@ class bool_circ(od.open_digraph):
         n.children = {id_cp : 1}
         n.label = rd.sample(['&&', '||', '^'], 1)[0]
 
+    return cls
+
+  @classmethod
+  def adder(cls, n : int):
+    def bis(n):
+      if n == 0:
+        g, _ = bool_circ.from_str("((a0)&(b0))|(((a0)^(b0))&(c))", "((a0)^(b0))^(c)")
+        for o in g.outputs_list:
+          if o.label == "o0": o.label = "c'"
+          elif o.label == "o1": o.label = "r0" 
+        return g
+      else:
+        g1 = bool_circ.adder(n-1)
+        g2 = g1.copy()
+
+        for i in g2.inputs_list:
+          if i.label[0] == 'a': i.label = "A" + i.label[1:]
+          elif i.label[0] == 'b': i.label = "B" + i.label[1:]
+          elif i.label[0] == 'c': i.label = "C"
+
+        for i in g2.outputs_list:
+          if i.label[0] == 'r': i.label = "R" + i.label[1:]
+          elif i.label == "c'": i.label = "C'"
+
+        g = od.open_digraph.parallel(g1,g2)
+
+        # carry
+        n_C_prime = g.node_by_label(r"C'")[0]
+        n_c = g.node_by_label(r"^c$")[0]
+        g.add_edge((n_C_prime.parents_ids[0], n_c.children_ids[0]))
+        g.remove_node_by_id([n_C_prime.id,n_c.id])
+        
+        # rename a_i with a_{n+i} and A_i with a_i
+        for i in g.node_by_label(r"[abr]+"):
+          i.label = i.label[0] + str(int(i.label[1:])+n)
+        for i in g.node_by_label(r"[ABR]+"):
+          i.label = i.label.lower()
+        g.node_by_label(r"C")[0].label = "c"
+
+        return g
+
+    cls = bis(n)
     return cls
