@@ -7,6 +7,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 import generic_heap as gh
 import copy as cp
+import re
 
 import modules.node.node as nd
 import modules.open_digraph.open_digraph_add_remove_mx as od_mx1
@@ -352,7 +353,8 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
     # on renvoie un dictionnaire comme ça c'est plus simple pour retrouver 
     # le noeud d'id i, vu que c'est une hash table
 
-
+  def node_by_label(self, r):
+    return [ n for n in self.nodes_list if re.search(r, n.label) ]
 
   def is_well_formed(self) -> bool :
     """
