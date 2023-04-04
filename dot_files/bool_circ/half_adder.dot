@@ -48,7 +48,7 @@ n62 [label="^\n id: 62"];
 n63 [label="^\n id: 63"];
 n67 [label="a0\n id: 67",shape="box"];
 n58 [label="b0\n id: 58",shape="box"];
-n59 [label="c\n id: 59",shape="box"];
+n59 [label="0\n id: 59"];
 n1 -> n0
 n2 -> n1
 n3 -> n2

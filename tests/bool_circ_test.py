@@ -57,8 +57,21 @@ class Bool_CircTest(unittest.TestCase):
         b0.save_as_pdf_file("dot_files/bool_circ/random.dot")
 
     def test_adder(self):
-        b0 = bc.bool_circ.adder(5)
-        b0.display("dot_files/bool_circ/adder.dot", True)
+        b0 = bc.bool_circ.adder(2)
+        b0.save_as_pdf_file("dot_files/bool_circ/adder.dot", True)
+
+    def test_half_adder(self):
+        b0 = bc.bool_circ.half_adder(2)
+        b0.save_as_pdf_file("dot_files/bool_circ/half_adder.dot", True)
+
+    def test_carry_lookahead(self):
+        b0 = bc.bool_circ.carry_lookahead(2)
+        b0.save_as_pdf_file("dot_files/bool_circ/carry_lookahead.dot", True)
+
+    def test_from_int(self):
+        b0 = bc.bool_circ.from_int(15, 9)
+        b0.display("dot_files/bool_circ/from_int.dot", True)
+
         
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

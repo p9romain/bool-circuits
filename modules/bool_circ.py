@@ -138,7 +138,7 @@ class bool_circ(od.open_digraph):
     merge_list = {}
 
     for n in g.nodes_list :
-      if not n.label in char and n.label[0] != "o":
+      if not n.label in char and n.label != "" and n.label[0] != "o":
         if n.label in merge_list : merge_list[n.label] += [n.id]
         else: merge_list[n.label] = [n.id]
 
@@ -270,3 +270,82 @@ class bool_circ(od.open_digraph):
 
     cls = bis(n)
     return cls
+    
+  @classmethod
+  def half_adder(cls, n : int):
+    cls = bool_circ.adder(n)
+    node_c = cls.node_by_label(r"^c$")[0]
+    cls.inputs_ids.remove(node_c.id)
+    node_c.label = "0"
+    return cls
+
+  @classmethod
+  def carry_lookahead(cls, n : int):
+    def bis(n):
+      if n == 1:
+        def p(i): return f"(a{i})^(b{i})"
+        def g(i): return f"(a{i})&(b{i})"
+        def c(i): return "c" if i == 0 else f"({g(i-1)})^(({p(i-1)})&({c(i-1)}))"
+        def o(i): return f"({p(i)})^({c(i)})"
+        g, _ = bool_circ.from_str(o(0),o(1),o(2),o(3),o(4),g(n))
+        for o in g.outputs_list:
+          if int(o.label[1]) == 5: o.label = "c'"
+          else: o.label = "r" + o.label[1] 
+        return g
+      else:
+        g1 = bool_circ.carry_lookahead(1)
+        g2 = bool_circ.carry_lookahead(n-1)
+
+        for i in g2.inputs_list:
+          if i.label[0] == 'a': i.label = "A" + i.label[1:]
+          elif i.label[0] == 'b': i.label = "B" + i.label[1:]
+          elif i.label[0] == 'c': i.label = "C" 
+
+        for i in g2.outputs_list:
+          if i.label[0] == 'r': i.label = "R" + i.label[1:]
+          elif i.label == "c'": i.label = "C'"
+
+        g = od.open_digraph.parallel(g1,g2)
+
+        # carry
+        n_C_prime = g.node_by_label(r"C'")[0]
+        n_c = g.node_by_label(r"^c$")[0]
+        g.add_edge((n_C_prime.parents_ids[0], n_c.children_ids[0]))
+        g.remove_node_by_id([n_C_prime.id,n_c.id])
+        
+        # rename a_i with a_{n+i} and A_i with a_i
+        for i in g.node_by_label(r"[abr]+"):
+          i.label = i.label[0] + str(int(i.label[1:])+4*n)
+        for i in g.node_by_label(r"[ABR]+"):
+          i.label = i.label.lower()
+        g.node_by_label(r"C")[0].label = "c"
+
+        return g
+
+    cls = bis(n)
+    return cls
+
+  @classmethod
+  def from_int(cls, m : int, n : int = 8):
+    if n == 0 or 2**n < m:
+      raise Exception("Voilà, c'est tout.")
+
+    s = bin(m)[2:]
+    s = (n-len(s))*"0" + s
+    cls = bool_circ.identity(n)
+    for i in range(n):
+      cls.inputs_ids.remove(i)
+      cls.node_by_id(i).label = s[i]
+    return cls
+
+  def transform_copie(self, id : int):
+    n = self.node_by_id(id)
+    # invariant : n est un noeud copie
+    if len(n.parents_ids) == 1 :
+      n_parent = self.node_by_id(n.parents_ids[0])
+      if len(n_parents_ids) == 0 && (n_parent.label == "0" || n_parent.label == "1"):
+        const = n_parent.label
+      else:
+        raise Exception("")
+    else:
+      raise Exception("")
