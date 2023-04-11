@@ -356,6 +356,9 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
   def node_by_label(self, r):
     return [ n for n in self.nodes_list if re.search(r, n.label) ]
 
+  def node_by_label_list(self, l, r):
+    return [ n for n in self.nodes_by_ids(l).values() if re.search(r, n.label) ]
+
   def is_well_formed(self) -> bool :
     """
     Check if the graph is well formed :
@@ -436,3 +439,11 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
       else:
         return 0
     return np.array( [ [ f(i, j) for j in range(len(s)) ] for i in range(len(s)) ] )
+  
+  def co_leaves(self):
+    return [n for n in self.nodes_list if len(n.parents_ids) == 0]
+    
+  def co_leaves_attached_to_output(self):
+    def f(n):
+      return (len(n.children_ids) > 1 and len(n.children_ids) == 0) or (not n.children_ids[0] in self.outputs_ids)
+    return [n for n in self.nodes_list if len(n.parents_ids) == 0 and f(n)]

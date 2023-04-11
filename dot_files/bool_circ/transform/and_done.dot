@@ -1,0 +1,18 @@
+digraph G {
+n0 [label="0\n id: 0"];
+n2 [label="i1\n id: 2",shape="box"];
+n3 [label="i2\n id: 3",shape="box"];
+n4 [label="o1\n id: 4",shape="diamond"];
+n5 [label="&\n id: 5"];
+n7 [label="i1\n id: 7",shape="box"];
+n8 [label="i2\n id: 8",shape="box"];
+n9 [label="o1\n id: 9",shape="diamond"];
+n10 [label="\n id: 10"];
+n11 [label="\n id: 11"];
+n0 -> n4
+n2 -> n10
+n3 -> n11
+n5 -> n9
+n7 -> n5
+n8 -> n5
+}

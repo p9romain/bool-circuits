@@ -86,6 +86,8 @@ class bool_circ(od.open_digraph):
     """
     od.open_digraph.display(self, path, verbose)
 
+
+
   def __str__(self) -> str :
     """
     Overload str conversion
@@ -93,12 +95,20 @@ class bool_circ(od.open_digraph):
     return od.open_digraph.__str__(self)
 
 
+  def __repr__(self) -> str :
+    """
+    Overload repr conversion (= str)
+    """
+    return self.__str__()
+
 
   def __repr__(self) -> str :
     """
     Overload repr conversion (= str)
     """
     return self.__str__()
+
+
 
   @classmethod
   def from_str(cls, *args) :
@@ -138,7 +148,8 @@ class bool_circ(od.open_digraph):
     merge_list = {}
 
     for n in g.nodes_list :
-      if not n.label in char and n.label[0] != "o":
+
+      if not n.label in char and n.label != "" and n.label[0] != "o":
         if n.label in merge_list : merge_list[n.label] += [n.id]
         else: merge_list[n.label] = [n.id]
 
@@ -229,6 +240,8 @@ class bool_circ(od.open_digraph):
 
     return cls
 
+
+
   @classmethod
   def adder(cls, n : int):
     def bis(n):
@@ -269,4 +282,226 @@ class bool_circ(od.open_digraph):
         return g
 
     cls = bis(n)
+
     return cls
+    
+
+
+  @classmethod
+  def half_adder(cls, n : int):
+    cls = bool_circ.adder(n)
+    node_c = cls.node_by_label(r"^c$")[0]
+    cls.inputs_ids.remove(node_c.id)
+    node_c.label = "0"
+    return cls
+
+
+
+  @classmethod
+  def carry_lookahead(cls, n : int):
+    def bis(n):
+      if n == 1:
+        def p(i): return f"(a{i})^(b{i})"
+        def g(i): return f"(a{i})&(b{i})"
+        def c(i): return "c" if i == 0 else f"({g(i-1)})^(({p(i-1)})&({c(i-1)}))"
+        def o(i): return f"({p(i)})^({c(i)})"
+        g, _ = bool_circ.from_str(o(0),o(1),o(2),o(3),o(4),g(n))
+        for o in g.outputs_list:
+          if int(o.label[1]) == 5: o.label = "c'"
+          else: o.label = "r" + o.label[1] 
+        return g
+      else:
+        g1 = bool_circ.carry_lookahead(1)
+        g2 = bool_circ.carry_lookahead(n-1)
+
+        for i in g2.inputs_list:
+          if i.label[0] == 'a': i.label = "A" + i.label[1:]
+          elif i.label[0] == 'b': i.label = "B" + i.label[1:]
+          elif i.label[0] == 'c': i.label = "C" 
+
+        for i in g2.outputs_list:
+          if i.label[0] == 'r': i.label = "R" + i.label[1:]
+          elif i.label == "c'": i.label = "C'"
+
+        g = od.open_digraph.parallel(g1,g2)
+
+        # carry
+        n_C_prime = g.node_by_label(r"C'")[0]
+        n_c = g.node_by_label(r"^c$")[0]
+        g.add_edge((n_C_prime.parents_ids[0], n_c.children_ids[0]))
+        g.remove_node_by_id([n_C_prime.id,n_c.id])
+        
+        # rename a_i with a_{n+i} and A_i with a_i
+        for i in g.node_by_label(r"[abr]+"):
+          i.label = i.label[0] + str(int(i.label[1:])+4*n)
+        for i in g.node_by_label(r"[ABR]+"):
+          i.label = i.label.lower()
+        g.node_by_label(r"C")[0].label = "c"
+
+        return g
+
+    cls = bis(n)
+    return cls
+
+
+
+  @classmethod
+  def from_int(cls, m : int, n : int = 8):
+    if n == 0 or 2**n < m:
+      raise Exception("Voilà, c'est tout.")
+
+    s = bin(m)[2:]
+    s = (n-len(s))*"0" + s
+    cls = bool_circ.identity(n)
+    for i in range(n):
+      cls.inputs_ids.remove(i)
+      cls.node_by_id(i).label = s[i]
+    return cls
+
+
+
+  def transform_copy(self, id : int):
+    n = self.node_by_id(id)
+    # invariant : n est un noeud copie
+    if n.indegree() == 1 :
+      n_parent = self.node_by_id(n.parents_ids[0])
+      if n_parent.indegree() == 0 and (n_parent.label == "0" or n_parent.label == "1"):
+        const = n_parent.label
+        
+        for i in n.children_ids:
+          self.add_node(const, {}, {i:1})
+          self.remove_edge((id,i))
+
+        self.remove_node_by_id(n.parents_ids[0])
+        self.remove_node_by_id(id)
+      else:
+        raise Exception("")
+    else:
+      raise Exception("")
+    
+
+    
+  def transform_not(self, id : int):
+    n = self.node_by_id(id)
+
+    if  n.indegree() == 1 :
+      n_parent = self.node_by_id(n.parents_ids[0])
+      if n_parent.indegree() == 0 and (n_parent.label == "0" or n_parent.label == "1"):
+        const = n_parent.label
+
+        self.remove_node_by_id(n.parents_ids[0])
+        n.label = "0" if const == "1" else "1"
+      else:
+        raise Exception("")
+    else:
+      raise Exception("")
+    
+
+
+  def transform_and(self, id : int):
+    n = self.node_by_id(id)
+
+    l = self.node_by_label_list(n.parents_ids, r"^[01]{1}$")
+    if len(l) >= 1:
+      n_parent_constant = None
+      for i in l:
+        if i.indegree() == 0 :
+          n_parent_constant = i
+          break
+      if n_parent_constant is None: raise Exception("")
+
+      const = n_parent_constant.label
+      if const == "0":
+        others_parent_ids = list(set(n.parents_ids) - set([n_parent_constant.id]))
+        for i in others_parent_ids:
+          self.add_node("", {i:1}, {})
+          self.remove_edge((i,id))
+        n.label = const
+        self.remove_node_by_id(n_parent_constant.id)
+      else:
+        self.remove_node_by_id(n_parent_constant.id)
+    else:
+      raise Exception("")
+    
+  
+
+  def transform_or(self, id : int):
+    n = self.node_by_id(id)
+
+    l = self.node_by_label_list(n.parents_ids, r"^[01]{1}$")
+    if len(l) >= 1:
+      n_parent_constant = None
+      for i in l:
+        if i.indegree() == 0 :
+          n_parent_constant = i
+          break
+      if n_parent_constant is None: raise Exception("")
+
+      const = n_parent_constant.label
+      if const == "1":
+        others_parent_ids = list(set(n.parents_ids) - set([n_parent_constant.id]))
+        for i in others_parent_ids:
+          self.add_node("", {i:1}, {})
+          self.remove_edge((i,id))
+        n.label = const
+        self.remove_node_by_id(n_parent_constant.id)
+      else:
+        self.remove_node_by_id(n_parent_constant.id)
+    else:
+      raise Exception("")
+    
+
+  def transform_xor(self, id : int):
+    n = self.node_by_id(id)
+
+    l = self.node_by_label_list(n.parents_ids, r"^[01]{1}$")
+    if len(l) >= 1:
+      n_parent_constant = None
+      for i in l:
+        if i.indegree() == 0 :
+          n_parent_constant = i
+          break
+      if n_parent_constant is None: raise Exception("")
+
+      const = n_parent_constant.label
+      if const == "1":
+        self.add_node(label='~', parents={id:1}, children={n.children_ids[0]:1})
+        self.remove_edge((id, n.children_ids[0]))
+      self.remove_node_by_id(n_parent_constant.id)
+    else:
+      raise Exception("")
+    
+
+  def transform_neutral(self, id : int):
+    n = self.node_by_id(id)
+    if n.indegree() == 0 :
+      if n.label in ['|', '||'] or n.label == '^' :
+        n.label = '0'
+      elif n.label in ['&', '&&'] :
+        n.label = '1'
+      else:
+        raise Exception("")
+    # else:
+    #   raise Exception("")
+    
+  def transform(self, id : int):
+    label = self.node_by_id(id).label
+
+    if label == "":
+      self.transform_copy(id)
+    elif label in ["~","!"]:
+      self.transform_not(id)
+    elif label in ["|","||","&","&&","^"]:
+      self.transform_neutral(id)
+    elif label in ["&","&&"]:
+      self.transform_and(id)
+    elif label in ["|","||"]:
+      self.transform_or(id)
+    elif label == "^":
+      self.transform_xor(id)
+
+  def evaluate(self):
+    l = self.co_leaves_attached_to_output()
+    while len(l) > 0:
+      self.transform(l[0].id)
+    
