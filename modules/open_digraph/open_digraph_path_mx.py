@@ -110,6 +110,7 @@ class open_digraph_path_mx:
     return bis(heap)
 
 
+
   def node_depth(self, id: int) -> int :
     """
     Returns the depth of a given node

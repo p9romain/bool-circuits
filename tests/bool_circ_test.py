@@ -5,7 +5,7 @@ sys.path.append(root) # allows us to fetch files from the project root
 import unittest
 import modules.node.node as nd
 import modules.open_digraph.open_digraph as od
-import modules.bool_circ as bc
+import modules.bool_circ.bool_circ as bc
 
 class Bool_CircTest(unittest.TestCase):
     def setUp(self):
@@ -38,11 +38,14 @@ class Bool_CircTest(unittest.TestCase):
         self.transforms_graph = {}
 
         n0 = nd.node(0, "0", {}, {1:1})
-        n1 = nd.node(1, "", {0:1}, {2:1,3:1,4:1})
-        c0 = nd.node(2, "o0", {1:1}, {})
-        c1 = nd.node(3, "o1", {1:1}, {})
-        c2 = nd.node(4, "o2", {1:1}, {})
-        self.transforms_graph["copy"] = bc.bool_circ([], [2,3,4], [n0, n1, c0, c1, c2], "transform_copy")
+        n1 = nd.node(1, "", {0:1}, {2:1, 3:1, 4:1})
+        n2 = nd.node(2, "", {1:1}, {5:1})
+        n3 = nd.node(3, "", {1:1}, {6:1})
+        n4 = nd.node(4, "", {1:1}, {7:1})
+        c0 = nd.node(5, "o0", {2:1}, {})
+        c1 = nd.node(6, "o1", {3:1}, {})
+        c2 = nd.node(7, "o2", {4:1}, {})
+        self.transforms_graph["copy"] = bc.bool_circ([], [5,6,7], [n0, n1, n2, n3, n4, c0, c1, c2], "transform_copy")
 
         
         n0 = nd.node(0, "0", {}, {1:1})
@@ -67,7 +70,6 @@ class Bool_CircTest(unittest.TestCase):
         i3 = nd.node(7, "i1", {}, {5:1})
         i4 = nd.node(8, "i2", {}, {5:1})
         o2 = nd.node(9, "o1", {5:1}, {})
-
         self.transforms_graph["and"] = bc.bool_circ([2,3,7,8], [4,9], [a1,n1,i1,i2,o1,a2,n2,i3,i4,o2], "transform_and")
         
 
@@ -83,7 +85,6 @@ class Bool_CircTest(unittest.TestCase):
         i3 = nd.node(7, "i1", {}, {5:1})
         i4 = nd.node(8, "i2", {}, {5:1})
         o2 = nd.node(9, "o1", {5:1}, {})
-
         self.transforms_graph["or"] = bc.bool_circ([2,3,7,8], [4,9], [a1,n1,i1,i2,o1,a2,n2,i3,i4,o2], "transform_or")
         
 
@@ -99,7 +100,6 @@ class Bool_CircTest(unittest.TestCase):
         i3 = nd.node(7, "i1", {}, {5:1})
         i4 = nd.node(8, "i2", {}, {5:1})
         o2 = nd.node(9, "o1", {5:1}, {})
-
         self.transforms_graph["xor"] = bc.bool_circ([2,3,7,8], [4,9], [a1,n1,i1,i2,o1,a2,n2,i3,i4,o2], "transform_xor")
         
 
@@ -111,7 +111,6 @@ class Bool_CircTest(unittest.TestCase):
         
         n3 = nd.node(4, "&", {}, {5:1})
         o3 = nd.node(5, "o3", {4:1}, {})
-
         self.transforms_graph["neutral"] = bc.bool_circ([], [1,3,5], [n1,o1,n2,o2,n3,o3], "transform_neutral")
         
 
@@ -165,6 +164,7 @@ class Bool_CircTest(unittest.TestCase):
     def test_transform_copy(self):
         self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy.dot", verbose=True)
         self.transforms_graph["copy"].transform_copy(1)
+        self.transforms_graph["copy"].transform_copy(2)
         self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done.dot", verbose=True)
 
 
@@ -174,6 +174,7 @@ class Bool_CircTest(unittest.TestCase):
         self.transforms_graph["not"].transform_not(1)
         self.transforms_graph["not"].transform_not(4)
         self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not_done.dot", verbose=True)
+    
     
 
     def test_transform_and(self):
@@ -208,6 +209,7 @@ class Bool_CircTest(unittest.TestCase):
         self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done.dot", verbose=True)
 
 
+
     def test_transform(self):
         self.transforms_graph["copy"].transform(1)
         self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done_transform_fct.dot", verbose=True)
@@ -232,6 +234,48 @@ class Bool_CircTest(unittest.TestCase):
         self.transforms_graph["neutral"].transform(2)
         self.transforms_graph["neutral"].transform(4)
         self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done_transform_fct.dot", verbose=True)
+
+
+
+    def test_evaluate(self):
+        b0, _ = bc.bool_circ.from_str("(!(x))||(!(x))")
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_not", True)
+        self.assertEqual(b0.evaluate(0), "1")
+        self.assertEqual(b0.evaluate(1), "0")
+
+        b0, _  = bc.bool_circ.from_str("(x)","(x)")
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_copy", True)
+        self.assertEqual(b0.evaluate(0), "00")
+        self.assertEqual(b0.evaluate(1), "11")
+
+        b0, _  = bc.bool_circ.from_str("((x1)&&(x2))")
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_and", True)
+        self.assertEqual(b0.evaluate("00"), "0")
+        self.assertEqual(b0.evaluate("01"), "0")
+        self.assertEqual(b0.evaluate("10"), "0")
+        self.assertEqual(b0.evaluate("11"), "1")
+
+        b0, _  = bc.bool_circ.from_str("((x1)||(x2))")
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_or", True)
+        self.assertEqual(b0.evaluate("00"), "0")
+        self.assertEqual(b0.evaluate("01"), "1")
+        self.assertEqual(b0.evaluate("10"), "1")
+        self.assertEqual(b0.evaluate("11"), "1")
+
+        b0, _  = bc.bool_circ.from_str("((x1)^(x2))")
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_xor", True)
+        self.assertEqual(b0.evaluate("00"), "0")
+        self.assertEqual(b0.evaluate("01"), "1")
+        self.assertEqual(b0.evaluate("10"), "1")
+        self.assertEqual(b0.evaluate("11"), "0")
+
+        self.assertEqual(self.b0.evaluate("01"), "00")
+        self.assertEqual(self.b0.evaluate("10"), "10")
+
+
+
+    def test_evaluate_adder(self):
+        pass
 
 
 if __name__ == '__main__': # the following code is called only when
