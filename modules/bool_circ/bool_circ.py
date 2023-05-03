@@ -120,10 +120,11 @@ class bool_circ(od.open_digraph,
     """
     """
     b = self.copy()
-    if isinstance(n, str): n = int(n, 2)
+    if isinstance(n, str): n = int(n, 2) # we can just give binary string
+    # exemple : for adder with 15 + 3 => "1111" + "0011" => "11110011" instead of giving 243
 
-    n = self.from_int(n, len(b.inputs_ids))
-    b = self.compose(n, b)
+    n = self.from_int(n, len(b.inputs_ids)) # from int to bool_circ
+    b = self.compose(n, b) # adding the int at the top of the bool_circ
 
     def f(n): # check if there isnt an output in [n]'s children 
       for id in n.children_ids:
@@ -132,22 +133,25 @@ class bool_circ(od.open_digraph,
     
     i = 0
 
+    # for all co_leaves not attached to (at least) an output
     l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ]
     while len(l) > 0 :
-      # print(l)
       n = l[0]
-      # pour distinguer opérateur ou non
+      
+      # always an 0 or 1, but sometimes binary operator
+      # eg : true && true && true => && with transform
       if n.label in ["0", "1" ] : b.transform(n.children_ids[0])
       else : b.transform_neutral(n.id) 
-      l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ]
-      # b.display(f"dot_files/bool_circ/tmp{i}.dot", True)
-      i += 1
+      l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ] # update what to do
 
+    # to get result
     s = ""
     for o in b.outputs_list:
       lb = b.node_by_id(o.parents_ids[0]).label
-      if not lb in ["0", "1"] : b.transform_neutral(o.parents_ids[0]) # si jamais le dernier noeud restant est un opérateur
+
+      # always an 0 or 1, but sometimes binary operator
+      # eg : true && true && true => && with transform
+      if not lb in ["0", "1"] : b.transform_neutral(o.parents_ids[0])
       s += b.node_by_id(o.parents_ids[0]).label
-    print()
 
     return s

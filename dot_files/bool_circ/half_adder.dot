@@ -1,5 +1,5 @@
 digraph G {
-n0 [label="c'\n id: 0",shape="diamond"];
+n0 [label="\n id: 0",shape="diamond"];
 n1 [label="|\n id: 1"];
 n2 [label="&\n id: 2"];
 n3 [label="\n id: 3"];
@@ -7,48 +7,48 @@ n4 [label="\n id: 4"];
 n5 [label="&\n id: 5"];
 n6 [label="^\n id: 6"];
 n9 [label="\n id: 9"];
-n10 [label="r3\n id: 10",shape="diamond"];
+n10 [label="\n id: 10",shape="diamond"];
 n11 [label="^\n id: 11"];
 n12 [label="^\n id: 12"];
-n16 [label="a3\n id: 16",shape="box"];
-n7 [label="b3\n id: 7",shape="box"];
-n18 [label="|\n id: 18"];
-n19 [label="&\n id: 19"];
-n20 [label="\n id: 20"];
-n21 [label="\n id: 21"];
-n22 [label="&\n id: 22"];
-n23 [label="^\n id: 23"];
+n18 [label="\n id: 18",shape="diamond"];
+n24 [label="|\n id: 24"];
+n25 [label="&\n id: 25"];
 n26 [label="\n id: 26"];
-n27 [label="r2\n id: 27",shape="diamond"];
-n28 [label="^\n id: 28"];
+n27 [label="\n id: 27"];
+n28 [label="&\n id: 28"];
 n29 [label="^\n id: 29"];
-n33 [label="a2\n id: 33",shape="box"];
-n24 [label="b2\n id: 24",shape="box"];
-n35 [label="|\n id: 35"];
-n36 [label="&\n id: 36"];
-n37 [label="\n id: 37"];
-n38 [label="\n id: 38"];
-n39 [label="&\n id: 39"];
-n40 [label="^\n id: 40"];
-n43 [label="\n id: 43"];
-n44 [label="r1\n id: 44",shape="diamond"];
-n45 [label="^\n id: 45"];
-n46 [label="^\n id: 46"];
-n50 [label="a1\n id: 50",shape="box"];
-n41 [label="b1\n id: 41",shape="box"];
-n52 [label="|\n id: 52"];
-n53 [label="&\n id: 53"];
-n54 [label="\n id: 54"];
+n32 [label="\n id: 32"];
+n34 [label="^\n id: 34"];
+n35 [label="^\n id: 35"];
+n42 [label="\n id: 42",shape="diamond"];
+n43 [label="\n id: 43",shape="diamond"];
+n44 [label="\n id: 44",shape="box"];
+n45 [label="\n id: 45",shape="box"];
+n46 [label="\n id: 46",shape="box"];
+n47 [label="\n id: 47",shape="box"];
+n53 [label="|\n id: 53"];
+n54 [label="&\n id: 54"];
 n55 [label="\n id: 55"];
-n56 [label="&\n id: 56"];
-n57 [label="^\n id: 57"];
-n60 [label="\n id: 60"];
-n61 [label="r0\n id: 61",shape="diamond"];
-n62 [label="^\n id: 62"];
+n56 [label="\n id: 56"];
+n57 [label="&\n id: 57"];
+n58 [label="^\n id: 58"];
+n61 [label="\n id: 61"];
 n63 [label="^\n id: 63"];
-n67 [label="a0\n id: 67",shape="box"];
-n58 [label="b0\n id: 58",shape="box"];
-n59 [label="0\n id: 59"];
+n64 [label="^\n id: 64"];
+n71 [label="\n id: 71",shape="box"];
+n72 [label="\n id: 72",shape="box"];
+n76 [label="|\n id: 76"];
+n77 [label="&\n id: 77"];
+n78 [label="\n id: 78"];
+n79 [label="\n id: 79"];
+n80 [label="&\n id: 80"];
+n81 [label="^\n id: 81"];
+n84 [label="\n id: 84"];
+n86 [label="^\n id: 86"];
+n87 [label="^\n id: 87"];
+n91 [label="\n id: 91",shape="box"];
+n82 [label="\n id: 82",shape="box"];
+n83 [label="0\n id: 83"];
 n1 -> n0
 n2 -> n1
 n3 -> n2
@@ -63,55 +63,55 @@ n9 -> n5
 n9 -> n11
 n11 -> n10
 n12 -> n11
-n16 -> n3
-n7 -> n4
-n18 -> n9
-n19 -> n18
-n20 -> n19
-n20 -> n23
-n20 -> n29
-n21 -> n19
-n21 -> n23
-n21 -> n29
-n22 -> n18
-n23 -> n22
-n26 -> n22
-n26 -> n28
-n28 -> n27
+n24 -> n9
+n25 -> n24
+n26 -> n25
+n26 -> n29
+n26 -> n35
+n27 -> n25
+n27 -> n29
+n27 -> n35
+n28 -> n24
 n29 -> n28
-n33 -> n20
-n24 -> n21
-n35 -> n26
-n36 -> n35
-n37 -> n36
-n37 -> n40
-n37 -> n46
-n38 -> n36
-n38 -> n40
-n38 -> n46
-n39 -> n35
-n40 -> n39
-n43 -> n39
-n43 -> n45
-n45 -> n44
-n46 -> n45
-n50 -> n37
-n41 -> n38
-n52 -> n43
-n53 -> n52
+n32 -> n28
+n32 -> n34
+n34 -> n18
+n35 -> n34
+n44 -> n3
+n45 -> n26
+n46 -> n4
+n47 -> n27
+n53 -> n32
 n54 -> n53
-n54 -> n57
-n54 -> n63
-n55 -> n53
-n55 -> n57
-n55 -> n63
-n56 -> n52
-n57 -> n56
-n60 -> n56
-n60 -> n62
-n62 -> n61
-n63 -> n62
-n67 -> n54
-n58 -> n55
-n59 -> n60
+n55 -> n54
+n55 -> n58
+n55 -> n64
+n56 -> n54
+n56 -> n58
+n56 -> n64
+n57 -> n53
+n58 -> n57
+n61 -> n57
+n61 -> n63
+n63 -> n42
+n64 -> n63
+n71 -> n55
+n72 -> n56
+n76 -> n61
+n77 -> n76
+n78 -> n77
+n78 -> n81
+n78 -> n87
+n79 -> n77
+n79 -> n81
+n79 -> n87
+n80 -> n76
+n81 -> n80
+n84 -> n80
+n84 -> n86
+n86 -> n43
+n87 -> n86
+n91 -> n78
+n82 -> n79
+n83 -> n84
 }

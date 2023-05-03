@@ -154,40 +154,81 @@ class bool_circ_classmethod_mx(object):
   def adder(cls, n : int):
     def bis(n):
       if n == 0:
-        g, _ = bool_circ_classmethod_mx.from_str("((a0)&(b0))|(((a0)^(b0))&(c))", "((a0)^(b0))^(c)")
+        g, _ = bool_circ_classmethod_mx.from_str("((a)&(b))|(((a)^(b))&(c))", "((a)^(b))^(c)")
         for o in g.outputs_list:
-          if o.label == "o0": o.label = "c'"
-          elif o.label == "o1": o.label = "r0" 
+          o.label = ""
+        for i in g.inputs_list:
+          if i.label != "c":
+            i.label = "" 
         return g
       else:
-        g1 = bool_circ_classmethod_mx.adder(n-1)
-        g2 = g1.copy()
+        # OLD CODE
+        # g1 = bool_circ_classmethod_mx.adder(n-1)
+        # g2 = g1.copy()
 
-        for i in g2.inputs_list:
-          if i.label[0] == 'a': i.label = "A" + i.label[1:]
-          elif i.label[0] == 'b': i.label = "B" + i.label[1:]
-          elif i.label[0] == 'c': i.label = "C"
+        # for i in g2.inputs_list:
+        #   if i.label[0] == 'a': i.label = "A" + i.label[1:]
+        #   elif i.label[0] == 'b': i.label = "B" + i.label[1:]
+        #   elif i.label[0] == 'c': i.label = "C"
 
-        for i in g2.outputs_list:
-          if i.label[0] == 'r': i.label = "R" + i.label[1:]
-          elif i.label == "c'": i.label = "C'"
+        # for i in g2.outputs_list:
+        #   if i.label[0] == 'r': i.label = "R" + i.label[1:]
+        #   elif i.label == "c'": i.label = "C'"
 
-        g = od.open_digraph.parallel(g1,g2)
+        # g = od.open_digraph.parallel(g1,g2)
 
-        # carry
-        n_C_prime = g.node_by_label(r"C'")[0]
-        n_c = g.node_by_label(r"^c$")[0]
-        g.add_edge((n_C_prime.parents_ids[0], n_c.children_ids[0]))
-        g.remove_node_by_id([n_C_prime.id,n_c.id])
+        # g.display("dot_files/bool_circ/tmp1.dot", True)
+
+        # # carry
+        # n_C_prime = g.node_by_label(r"C'")[0]
+        # n_c = g.node_by_label(r"^c$")[0]
+        # g.add_edge((n_C_prime.parents_ids[0], n_c.children_ids[0]))
+        # g.remove_node_by_id([n_C_prime.id,n_c.id])
+
+        # g.display("dot_files/bool_circ/tmp2.dot", True)
         
-        # rename a_i with a_{n+i} and A_i with a_i
-        for i in g.node_by_label(r"[abr]+"):
-          i.label = i.label[0] + str(int(i.label[1:])+n)
-        for i in g.node_by_label(r"[ABR]+"):
-          i.label = i.label.lower()
-        g.node_by_label(r"C")[0].label = "c"
+        # # rename a_i with a_{n+i} and A_i with a_i
+        # for i in g.node_by_label(r"[abr]+"):
+        #   i.label = i.label[0] + str(int(i.label[1:])+n)
+        # for i in g.node_by_label(r"[ABR]+"):
+        #   i.label = i.label.lower()
+        # g.node_by_label(r"C")[0].label = "c"
 
-        return g
+
+
+
+
+
+
+
+        # Logique du code :
+        # g1 représente la partie du haut (donc avec le adder des bits les plus faible)
+        # g2 représente la partie du bas (donc avec le adder des bits les plus forts)
+        b = bis(n-1)
+
+        g1 = od.open_digraph.parallel(od.open_digraph.identity(2**n), b)
+        g2 = od.open_digraph.parallel(b, od.open_digraph.identity(2**(n-1)))
+
+        # EXPLICATION (on veut a+b) :
+        #
+        # Les inputs de g1 resemble à ça :
+        # [2^n de identity, 2^n de adder(n-1), 1 de carry]
+        # donc à
+        # [2^n de identity, 2^(n-1) de bits de a, 2^(n-1) de bits de b, 1 de carry]
+        # En réalité dans la récusion, ça doit donner
+        # [2^n de bit forts, 2^n de bits faibles, 1 de carry]
+        #
+        # Or dans la finalité, on va donner les inputs comme ceci :
+        # [2^(n-1) de bit fort de a, 2^(n-1) de bit faible de a,2 ^(n-1) de bit fort de b, 2^(n-1) de bit faible de b, 1 de carry]
+        # car on va donner a et b, dans cette ordre pour faire a+b
+        #
+        # et donc on échange bien pour avoir les bits faibles et forts ensemble
+        for i in range(2**(n-1),2**n):
+          tmp = g1.inputs_ids[i]
+          g1.inputs_ids[i] = g1.inputs_ids[i+2**(n-1)]
+          g1.inputs_ids[i+2**(n-1)] = tmp
+
+        return od.open_digraph.compose(g1, g2)
 
     cls = bis(n)
 
@@ -208,7 +249,7 @@ class bool_circ_classmethod_mx(object):
   @classmethod
   def carry_lookahead(cls, n : int):
     def bis(n):
-      if n == 1:
+      if n == 0:
         def p(i): return f"(a{i})^(b{i})"
         def g(i): return f"(a{i})&(b{i})"
         def c(i): return "c" if i == 0 else f"({g(i-1)})^(({p(i-1)})&({c(i-1)}))"
@@ -219,7 +260,7 @@ class bool_circ_classmethod_mx(object):
           else: o.label = "r" + o.label[1] 
         return g
       else:
-        g1 = bool_circ_classmethod_mx.carry_lookahead(1)
+        g1 = bool_circ_classmethod_mx.carry_lookahead(0)
         g2 = bool_circ_classmethod_mx.carry_lookahead(n-1)
 
         for i in g2.inputs_list:

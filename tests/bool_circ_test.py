@@ -239,31 +239,31 @@ class Bool_CircTest(unittest.TestCase):
 
     def test_evaluate(self):
         b0, _ = bc.bool_circ.from_str("(!(x))||(!(x))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_not", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_not.dot", True)
         self.assertEqual(b0.evaluate(0), "1")
         self.assertEqual(b0.evaluate(1), "0")
 
         b0, _  = bc.bool_circ.from_str("(x)","(x)")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_copy", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_copy.dot", True)
         self.assertEqual(b0.evaluate(0), "00")
         self.assertEqual(b0.evaluate(1), "11")
 
         b0, _  = bc.bool_circ.from_str("((x1)&&(x2))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_and", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_and.dot", True)
         self.assertEqual(b0.evaluate("00"), "0")
         self.assertEqual(b0.evaluate("01"), "0")
         self.assertEqual(b0.evaluate("10"), "0")
         self.assertEqual(b0.evaluate("11"), "1")
 
         b0, _  = bc.bool_circ.from_str("((x1)||(x2))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_or", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_or.dot", True)
         self.assertEqual(b0.evaluate("00"), "0")
         self.assertEqual(b0.evaluate("01"), "1")
         self.assertEqual(b0.evaluate("10"), "1")
         self.assertEqual(b0.evaluate("11"), "1")
 
         b0, _  = bc.bool_circ.from_str("((x1)^(x2))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_xor", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate_xor.dot", True)
         self.assertEqual(b0.evaluate("00"), "0")
         self.assertEqual(b0.evaluate("01"), "1")
         self.assertEqual(b0.evaluate("10"), "1")
@@ -275,7 +275,13 @@ class Bool_CircTest(unittest.TestCase):
 
 
     def test_evaluate_adder(self):
-        pass
+        ad = bc.bool_circ.half_adder(2)
+        self.assertEqual(ad.evaluate("01000110"), "01010") # 0100 + 0110 = 1010 with carry 0
+        self.assertEqual(ad.evaluate("11000110"), "10010") # 1100 + 0110 = 0010 with carry 1
+
+        ad = bc.bool_circ.half_adder(5)
+        self.assertEqual(ad.evaluate("0100101100101110101001011010101001011010100111010000010110101101"), "010100101110010111010101101010111")
+        # je te laisse vérifier sur internet ou manuellement
 
 
 if __name__ == '__main__': # the following code is called only when
