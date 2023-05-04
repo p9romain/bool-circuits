@@ -276,6 +276,9 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
 
   #pour les sets
   def __hash__(self) -> hash :
+    """
+    Setup the hash coding of a open_digraph
+    """
     return hash(self.desc*sys.getsizeof(self))
 
 
@@ -353,11 +356,38 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
     # on renvoie un dictionnaire comme ça c'est plus simple pour retrouver 
     # le noeud d'id i, vu que c'est une hash table
 
-  def node_by_label(self, r):
+
+
+  def node_by_label(self, r : str) -> List[nd.node] :
+    """
+    ''Getter'' for all nodes with a label corresponding to the regex [r]
+    """
+    if not isinstance(r, str):
+      raise TypeError("Given regex must be a string")
+
     return [ n for n in self.nodes_list if re.search(r, n.label) ]
 
-  def node_by_label_list(self, l, r):
+
+
+  def node_by_label_list(self, l : List[int], r : str) -> List[nd.node] :
+    """
+    ''Getter'' for all nodes with ids in [l] with a label corresponding to the regex [r]
+    """
+    if not isinstance(l, list):
+      raise TypeError("Given list must be a list")
+    types = set(type(k) for k in l)
+    if len(types) >= 1 and list(types)[0] != int :
+      raise TypeError("Elements in the given list must all be integers")
+    for id in l :
+      if not id in self.nodes_ids:
+        raise Exception("Given list must only have ids in the graph")
+
+    if not isinstance(r, str):
+      raise TypeError("Given regex must be a string")
+
     return [ n for n in self.nodes_by_ids(l).values() if re.search(r, n.label) ]
+
+
 
   def is_well_formed(self) -> bool :
     """
@@ -413,6 +443,9 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
 
 
   def assert_is_cycle(self) -> bool :
+    """
+    Return if a graph is cyclic else it throws an exception
+    """
     if self.is_cyclic(): return True
     else: raise Exception("Graph is not well formed.")
 

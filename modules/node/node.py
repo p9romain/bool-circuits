@@ -176,6 +176,9 @@ class node(nd_mx.node_add_remove_mx):
 
   #pour les sets
   def __hash__(self) -> hash :
+    """
+    Setup the hash coding of a node
+    """
     return hash(self.label*sys.getsizeof(self))
 
 

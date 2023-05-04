@@ -283,6 +283,19 @@ class Bool_CircTest(unittest.TestCase):
         self.assertEqual(ad.evaluate("0100101100101110101001011010101001011010100111010000010110101101"), "010100101110010111010101101010111")
         # je te laisse vérifier sur internet ou manuellement
 
+        self.assertEqual(ad.evaluateHalfAdder(1, 2), 3)
+        self.assertEqual(ad.evaluateHalfAdder(1, 0), 1)
+        self.assertEqual(ad.evaluateHalfAdder(0, 1), 1)
+        self.assertEqual(ad.evaluateHalfAdder(15, 37), 52)
+        self.assertEqual(ad.evaluateHalfAdder(2846423656, 23243), 2846446899)
+
+        ad = bc.bool_circ.adder(5)
+        self.assertEqual(ad.evaluateAdder(1, 2), 3)
+        self.assertEqual(ad.evaluateAdder(1, 0), 1)
+        self.assertEqual(ad.evaluateAdder(0, 1), 1)
+        self.assertEqual(ad.evaluateAdder(15, 37), 52)
+        self.assertEqual(ad.evaluateAdder(2846423656, 23243), 2846446899)
+
 
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

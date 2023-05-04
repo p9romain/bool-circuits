@@ -160,15 +160,18 @@ class open_digraph_classmethod_mx:
     """
     if not isinstance(n, int):
       raise TypeError("Given argument must be an int")
+    if n < 0 :
+      raise Exception("Given argument must be a positive or zero interger")
 
     g = cls.empty()
     
-    for k in range(2*n):
-      g.add_node()
-    for k in range(n):
-      g.add_edge((k,k+n))
-        
-    g.inputs_ids = list(range(n))
-    g.outputs_ids = list(range(n,2*n))
+    if n != 0 :
+      for k in range(2*n):
+        g.add_node()
+      for k in range(n):
+        g.add_edge((k,k+n))
+          
+      g.inputs_ids = list(range(n))
+      g.outputs_ids = list(range(n,2*n))
 
     return g

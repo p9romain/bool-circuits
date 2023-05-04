@@ -1,5 +1,13 @@
 class bool_circ_transform_mx:
-  def transform_copy(self, id : int):
+  def transform_copy(self, id : int) -> None :
+    """
+    Applies a certain transformation to a copy node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
     n = self.node_by_id(id)
     # invariant : n est un noeud copie
     if n.indegree() == 1 :
@@ -14,16 +22,23 @@ class bool_circ_transform_mx:
         self.remove_node_by_id(n.parents_ids[0])
         self.remove_node_by_id(id)
       else:
-        raise Exception("")
+        raise Exception("Given node isn't the child of a '0' or '1' node, which mustn't have any parents")
     else:
-      raise Exception("")
+      raise Exception("Given node must have only one parent")
     
 
     
-  def transform_not(self, id : int):
+  def transform_not(self, id : int) -> None :
+    """
+    Applies a certain transformation to a not node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
     n = self.node_by_id(id)
-
-    if  n.indegree() == 1 :
+    if n.indegree() == 1 :
       n_parent = self.node_by_id(n.parents_ids[0])
       if n_parent.indegree() == 0 and (n_parent.label == "0" or n_parent.label == "1"):
         const = n_parent.label
@@ -31,15 +46,22 @@ class bool_circ_transform_mx:
         self.remove_node_by_id(n.parents_ids[0])
         n.label = "0" if const == "1" else "1"
       else:
-        raise Exception("")
+        raise Exception("Given node isn't the child of a '0' or '1' node, which mustn't have any parents")
     else:
-      raise Exception("")
+      raise Exception("Given node must have only one parent")
     
 
 
-  def transform_and(self, id : int):
-    n = self.node_by_id(id)
+  def transform_and(self, id : int) -> None :
+    """
+    Applies a certain transformation to a and node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
 
+    n = self.node_by_id(id)
     l = self.node_by_label_list(n.parents_ids, r"^[01]{1}$")
     if len(l) >= 1:
       n_parent_constant = None
@@ -47,7 +69,8 @@ class bool_circ_transform_mx:
         if i.indegree() == 0 :
           n_parent_constant = i
           break
-      if n_parent_constant is None: raise Exception("")
+      if n_parent_constant is None: 
+        raise Exception("Given node isn't the child of at least one '0' or '1' node, which mustn't have any parents")
 
       const = n_parent_constant.label
       if const == "0":
@@ -64,9 +87,16 @@ class bool_circ_transform_mx:
     
   
 
-  def transform_or(self, id : int):
-    n = self.node_by_id(id)
+  def transform_or(self, id : int) -> None :
+    """
+    Applies a certain transformation to a or node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
 
+    n = self.node_by_id(id)
     l = self.node_by_label_list(n.parents_ids, r"^[01]{1}$")
     if len(l) >= 1:
       n_parent_constant = None
@@ -74,7 +104,8 @@ class bool_circ_transform_mx:
         if i.indegree() == 0 :
           n_parent_constant = i
           break
-      if n_parent_constant is None: raise Exception("")
+      if n_parent_constant is None:
+        raise Exception("Given node isn't the child of at least one '0' or '1' node, which mustn't have any parents")
 
       const = n_parent_constant.label
       if const == "1":
@@ -91,9 +122,16 @@ class bool_circ_transform_mx:
     
 
 
-  def transform_xor(self, id : int):
-    n = self.node_by_id(id)
+  def transform_xor(self, id : int) -> None :
+    """
+    Applies a certain transformation to a xor node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
 
+    n = self.node_by_id(id)
     l = self.node_by_label_list(n.parents_ids, r"^[01]{1}$")
     if len(l) >= 1:
       n_parent_constant = None
@@ -101,7 +139,8 @@ class bool_circ_transform_mx:
         if i.indegree() == 0 :
           n_parent_constant = i
           break
-      if n_parent_constant is None: raise Exception("")
+      if n_parent_constant is None:
+        raise Exception("Given node isn't the child of at least one '0' or '1' node, which mustn't have any parents")
 
       const = n_parent_constant.label
       if const == "1":
@@ -113,24 +152,38 @@ class bool_circ_transform_mx:
     
 
 
-  def transform_neutral(self, id : int):
-    n = self.node_by_id(id)
+  def transform_neutral(self, id : int) -> None :
+    """
+    Applies a certain transformation to a a single binary operator node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
 
+    n = self.node_by_id(id)
     if n.indegree() == 0 :
       if n.label in ['|', '||'] or n.label == '^' :
         n.label = '0'
       elif n.label in ['&', '&&'] :
         n.label = '1'
       else:
-        raise Exception("")
+        raise Exception("Given node isn't a binary operator")
     else:
-      raise Exception("")
+      raise Exception("Given node mustn't have any parent")
     
 
 
-  def transform(self, id : int):
-    label = self.node_by_id(id).label
+  def transform(self, id : int) -> None :
+    """
+    Applies a certain transformation to a node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
 
+    label = self.node_by_id(id).label
     if label == "":
       self.transform_copy(id)
     elif label in ["~","!"]:

@@ -169,7 +169,6 @@ class open_digraph_add_remove_mx:
 
         self.node_by_id(src).add_child_id(tgt)
         self.node_by_id(tgt).add_parent_id(src)
-    
 
     if isinstance(args, list) :
         types = set(type(k) for k in args)
@@ -284,8 +283,19 @@ class open_digraph_add_remove_mx:
 
   def merge_nodes(self, ids : List[int]) -> None :
     """
+    Merges all the nodes in [ids]
     """
-    if len(ids) < 2: raise Exception("At least two arguments must be given")
+    if not isinstance(ids, list):
+      raise TypeError("Given list must be a list")
+    types = set(type(k) for k in ids)
+    if len(types) >= 1 and list(types)[0] != int :
+      raise TypeError("Elements in the given list must all be integers")
+    for id in ids :
+      if not id in self.nodes_ids:
+        raise Exception("Given list must only have ids in the graph")
+
+    if len(ids) < 2 : 
+        raise Exception("At least two arguments must be given")
 
     def f(id1, id2):
       if id1 in self.inputs_ids or id1 in self.outputs_ids or id2 in self.inputs_ids or id2 in self.outputs_ids :

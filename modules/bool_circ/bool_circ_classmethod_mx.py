@@ -12,17 +12,26 @@ class bool_circ_classmethod_mx(object):
   @classmethod
   def empty(cls) :
     """
-    Creates the empty graph
+    Creates the empty bool circuit
     """
     return bc.bool_circ([],[],{}, "")
 
 
 
   @classmethod
-  def from_str(cls, *args) :
+  def from_str(cls, *args : str) :
     """
+    Creates a bool circuit from an string expression
+
+    Example : x1 and x2 ; created from "((x1)&&(x2))" or "((x1)&(x2))"
+
+    Example : x1 and x2, x1 or x3 (two outputs) ; created from "((x1)&&(x2))", "((x1)||(x3))"
     """
-    if len(args) == 0: raise Exception("An argument has to be given")
+    if len(args) == 0: 
+      raise Exception("An argument has to be given")
+    for arg in args:
+      if not isinstance(arg, str):
+        raise TypeError("All args must be str")
     
     def f(s, i):
       g = cls.empty()
@@ -76,62 +85,76 @@ class bool_circ_classmethod_mx(object):
   @classmethod
   def random(cls, n: int, bound : int, input : int, output : int) :
     """
+    Creates a random bool circuit of [n] nodes with [input] inputs and [output] outputs.
+    [bound] represent the maximum of edges between two nodes (not the degree !!)
     """
-    # tester si bound < 2
+    if not isinstance(n, int):
+      raise TypeError("Given size must be an integer")
+    if n < 0 :
+      raise Exception("Given size must be a positive or zero interger")
+    if not isinstance(bound, int):
+      raise TypeError("Bound must be an integer")
+    if bound <= 0 :
+      raise Exception("Bound must be a positive integer")
+    if not isinstance(input, int):
+      raise TypeError("Number of inputs must be an integer")
+    if input < 0 :
+      raise Exception("Number of inputs must be a positive or zero interger")
+    if not isinstance(output, int):
+      raise TypeError("Number of outputs must be an integer")
+    if output < 0 :
+      raise Exception("Number of outputs must be a positive or zero interger")
 
     M = am.random_matrix(n, bound, null_diag = True, triangular = True)
     cls = am.graph_from_adjacency_matrix(M)
 
     # Inputs
-
-    no_parents = [ n.id for n in cls.nodes_list if n.indegree() == 0 ]
+    no_parents = [ n.id for n in cls.nodes_list if n.indegree() == 0 ] # all nodes without parents
     for id in no_parents :
       cls.add_input_node(children = {id:1})
 
     l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
-    if input > len(no_parents) :
+    if input > len(no_parents) : # there isn't enough orphans lol
       for _ in range(input-len(no_parents)):
         cls.add_input_node(children = {rd.sample(l, 1)[0].id : 1})
 
-    def fi(id1, id2):
-      idc1 = cls.node_by_id(id1).children_ids[0]
-      idc2 = cls.node_by_id(id2).children_ids[0]
+    while ( len(cls.inputs_ids) > input) : # there's too much inputs
+      def fi(id1, id2):
+        idc1 = cls.node_by_id(id1).children_ids[0]
+        idc2 = cls.node_by_id(id2).children_ids[0]
 
-      id_cp = cls.add_node(children = {idc1:1, idc2:1}, parents = {id1: 1})
-      cls.node_by_id(id1).children = {id_cp: 1}
-      cls.remove_node_by_id(id2)
+        id_cp = cls.add_node(children = {idc1:1, idc2:1}, parents = {id1: 1})
+        cls.node_by_id(id1).children = {id_cp: 1}
+        cls.remove_node_by_id(id2)
 
-    while ( len(cls.inputs_ids) > input) :
       l = rd.sample(cls.inputs_ids, 2)
       fi(l[0], l[1])
 
     # Outputs
-
-    no_children = [ n.id for n in cls.nodes_list if n.outdegree() == 0 ]
+    no_children = [ n.id for n in cls.nodes_list if n.outdegree() == 0 ] # all nodes without children
     for id in no_children :
       cls.add_output_node(parents = {id:1})
     
     l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
-    if output > len(no_children) :
+    if output > len(no_children) : # there isn't enough orphans lol
       for _ in range(output-len(no_children)):
         cls.add_output_node(parents = {rd.sample(l, 1)[0].id : 1})
 
-    def fo(id1, id2):
-      idc1 = cls.node_by_id(id1).parents_ids[0]
-      idc2 = cls.node_by_id(id2).parents_ids[0]
+    while ( len(cls.outputs_ids) > output) : # there's too much outputs
+      def fo(id1, id2):
+        idc1 = cls.node_by_id(id1).parents_ids[0]
+        idc2 = cls.node_by_id(id2).parents_ids[0]
 
-      id_bin = cls.add_node(parents = {idc1:1, idc2:1}, children = {id1: 1})
-      cls.node_by_id(id1).parents = {id_bin: 1}
-      cls.remove_node_by_id(id2)
+        id_bin = cls.add_node(parents = {idc1:1, idc2:1}, children = {id1: 1})
+        cls.node_by_id(id1).parents = {id_bin: 1}
+        cls.remove_node_by_id(id2)
 
-    while ( len(cls.outputs_ids) > output) :
       l = rd.sample(cls.outputs_ids, 2)
       fo(l[0], l[1])
 
     # Labels
-
     l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
-    for n in l :
+    for n in l : # creates operators
       in_deg = n.indegree()
       out_deg = n.outdegree()
 
@@ -152,6 +175,14 @@ class bool_circ_classmethod_mx(object):
 
   @classmethod
   def adder(cls, n : int):
+    """
+    Creates an Adder to add two registers of size 2^n (number below 2^(2^n))
+    """
+    if not isinstance(n, int):
+      raise TypeError("Given size must be an integer")
+    if n < 0 :
+      raise Exception("Given size must be a positive or zero interger")
+
     def bis(n):
       if n == 0:
         g, _ = bool_circ_classmethod_mx.from_str("((a)&(b))|(((a)^(b))&(c))", "((a)^(b))^(c)")
@@ -216,10 +247,11 @@ class bool_circ_classmethod_mx(object):
         # donc à
         # [2^n de identity, 2^(n-1) de bits de a, 2^(n-1) de bits de b, 1 de carry]
         # En réalité dans la récusion, ça doit donner
-        # [2^n de bit forts, 2^n de bits faibles, 1 de carry]
+        # [2^n de bits forts, 2^n de bits faibles, 1 de carry]
+        #=[2^(n-1) de bits forts, 2^(n-1) de bits forts, 2^(n-1) de bits faibles, 2^(n-1) de bits faibles, 1 de carry]
         #
         # Or dans la finalité, on va donner les inputs comme ceci :
-        # [2^(n-1) de bit fort de a, 2^(n-1) de bit faible de a,2 ^(n-1) de bit fort de b, 2^(n-1) de bit faible de b, 1 de carry]
+        # [2^(n-1) de bits forts de a, 2^(n-1) de bits faibles de a,2 ^(n-1) de bits forts de b, 2^(n-1) de bits faibles de b, 1 de carry]
         # car on va donner a et b, dans cette ordre pour faire a+b
         #
         # et donc on échange bien pour avoir les bits faibles et forts ensemble
@@ -238,6 +270,10 @@ class bool_circ_classmethod_mx(object):
 
   @classmethod
   def half_adder(cls, n : int):
+    """
+    Creates an Adder to add two registers of size 2^n (number below 2^(2^n)) (without any carry at the start :
+    represents the real addition to us)
+    """
     cls = bool_circ_classmethod_mx.adder(n)
     node_c = cls.node_by_label(r"^c$")[0]
     cls.inputs_ids.remove(node_c.id)
@@ -248,6 +284,17 @@ class bool_circ_classmethod_mx(object):
 
   @classmethod
   def carry_lookahead(cls, n : int):
+    """
+    Creates an Adder to add two registers of size 4n+4 (number below 2^(4n+1))
+    It has a better carry management
+
+    CANT BE EVALUATED
+    """
+    if not isinstance(n, int):
+      raise TypeError("Given size must be an integer")
+    if n < 0 :
+      raise Exception("Given size must be a positive or zero interger")
+
     def bis(n):
       if n == 0:
         def p(i): return f"(a{i})^(b{i})"
@@ -297,9 +344,17 @@ class bool_circ_classmethod_mx(object):
   @classmethod
   def from_int(cls, m : int, n : int = 8):
     """
+    Creates an "identity" bool circuit
     """
-    if n == 0 or 2**n < m:
-      raise Exception("Voilà, c'est tout.")
+    if not isinstance(n, int):
+      raise TypeError("Given number of bits must be an integer")
+    if n <= 0 :
+      raise Exception("Given number of bits must be a positive interger")
+
+    if not isinstance(m, int):
+      raise TypeError("Given decimal number must be an integer")
+    if m < 0 :
+      raise Exception("Given decimal number must be a positive or zero interger")
 
     s = bin(m)[2:]
     s = (n-len(s))*"0" + s

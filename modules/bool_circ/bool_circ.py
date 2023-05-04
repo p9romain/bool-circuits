@@ -116,10 +116,24 @@ class bool_circ(od.open_digraph,
 
 
   
-  def evaluate(self, n):
+  def evaluate(self, n : int or str) -> str :
     """
+    Evaluates the bool circuit with a certain int or str (binary).
+    
+    ----
+
+    Example : ( x1 and x2 ) or x1
+
+    If we give "11", it will evaluate the graph and returns ( 1 and 1 ) or 1 which 1, so "1"
+
+    Example : ( x1 and x2 ) xor x2, ( x1 and x2 ) xor (not x1)
+
+    If we give "01", it returns "1" and "1", so "11"
     """
-    b = self.copy()
+    if not isinstance(n, str) and not isinstance(n, int):
+      raise TypeError("Given argument must be an int or a binary int (str)")
+
+    b = self.copy() # copy to not modify self
     if isinstance(n, str): n = int(n, 2) # we can just give binary string
     # exemple : for adder with 15 + 3 => "1111" + "0011" => "11110011" instead of giving 243
 
@@ -130,8 +144,6 @@ class bool_circ(od.open_digraph,
       for id in n.children_ids:
         if id in b.outputs_ids : return False
       return True
-    
-    i = 0
 
     # for all co_leaves not attached to (at least) an output
     l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ]
@@ -140,7 +152,7 @@ class bool_circ(od.open_digraph,
       
       # always an 0 or 1, but sometimes binary operator
       # eg : true && true && true => && with transform
-      if n.label in ["0", "1" ] : b.transform(n.children_ids[0])
+      if n.label in ["0", "1"] : b.transform(n.children_ids[0])
       else : b.transform_neutral(n.id) 
       l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ] # update what to do
 
@@ -155,3 +167,49 @@ class bool_circ(od.open_digraph,
       s += b.node_by_id(o.parents_ids[0]).label
 
     return s
+
+
+
+  def evaluateHalfAdder(self, n : int, m : int) -> int :
+    """
+    Adds [n] to [m]
+
+    ONLY WORKS FOR HALF_ADDER !
+    """
+    if not isinstance(n, int) and not isinstance(m, int):
+      raise TypeError("Given arguments must be integers")
+    if n < 0 or m < 0 :
+      raise Exception("Given arguments must be positive or zero intergers")
+
+    # dec to bin
+    n = bin(n)[2:]
+    n = (len(self.inputs_ids)//2-len(n))*"0" + n
+
+    # dec to bin
+    m = bin(m)[2:]
+    m = (len(self.inputs_ids)//2-len(m))*"0" + m
+
+    return int(self.evaluate(n + m), 2) # bin to dec
+
+
+
+  def evaluateAdder(self, n : int, m : int) -> int :
+    """
+    Adds [n] to [m]
+
+    ONLY WORKS FOR ADDER !
+    """
+    if not isinstance(n, int) and not isinstance(m, int):
+      raise TypeError("Given arguments must be integers")
+    if n < 0 or m < 0 :
+      raise Exception("Given arguments must be positive or zero intergers")
+
+    # dec to bin
+    n = bin(n)[2:]
+    n = (len(self.inputs_ids)//2-len(n))*"0" + n
+
+    # dec to bin
+    m = bin(m)[2:]
+    m = (len(self.inputs_ids)//2-len(m))*"0" + m
+
+    return int(self.evaluate(n + m + "0"), 2) # bin to dec
