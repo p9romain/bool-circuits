@@ -173,6 +173,123 @@ class bool_circ_transform_mx:
       raise Exception("Given node mustn't have any parent")
     
 
+  def transform_assoc_xor(self, id : int) -> None : # focus on children xor node compared to parent copy node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    n = self.node_by_id(id)
+    l = self.node_by_label_list(n.parents_ids, r"^\^$")
+    if len(l) == 0: return self
+    else:
+      n_parent = l[0]
+      for i in n_parent.parents_ids:
+        self.add_edge((i,n.id))
+        
+      self.remove_node_by_id(n_parent.id)
+    return self
+
+
+  def transform_assoc_copy(self, id : int) -> None : # focus on parent copy node compared to children copy node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    n = self.node_by_id(id)
+    l = self.node_by_label_list(n.children_ids, r"^$")
+    if len(l) == 0: return self
+    else:
+      n_children = l[0]
+      for i in n_children.children_ids:
+        self.add_edge((n.id,i))
+        
+      self.remove_node_by_id(n_children.id)
+    return self
+
+  def transform_invol_xor(self, id : int) -> None : # focus on xor node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    n = self.node_by_id(id)
+    l = self.node_by_label_list(n.children_ids, r"^$")
+    if len(l) == 0: return self
+    else:
+      n_parent = l[0]
+      m = n_parent.children[n.id]
+      if m%2 == 0:
+        self.remove_parallel_edges((n_parent.id,n.id))
+      else:
+        self.remove_parallel_edges((n_parent.id,n.id))
+        self.add_edge((n_parent.id,n.id))
+    
+    return self
+
+  def transform_delete(self, id : int) -> None : # focus on op node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    
+
+    return self
+
+  def transform_no_through_xor(self, id : int) -> None : # focus on xor node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    n = self.node_by_id(id)
+    l = self.node_by_label_list(n.parents_ids, r"^~$")
+    if len(l) == 0: return self
+    else:
+      n_parent = l[0]
+      self.add_edge((n_parent.parents_ids[0],n.id))
+      self.remove_edge((n_parent.parents_ids[0],n_parent.id))
+      self.remove_edge((n_parent.id,n.id))
+      self.add_edge((n.id,n_parent.id))
+      self.add_edge((n_parent.id,n.children_ids[0].id))
+
+    return self
+
+  def transform_no_through_copy(self, id : int) -> None : # focus on copy node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    n = self.node_by_id(id)
+    n_parent = self.node_by_id(n.parents_ids[0])
+    if n_parent.label != "~": return self
+    else:
+      self.add_edge((n_parent.parents_ids[0],n.id))
+      self.remove_node_by_id(n_parent.id)
+
+      for n_children_id in n.children_ids:
+        self.add_node("",{n.id:1},{n_children_id:1})
+        self.remove_edge((n.id,n_children_id))
+
+    return self
+
+  def transform_invol_no(self, id : int) -> None : # focus on parent copy node compared to children copy node
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+
+    n = self.node_by_id(id)
+    n_chidren = self.node_by_id(n.children_ids[0])
+    self.add_edge((n.id.parents_ids[0],n_chidren.children_ids[0]))
+    self.remove_node_by_id(n.id)
+    self.remove_node_by_id(n.childre.id)
+
+    return self
+
 
   def transform(self, id : int) -> None :
     """

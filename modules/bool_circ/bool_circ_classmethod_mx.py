@@ -384,6 +384,9 @@ class bool_circ_classmethod_mx(object):
     if not isinstance(n, int):
       raise TypeError("Given number must be a non-zero integer")
 
-    cls = bool_circ_classmethod_mx.from_str("")[0]
+    s1 = "(((x1)^(x3))^(x5))^(x7)"
+    s2 = "(((x2)^(x3))^(x6))^(x7)"
+    s3 = "(((x4)^(x5))^(x6))^(x7)"
+    cls = bool_circ_classmethod_mx.from_str(f"((({s1})&({s2}))&(~({s3})))^(x3)", f"((({s1})&(~({s2})))&({s3}))^(x5)", f"(((~({s1}))&({s2}))&({s3}))^(x6)", f"((({s1})&({s2}))&({s3}))^(x7)")[0] # c'est horrible après on pouvait donner un nombre aux noeuds copies et les retirer après
 
     return cls
