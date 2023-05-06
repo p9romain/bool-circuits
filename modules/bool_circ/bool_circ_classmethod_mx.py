@@ -363,3 +363,27 @@ class bool_circ_classmethod_mx(object):
       cls.inputs_ids.remove(i)
       cls.node_by_id(i).label = s[i]
     return cls
+
+  @classmethod
+  def enc(cls, n : int = 3):
+    """
+    Creates an encoder of 2**n - n - 1 bits using 2**n - 1 bits
+    """
+    if not isinstance(n, int):
+      raise TypeError("Given number must be a non-zero integer")
+
+    cls = bool_circ_classmethod_mx.from_str("((x1)^(x2))^(x4)", "((x1)^(x3))^(x4)", "(x1)", "((x2)^(x3))^(x4)", "(x2)", "(x3)", "(x4)")[0]
+
+    return cls
+
+  @classmethod
+  def dec(cls, n : int = 3):
+    """
+    Creates an encoder of 2**n - n - 1 bits using 2**n - 1 bits
+    """
+    if not isinstance(n, int):
+      raise TypeError("Given number must be a non-zero integer")
+
+    cls = bool_circ_classmethod_mx.from_str("")[0]
+
+    return cls

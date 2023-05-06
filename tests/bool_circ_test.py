@@ -297,5 +297,14 @@ class Bool_CircTest(unittest.TestCase):
         self.assertEqual(ad.evaluateAdder(2846423656, 23243), 2846446899)
 
 
+    def test_enc(self):
+        b = bc.bool_circ.enc()
+        b.display("dot_files/bool_circ/enc.dot")
+
+    def test_dec(self):
+        b = bc.bool_circ.dec()
+        b.display("dot_files/bool_circ/dec.dot")
+
+
 if __name__ == '__main__': # the following code is called only when
     unittest.main() # precisely this file is run

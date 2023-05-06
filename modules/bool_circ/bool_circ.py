@@ -88,6 +88,7 @@ class bool_circ(od.open_digraph,
     Saves and display the graph in a pdf
     The verbose adds the id in the file, not only the label of a node
     """
+    print("here")
     od.open_digraph.display(self, path, verbose)
 
 
