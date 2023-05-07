@@ -115,7 +115,7 @@ class bool_circ_classmethod_mx(object):
     for id in no_parents :
       cls.add_input_node(children = {id:1})
 
-    l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
+    l = cls.nodes_not_io_list
     if input > len(no_parents) : # there isn't enough orphans lol
       for _ in range(input-len(no_parents)):
         cls.add_input_node(children = {rd.sample(l, 1)[0].id : 1})
@@ -137,7 +137,7 @@ class bool_circ_classmethod_mx(object):
     for id in no_children :
       cls.add_output_node(parents = {id:1})
     
-    l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
+    l = cls.nodes_not_io_list
     if output > len(no_children) : # there isn't enough orphans lol
       for _ in range(output-len(no_children)):
         cls.add_output_node(parents = {rd.sample(l, 1)[0].id : 1})
@@ -155,7 +155,7 @@ class bool_circ_classmethod_mx(object):
       fo(l[0], l[1])
 
     # Labels
-    l = list(set(cls.nodes_list) - set(cls.outputs_list) - set(cls.inputs_list))
+    l = cls.nodes_not_io_list
     for n in l : # creates operators
       in_deg = n.indegree()
       out_deg = n.outdegree()
@@ -377,6 +377,8 @@ class bool_circ_classmethod_mx(object):
 
     return cls
 
+
+
   @classmethod
   def enc(cls, n : int = 3):
     """
@@ -385,11 +387,21 @@ class bool_circ_classmethod_mx(object):
     if not isinstance(n, int):
       raise TypeError("Given number must be a non-zero integer")
 
+    n = 3 # ONLY IMPLEMENTED WITH THIS INTEGER
+
     cls = bool_circ_classmethod_mx.from_str("((x1)^(x2))^(x4)", "((x1)^(x3))^(x4)", "(x1)", "((x2)^(x3))^(x4)", "(x2)", "(x3)", "(x4)")[0]
 
     cls.simplify()
+
+    # comme on implémente que pour n = 3 et qu'on veut tester l'évaluation
+    # encoder + decoder, on doit ranger correctement les inptus
+    # pour pouvoir évaluer correctement (avoir "0110" et pas "0101" par exemple)
+    cls.inputs_ids = [9, 18, 14, 11]
+    # il est clair qu'avec un code pour n, il faurait réfléchir autrement
     
     return cls
+
+
 
   @classmethod
   def dec(cls, n : int = 3):
@@ -399,11 +411,19 @@ class bool_circ_classmethod_mx(object):
     if not isinstance(n, int):
       raise TypeError("Given number must be a non-zero integer")
 
+    n = 3 # ONLY IMPLEMENTED WITH THIS INTEGER
+
     s1 = "(((x1)^(x3))^(x5))^(x7)"
     s2 = "(((x2)^(x3))^(x6))^(x7)"
     s3 = "(((x4)^(x5))^(x6))^(x7)"
     cls = bool_circ_classmethod_mx.from_str(f"((({s1})&({s2}))&(~({s3})))^(x3)", f"((({s1})&(~({s2})))&({s3}))^(x5)", f"(((~({s1}))&({s2}))&({s3}))^(x6)", f"((({s1})&({s2}))&({s3}))^(x7)")[0] # c'est horrible après on pouvait donner un nombre aux noeuds copies et les retirer après
 
     cls.simplify()
+
+    # comme on implémente que pour n = 3 et qu'on veut tester l'évaluation
+    # encoder + decoder, on doit ranger correctement les inputs
+    # pour qu'ils correspondent aux bon outputs de encoder
+    cls.inputs_ids = [88, 17, 96, 24, 64, 23, 15]
+    # il est clair qu'avec un code pour n, il faurait réfléchir autrement
     
     return cls

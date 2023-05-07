@@ -10,10 +10,12 @@ import modules.open_digraph.open_digraph as od
 import modules.adjacency_matrix as am
 import modules.bool_circ.bool_circ_classmethod_mx as bc_mx1
 import modules.bool_circ.bool_circ_transform_mx as bc_mx2
+import modules.bool_circ.bool_circ_simplify_mx as bc_mx3
 
 class bool_circ(od.open_digraph, 
                 bc_mx1.bool_circ_classmethod_mx,
-                bc_mx2.bool_circ_transform_mx):
+                bc_mx2.bool_circ_transform_mx,
+                bc_mx3.bool_circ_simplify_mx):
   def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
     '''
     inputs: int list; the ids of the input nodes
@@ -23,6 +25,8 @@ class bool_circ(od.open_digraph,
     '''
     od.open_digraph.__init__(self, inputs, outputs, nodes, desc)
     if not self.is_well_formed(): raise Exception("Given argument must be a correct bool circuit")
+
+
 
   def is_well_formed(self) -> bool :
     """
@@ -53,7 +57,7 @@ class bool_circ(od.open_digraph,
         return False
 
     # j'enlève les inputs et outputs
-    for n in list(set(self.nodes_list) - set(self.outputs_list) - set(self.inputs_list)):
+    for n in self.nodes_not_io_list:
       if not node_well_formed(n): return False
       
     return not self.is_cyclic()
@@ -212,19 +216,26 @@ class bool_circ(od.open_digraph,
 
     return int(self.evaluate(n + m + "0"), 2) # bin to dec
 
+
+
   def simplify(self) -> None:
+    """
+    Simplifies a bool_circ (example : !(!(x)) = (x))
+    """
     g1 = self.copy()
     n = 0
-    while (n < len(self.nodes_ids)) or (g1 != self):
+    while (n < len(self.nodes_not_io_ids)) or (g1 != self):
       g1 = self.copy()
-      self.simplify_node(self.nodes_ids[n])
+      self.simplify_node(self.nodes_not_io_ids[n])
       if g1 == self:
         n += 1
       else:
         n = 0
 
-  def isCopyNode(self, id : int) -> bool:
-    return self.node_by_id(id).label == "" and not id in self.inputs_ids and not id in self.outputs_ids
 
-  def getNodesCopyInList(self, t : List[int]) -> None:
-    return [ self.node_by_id(id) for id in t if self.isCopyNode(id)]
+
+  def isCopyNode(self, id : int) -> bool:
+    """
+    Check if a node of id [id] is a copy node or not
+    """
+    return self.node_by_id(id).label == "" and self.node_by_id(id).indegree() == 1 and id in self.nodes_not_io_ids

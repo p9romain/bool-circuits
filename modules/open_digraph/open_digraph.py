@@ -155,7 +155,35 @@ class open_digraph(od_mx1.open_digraph_add_remove_mx,
     Getter for the graph's nodes' id
     """
     return list(self.nodes.keys())
+  
 
+
+  @property
+  def nodes_not_io(self) -> Dict[int, nd.node]:
+    """
+    Getter for the graph's nodes' id who aren't inputs or ouputs (a dict {note id: node})
+    """
+    return { n.id : n for n in self.nodes_not_io_list }
+
+
+
+  @property
+  def nodes_not_io_list(self) -> List[nd.node]:
+    """
+    Getter for the graph's nodes who aren't inputs or ouputs
+    """
+    return self.nodes_by_ids(self.nodes_not_io_ids).values()
+
+
+
+  @property
+  def nodes_not_io_ids(self) -> List[int]:
+    """
+    Getter for the graph's nodes' id who aren't inputs or ouputs
+    """
+    return list(set(self.nodes_ids)-set(self.inputs_ids)-set(self.outputs_ids))
+
+  
 
 
   @property

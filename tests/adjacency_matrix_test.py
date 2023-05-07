@@ -12,6 +12,8 @@ class Adjacency_MAtrixTest(unittest.TestCase):
     def setUp(self):
         self.g0 = od.open_digraph.empty()
 
+
+
     def test_random_matrixes(self):
         try:
             _ = am.random_matrix(5, 5, symetric = True, oriented = True)
@@ -82,6 +84,8 @@ class Adjacency_MAtrixTest(unittest.TestCase):
             for j in range(M.shape[1]):
                 if M[i][j] != 0 : self.assertEqual(M[j][i], 0)
 
+
+
     def test_adjacency_matrix(self):
         self.g0 = od.open_digraph.empty()
         self.g0.add_input_node("i0")
@@ -97,6 +101,7 @@ class Adjacency_MAtrixTest(unittest.TestCase):
 
         M = self.g0.adjacency_matrix()
         self.assertEqual(M.tolist(), [[0,1,2],[1,0,1],[0,0,0]])
+
 
 
     def test_graph(self):
