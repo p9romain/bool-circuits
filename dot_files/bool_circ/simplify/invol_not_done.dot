@@ -1,5 +1,5 @@
 digraph G {
-n0 [label="i\n id: 0",shape="box"];
-n3 [label="o\n id: 3",shape="diamond"];
+n0 [label="i",shape="box"];
+n3 [label="o",shape="diamond"];
 n0 -> n3
 }

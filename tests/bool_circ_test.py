@@ -236,17 +236,17 @@ class Bool_CircTest(unittest.TestCase):
 
     def test_init(self):
         self.b0.save_as_pdf_file()
-        self.b0.save_as_pdf_file("dot_files/bool_circ/bool_circ_verbose.dot", verbose=True)
+        self.b0.save_as_pdf_file("dot_files/bool_circ/bool_circ_verbose.dot",)
         
 
 
     def test_from_str(self):
         b0, l0 = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))")
-        b0.save_as_pdf_file("dot_files/bool_circ/from_one_str.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/from_one_str.dot")
         self.assertEqual(l0, ['x0', 'x1', 'x2'])
 
         b1, l1 = bc.bool_circ.from_str("((x0)&((x1)&(x2)))|((x1)&(~(x2)))", "((x0)&(~(x1)))|(x2)")
-        b1.save_as_pdf_file("dot_files/bool_circ/from_two_str.dot", True)
+        b1.save_as_pdf_file("dot_files/bool_circ/from_two_str.dot")
         self.assertEqual(l1, ['x0', 'x1', 'x2'])
 
 
@@ -259,55 +259,55 @@ class Bool_CircTest(unittest.TestCase):
 
     def test_adder(self):
         b0 = bc.bool_circ.adder(2)
-        b0.save_as_pdf_file("dot_files/bool_circ/adder.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/adder.dot")
 
 
 
     def test_half_adder(self):
         b0 = bc.bool_circ.half_adder(2)
-        b0.save_as_pdf_file("dot_files/bool_circ/half_adder.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/half_adder.dot")
 
 
 
     def test_carry_lookahead(self):
         b0 = bc.bool_circ.carry_lookahead(2)
-        b0.save_as_pdf_file("dot_files/bool_circ/carry_lookahead.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/carry_lookahead.dot")
 
 
 
     def test_from_int(self):
         b0 = bc.bool_circ.from_int(15, 9)
-        b0.save_as_pdf_file("dot_files/bool_circ/from_int.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/from_int.dot")
 
 
 
     def test_evaluate(self):
         b0, _ = bc.bool_circ.from_str("(!(x))||(!(x))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/not.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/not.dot")
         self.assertEqual(b0.evaluate(0), "1")
         self.assertEqual(b0.evaluate(1), "0")
 
         b0, _  = bc.bool_circ.from_str("(x)","(x)")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/copy.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/copy.dot")
         self.assertEqual(b0.evaluate(0), "00")
         self.assertEqual(b0.evaluate(1), "11")
 
         b0, _  = bc.bool_circ.from_str("((x1)&&(x2))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/and.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/and.dot")
         self.assertEqual(b0.evaluate("00"), "0")
         self.assertEqual(b0.evaluate("01"), "0")
         self.assertEqual(b0.evaluate("10"), "0")
         self.assertEqual(b0.evaluate("11"), "1")
 
         b0, _  = bc.bool_circ.from_str("((x1)||(x2))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/or.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/or.dot")
         self.assertEqual(b0.evaluate("00"), "0")
         self.assertEqual(b0.evaluate("01"), "1")
         self.assertEqual(b0.evaluate("10"), "1")
         self.assertEqual(b0.evaluate("11"), "1")
 
         b0, _  = bc.bool_circ.from_str("((x1)^(x2))")
-        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/xor.dot", True)
+        b0.save_as_pdf_file("dot_files/bool_circ/evaluate/xor.dot")
         self.assertEqual(b0.evaluate("00"), "0")
         self.assertEqual(b0.evaluate("01"), "1")
         self.assertEqual(b0.evaluate("10"), "1")
@@ -318,39 +318,39 @@ class Bool_CircTest(unittest.TestCase):
 
 
 
-    # def test_evaluate_adder(self):
-    #     ad = bc.bool_circ.half_adder(2)
-    #     self.assertEqual(ad.evaluate("01000110"), "01010") # 0100 + 0110 = 1010 with carry 0
-    #     self.assertEqual(ad.evaluate("11000110"), "10010") # 1100 + 0110 = 0010 with carry 1
+    def test_evaluate_adder(self):
+        ad = bc.bool_circ.half_adder(2)
+        self.assertEqual(ad.evaluate("01000110"), "01010") # 0100 + 0110 = 1010 (with carry 0)
+        self.assertEqual(ad.evaluate("11000110"), "10010") # 1100 + 0110 = 10010 (with carry 1)
 
-    #     ad = bc.bool_circ.half_adder(5)
-    #     self.assertEqual(ad.evaluate("0100101100101110101001011010101001011010100111010000010110101101"), "010100101110010111010101101010111")
-    #     # je te laisse vérifier sur internet ou manuellement
+        ad = bc.bool_circ.half_adder(5)
+        self.assertEqual(ad.evaluate("0100101100101110101001011010101001011010100111010000010110101101"), "010100101110010111010101101010111")
+        # je te laisse vérifier sur internet ou manuellement
 
-    #     self.assertEqual(ad.evaluateHalfAdder(1, 2), 3)
-    #     self.assertEqual(ad.evaluateHalfAdder(1, 0), 1)
-    #     self.assertEqual(ad.evaluateHalfAdder(0, 1), 1)
-    #     self.assertEqual(ad.evaluateHalfAdder(15, 37), 52)
-    #     self.assertEqual(ad.evaluateHalfAdder(2846423656, 23243), 2846446899)
+        self.assertEqual(ad.evaluateHalfAdder(1, 2), 3)
+        self.assertEqual(ad.evaluateHalfAdder(1, 0), 1)
+        self.assertEqual(ad.evaluateHalfAdder(0, 1), 1)
+        self.assertEqual(ad.evaluateHalfAdder(15, 37), 52)
+        self.assertEqual(ad.evaluateHalfAdder(2846423656, 23243), 2846446899)
 
-    #     ad = bc.bool_circ.adder(5)
-    #     self.assertEqual(ad.evaluateAdder(1, 2), 3)
-    #     self.assertEqual(ad.evaluateAdder(1, 0), 1)
-    #     self.assertEqual(ad.evaluateAdder(0, 1), 1)
-    #     self.assertEqual(ad.evaluateAdder(15, 37), 52)
-    #     self.assertEqual(ad.evaluateAdder(2846423656, 23243), 2846446899)
+        ad = bc.bool_circ.adder(5)
+        self.assertEqual(ad.evaluateAdder(1, 2), 3)
+        self.assertEqual(ad.evaluateAdder(1, 0), 1)
+        self.assertEqual(ad.evaluateAdder(0, 1), 1)
+        self.assertEqual(ad.evaluateAdder(15, 37), 52)
+        self.assertEqual(ad.evaluateAdder(2846423656, 23243), 2846446899)
 
 
 
     def test_enc(self):
         b = bc.bool_circ.enc()
-        b.save_as_pdf_file("dot_files/bool_circ/hamming/encoder.dot", True)
+        b.save_as_pdf_file("dot_files/bool_circ/hamming/encoder.dot")
 
 
 
     def test_dec(self):
         b = bc.bool_circ.dec()
-        b.save_as_pdf_file("dot_files/bool_circ/hamming/decoder.dot", True)
+        b.save_as_pdf_file("dot_files/bool_circ/hamming/decoder.dot")
 
 
 
@@ -380,9 +380,8 @@ class Bool_CircTest(unittest.TestCase):
         id = bc.bool_circ(id.inputs_ids, id.outputs_ids, id.nodes_list) # pour convertir en bool circ.......
 
         b = od.open_digraph.compose(od.open_digraph.compose(b_enc, id), b_dec)
-        b.save_as_pdf_file("dot_files/bool_circ/hamming/encode_decode_with_two_errors.dot", True)
         b.simplify()
-        b.save_as_pdf_file("dot_files/bool_circ/hamming/encode_decode_with_two_errors_simp.dot", True)
+        b.save_as_pdf_file("dot_files/bool_circ/hamming/encode_decode_with_two_errors.dot")
 
         for n in range(16):
             self.assertNotEqual(int(b.evaluate(n), 2), n) # try
@@ -394,61 +393,61 @@ class Bool_CircTest(unittest.TestCase):
     def test_transform_copy(self):
         self.setUpTransform() # pour reset
 
-        self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy.dot", verbose=True)
+        self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy.dot",)
         self.transforms_graph["copy"].transform_copy(1)
         self.transforms_graph["copy"].transform_copy(2)
-        self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done.dot", verbose=True)
+        self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done.dot",)
 
 
 
     def test_transform_not(self):
         self.setUpTransform() # pour reset
 
-        self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not.dot", verbose=True)
+        self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not.dot",)
         self.transforms_graph["not"].transform_not(1)
         self.transforms_graph["not"].transform_not(4)
-        self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not_done.dot", verbose=True)
+        self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not_done.dot",)
     
     
 
     def test_transform_and(self):
         self.setUpTransform() # pour reset
 
-        self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and.dot", verbose=True)
+        self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and.dot",)
         self.transforms_graph["and"].transform_and(0)
         self.transforms_graph["and"].transform_and(5)
-        self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and_done.dot", verbose=True)
+        self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and_done.dot",)
 
 
 
     def test_transform_or(self):
         self.setUpTransform() # pour reset
 
-        self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or.dot", verbose=True)
+        self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or.dot",)
         self.transforms_graph["or"].transform_or(0)
         self.transforms_graph["or"].transform_or(5)
-        self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or_done.dot", verbose=True)
+        self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or_done.dot",)
     
 
 
     def test_transform_xor(self):
         self.setUpTransform() # pour reset
 
-        self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor.dot", verbose=True)
+        self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor.dot",)
         self.transforms_graph["xor"].transform_xor(0)
         self.transforms_graph["xor"].transform_xor(5)
-        self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor_done.dot", verbose=True)
+        self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor_done.dot",)
 
 
 
     def test_transform_neutral(self):
         self.setUpTransform() # pour reset
 
-        self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral.dot", verbose=True)
+        self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral.dot",)
         self.transforms_graph["neutral"].transform_neutral(0)
         self.transforms_graph["neutral"].transform_neutral(2)
         self.transforms_graph["neutral"].transform_neutral(4)
-        self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done.dot", verbose=True)
+        self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done.dot",)
 
 
 
@@ -456,28 +455,28 @@ class Bool_CircTest(unittest.TestCase):
         self.setUpTransform() # pour reset
 
         self.transforms_graph["copy"].transform_node(1)
-        self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done_transform_fct.dot", verbose=True)
+        self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done_transform_fct.dot",)
         
         self.transforms_graph["not"].transform_node(1)
         self.transforms_graph["not"].transform_node(4)
-        self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not_done_transform_fct.dot", verbose=True)
+        self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not_done_transform_fct.dot",)
     
         self.transforms_graph["and"].transform_node(0)
         self.transforms_graph["and"].transform_node(5)
-        self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and_done_transform_fct.dot", verbose=True)
+        self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and_done_transform_fct.dot",)
 
         self.transforms_graph["or"].transform_node(0)
         self.transforms_graph["or"].transform_node(5)
-        self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or_done_transform_fct.dot", verbose=True)
+        self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or_done_transform_fct.dot",)
     
         self.transforms_graph["xor"].transform_node(0)
         self.transforms_graph["xor"].transform_node(5)
-        self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor_done_transform_fct.dot", verbose=True)
+        self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor_done_transform_fct.dot",)
 
         self.transforms_graph["neutral"].transform_node(0)
         self.transforms_graph["neutral"].transform_node(2)
         self.transforms_graph["neutral"].transform_node(4)
-        self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done_transform_fct.dot", verbose=True)
+        self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done_transform_fct.dot",)
 
 
 # ------------------------- Simplify -------------------------
@@ -486,71 +485,71 @@ class Bool_CircTest(unittest.TestCase):
     def test_simplify_assoc_xor(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["assoc_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_xor.dot", True)
+        self.simplify_graph["assoc_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_xor.dot")
         self.simplify_graph["assoc_xor"].simplify_assoc_xor(5)
-        self.simplify_graph["assoc_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_xor_done.dot", True)
+        self.simplify_graph["assoc_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_xor_done.dot")
 
 
     
     def test_simplify_invol_xor(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["invol_xor_1"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_1.dot", True)
+        self.simplify_graph["invol_xor_1"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_1.dot")
         self.simplify_graph["invol_xor_1"].simplify_invol_xor(3)
-        self.simplify_graph["invol_xor_1"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_1_done.dot", True)
+        self.simplify_graph["invol_xor_1"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_1_done.dot")
 
-        self.simplify_graph["invol_xor_2"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_2.dot", True)
+        self.simplify_graph["invol_xor_2"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_2.dot")
         self.simplify_graph["invol_xor_2"].simplify_invol_xor(3)
-        self.simplify_graph["invol_xor_2"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_2_done.dot", True)
+        self.simplify_graph["invol_xor_2"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_2_done.dot")
 
-        self.simplify_graph["invol_xor_3"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_3.dot", True)
+        self.simplify_graph["invol_xor_3"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_3.dot")
         self.simplify_graph["invol_xor_3"].simplify_invol_xor(3)
-        self.simplify_graph["invol_xor_3"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_3_done.dot", True)
+        self.simplify_graph["invol_xor_3"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_3_done.dot")
 
 
     
     def test_simplify_not_xor(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["not_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/not_xor.dot", True)
+        self.simplify_graph["not_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/not_xor.dot")
         self.simplify_graph["not_xor"].simplify_not_through_xor(3)
-        self.simplify_graph["not_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/not_xor_done.dot", True)
+        self.simplify_graph["not_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/not_xor_done.dot")
 
 
     
     def test_simplify_assoc_copy(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["assoc_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_copy.dot", True)
+        self.simplify_graph["assoc_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_copy.dot")
         self.simplify_graph["assoc_copy"].simplify_assoc_copy(5)
-        self.simplify_graph["assoc_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_copy_done.dot", True)
+        self.simplify_graph["assoc_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_copy_done.dot")
 
 
     
     def test_simplify_delete(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["delete"].save_as_pdf_file("dot_files/bool_circ/simplify/delete.dot", True)
+        self.simplify_graph["delete"].save_as_pdf_file("dot_files/bool_circ/simplify/delete.dot")
         self.simplify_graph["delete"].simplify_delete(3)
-        self.simplify_graph["delete"].save_as_pdf_file("dot_files/bool_circ/simplify/delete_done.dot", True)
+        self.simplify_graph["delete"].save_as_pdf_file("dot_files/bool_circ/simplify/delete_done.dot")
 
 
     
     def test_simplify_not_copy(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["not_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/not_copy.dot", True)
+        self.simplify_graph["not_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/not_copy.dot")
         self.simplify_graph["not_copy"].simplify_not_through_copy(2)
-        self.simplify_graph["not_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/not_copy_done.dot", True)
+        self.simplify_graph["not_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/not_copy_done.dot")
 
 
     
     def test_simplify_not_not(self):
         self.setUpSimplify() # pour reset
 
-        self.simplify_graph["invol_not"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_not.dot", True)
+        self.simplify_graph["invol_not"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_not.dot")
         self.simplify_graph["invol_not"].simplify_invol_not(1)
-        self.simplify_graph["invol_not"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_not_done.dot", True)
+        self.simplify_graph["invol_not"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_not_done.dot")
 
 
     
@@ -558,35 +557,35 @@ class Bool_CircTest(unittest.TestCase):
         self.setUpSimplify() # pour reset
 
         self.simplify_graph["assoc_xor"].simplify_node(5)
-        self.simplify_graph["assoc_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_xor_done_simplify_fct.dot", True)
+        self.simplify_graph["assoc_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_xor_done_simplify_fct.dot")
 
 
         self.simplify_graph["invol_xor_1"].simplify_node(3)
-        self.simplify_graph["invol_xor_1"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_1_done_simplify_fct.dot", True)
+        self.simplify_graph["invol_xor_1"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_1_done_simplify_fct.dot")
         self.simplify_graph["invol_xor_2"].simplify_node(3)
-        self.simplify_graph["invol_xor_2"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_2_done_simplify_fct.dot", True)
+        self.simplify_graph["invol_xor_2"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_2_done_simplify_fct.dot")
         self.simplify_graph["invol_xor_3"].simplify_node(3)
-        self.simplify_graph["invol_xor_3"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_3_done_simplify_fct.dot", True)
+        self.simplify_graph["invol_xor_3"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_xor_3_done_simplify_fct.dot")
 
 
         self.simplify_graph["not_xor"].simplify_node(3)
-        self.simplify_graph["not_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/not_xor_done_simplify_fct.dot", True)
+        self.simplify_graph["not_xor"].save_as_pdf_file("dot_files/bool_circ/simplify/not_xor_done_simplify_fct.dot")
 
 
         self.simplify_graph["assoc_copy"].simplify_node(5)
-        self.simplify_graph["assoc_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_copy_done_simplify_fct.dot", True)
+        self.simplify_graph["assoc_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/assoc_copy_done_simplify_fct.dot")
 
         
         self.simplify_graph["delete"].simplify_node(3)
-        self.simplify_graph["delete"].save_as_pdf_file("dot_files/bool_circ/simplify/delete_done_simplify_fct.dot", True)
+        self.simplify_graph["delete"].save_as_pdf_file("dot_files/bool_circ/simplify/delete_done_simplify_fct.dot")
 
 
         self.simplify_graph["not_copy"].simplify_node(2)
-        self.simplify_graph["not_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/not_copy_done_simplify_fct.dot", True)
+        self.simplify_graph["not_copy"].save_as_pdf_file("dot_files/bool_circ/simplify/not_copy_done_simplify_fct.dot")
 
 
         self.simplify_graph["invol_not"].simplify_node(1)
-        self.simplify_graph["invol_not"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_not_done_simplify_fct.dot", True)
+        self.simplify_graph["invol_not"].save_as_pdf_file("dot_files/bool_circ/simplify/invol_not_done_simplify_fct.dot")
 
 
 

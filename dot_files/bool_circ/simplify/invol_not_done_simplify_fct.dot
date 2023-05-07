@@ -1,0 +1,5 @@
+digraph G {
+n0 [label="i",shape="box"];
+n3 [label="o",shape="diamond"];
+n0 -> n3
+}

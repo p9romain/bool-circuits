@@ -1,0 +1,13 @@
+digraph G {
+n0 [label="i0",shape="box"];
+n1 [label="i1",shape="box"];
+n2 [label="i2",shape="box"];
+n3 [label="^"];
+n5 [label="o",shape="diamond"];
+n4 [label="!"];
+n0 -> n3
+n1 -> n3
+n2 -> n3
+n3 -> n4
+n4 -> n5
+}

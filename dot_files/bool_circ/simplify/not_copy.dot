@@ -1,10 +1,10 @@
 digraph G {
-n0 [label="i\n id: 0",shape="box"];
-n1 [label="!\n id: 1"];
-n2 [label="\n id: 2"];
-n3 [label="o1\n id: 3",shape="diamond"];
-n4 [label="o2\n id: 4",shape="diamond"];
-n5 [label="o3\n id: 5",shape="diamond"];
+n0 [label="i",shape="box"];
+n1 [label="!"];
+n2 [label=""];
+n3 [label="o1",shape="diamond"];
+n4 [label="o2",shape="diamond"];
+n5 [label="o3",shape="diamond"];
 n0 -> n1
 n1 -> n2
 n2 -> n3

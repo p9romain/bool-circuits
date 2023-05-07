@@ -1,13 +1,13 @@
 digraph G {
-n2 [label="\n id: 2"];
-n3 [label="\n id: 3"];
-n4 [label="\n id: 4"];
-n5 [label="o0\n id: 5",shape="diamond"];
-n6 [label="o1\n id: 6",shape="diamond"];
-n7 [label="o2\n id: 7",shape="diamond"];
-n8 [label="0\n id: 8"];
-n9 [label="0\n id: 9"];
-n10 [label="0\n id: 10"];
+n2 [label=""];
+n3 [label=""];
+n4 [label=""];
+n5 [label="o0",shape="diamond"];
+n6 [label="o1",shape="diamond"];
+n7 [label="o2",shape="diamond"];
+n8 [label="0"];
+n9 [label="0"];
+n10 [label="0"];
 n2 -> n5
 n3 -> n6
 n4 -> n7

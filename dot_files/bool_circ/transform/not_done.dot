@@ -1,8 +1,8 @@
 digraph G {
-n1 [label="1\n id: 1"];
-n2 [label="o0\n id: 2",shape="diamond"];
-n4 [label="0\n id: 4"];
-n5 [label="o1\n id: 5",shape="diamond"];
+n1 [label="1"];
+n2 [label="o0",shape="diamond"];
+n4 [label="0"];
+n5 [label="o1",shape="diamond"];
 n1 -> n2
 n4 -> n5
 }

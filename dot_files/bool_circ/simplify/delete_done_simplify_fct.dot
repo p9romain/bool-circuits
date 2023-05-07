@@ -1,0 +1,11 @@
+digraph G {
+n0 [label="i0",shape="box"];
+n1 [label="i1",shape="box"];
+n2 [label="i2",shape="box"];
+n5 [label=""];
+n6 [label=""];
+n7 [label=""];
+n0 -> n5
+n1 -> n6
+n2 -> n7
+}

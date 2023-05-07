@@ -1,10 +1,10 @@
 digraph G {
-n0 [label="i0\n id: 0",shape="box"];
-n1 [label="i1\n id: 1",shape="box"];
-n2 [label="i2\n id: 2",shape="box"];
-n5 [label="\n id: 5"];
-n6 [label="\n id: 6"];
-n7 [label="\n id: 7"];
+n0 [label="i0",shape="box"];
+n1 [label="i1",shape="box"];
+n2 [label="i2",shape="box"];
+n5 [label=""];
+n6 [label=""];
+n7 [label=""];
 n0 -> n5
 n1 -> n6
 n2 -> n7

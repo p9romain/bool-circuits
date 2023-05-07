@@ -1,0 +1,293 @@
+.
+├── dot_files
+│   ├── bool_circ
+│   │   ├── adder.dot
+│   │   ├── bool_circ.dot
+│   │   ├── bool_circ_verbose.dot
+│   │   ├── carry_lookahead.dot
+│   │   ├── evaluate
+│   │   │   ├── and.dot
+│   │   │   ├── copy.dot
+│   │   │   ├── not.dot
+│   │   │   ├── or.dot
+│   │   │   ├── output
+│   │   │   │   ├── and.pdf
+│   │   │   │   ├── copy.pdf
+│   │   │   │   ├── not.pdf
+│   │   │   │   ├── or.pdf
+│   │   │   │   └── xor.pdf
+│   │   │   └── xor.dot
+│   │   ├── from_int.dot
+│   │   ├── from_one_str.dot
+│   │   ├── from_two_str.dot
+│   │   ├── half_adder.dot
+│   │   ├── hamming
+│   │   │   ├── decoder.dot
+│   │   │   ├── encode_decode_with_one_errors_0.dot
+│   │   │   ├── encode_decode_with_one_errors_1.dot
+│   │   │   ├── encode_decode_with_one_errors_2.dot
+│   │   │   ├── encode_decode_with_one_errors_3.dot
+│   │   │   ├── encode_decode_with_one_errors_4.dot
+│   │   │   ├── encode_decode_with_one_errors_5.dot
+│   │   │   ├── encode_decode_with_one_errors_6.dot
+│   │   │   ├── encode_decode_with_one_errors_7.dot
+│   │   │   ├── encode_decode_with_two_errors.dot
+│   │   │   ├── encode_decode_with_two_errors_simp.dot
+│   │   │   ├── encoder.dot
+│   │   │   └── output
+│   │   │       ├── decoder.pdf
+│   │   │       ├── encode_decode_with_one_errors_0.pdf
+│   │   │       ├── encode_decode_with_one_errors_1.pdf
+│   │   │       ├── encode_decode_with_one_errors_2.pdf
+│   │   │       ├── encode_decode_with_one_errors_3.pdf
+│   │   │       ├── encode_decode_with_one_errors_4.pdf
+│   │   │       ├── encode_decode_with_one_errors_5.pdf
+│   │   │       ├── encode_decode_with_one_errors_6.pdf
+│   │   │       ├── encode_decode_with_one_errors_7.pdf
+│   │   │       ├── encode_decode_with_two_errors.pdf
+│   │   │       ├── encode_decode_with_two_errors_simp.pdf
+│   │   │       └── encoder.pdf
+│   │   ├── output
+│   │   │   ├── adder.pdf
+│   │   │   ├── bool_circ.pdf
+│   │   │   ├── bool_circ_verbose.pdf
+│   │   │   ├── carry_lookahead.pdf
+│   │   │   ├── from_int.pdf
+│   │   │   ├── from_one_str.pdf
+│   │   │   ├── from_two_str.pdf
+│   │   │   ├── half_adder.pdf
+│   │   │   └── random.pdf
+│   │   ├── random.dot
+│   │   ├── simplify
+│   │   │   ├── assoc_copy_done.dot
+│   │   │   ├── assoc_copy_done_simplify_fct.dot
+│   │   │   ├── assoc_copy.dot
+│   │   │   ├── assoc_xor_done.dot
+│   │   │   ├── assoc_xor_done_simplify_fct.dot
+│   │   │   ├── assoc_xor.dot
+│   │   │   ├── delete_done.dot
+│   │   │   ├── delete_done_simplify_fct.dot
+│   │   │   ├── delete.dot
+│   │   │   ├── invol_not_done.dot
+│   │   │   ├── invol_not_done_simplify_fct.dot
+│   │   │   ├── invol_not.dot
+│   │   │   ├── invol_xor_1_done.dot
+│   │   │   ├── invol_xor_1_done_simplify_fct.dot
+│   │   │   ├── invol_xor_1.dot
+│   │   │   ├── invol_xor_2_done.dot
+│   │   │   ├── invol_xor_2_done_simplify_fct.dot
+│   │   │   ├── invol_xor_2.dot
+│   │   │   ├── invol_xor_3_done.dot
+│   │   │   ├── invol_xor_3_done_simplify_fct.dot
+│   │   │   ├── invol_xor_3.dot
+│   │   │   ├── not_copy_done.dot
+│   │   │   ├── not_copy_done_simplify_fct.dot
+│   │   │   ├── not_copy.dot
+│   │   │   ├── not_xor_done.dot
+│   │   │   ├── not_xor_done_simplify_fct.dot
+│   │   │   ├── not_xor.dot
+│   │   │   └── output
+│   │   │       ├── assoc_copy_done.pdf
+│   │   │       ├── assoc_copy_done_simplify_fct.pdf
+│   │   │       ├── assoc_copy.pdf
+│   │   │       ├── assoc_xor_done.pdf
+│   │   │       ├── assoc_xor_done_simplify_fct.pdf
+│   │   │       ├── assoc_xor.pdf
+│   │   │       ├── delete_done.pdf
+│   │   │       ├── delete_done_simplify_fct.pdf
+│   │   │       ├── delete.pdf
+│   │   │       ├── invol_not_done.pdf
+│   │   │       ├── invol_not_done_simplify_fct.pdf
+│   │   │       ├── invol_not.pdf
+│   │   │       ├── invol_xor_1_done.pdf
+│   │   │       ├── invol_xor_1_done_simplify_fct.pdf
+│   │   │       ├── invol_xor_1.pdf
+│   │   │       ├── invol_xor_2_done.pdf
+│   │   │       ├── invol_xor_2_done_simplify_fct.pdf
+│   │   │       ├── invol_xor_2.pdf
+│   │   │       ├── invol_xor_3_done.pdf
+│   │   │       ├── invol_xor_3_done_simplify_fct.pdf
+│   │   │       ├── invol_xor_3.pdf
+│   │   │       ├── not_copy_done.pdf
+│   │   │       ├── not_copy_done_simplify_fct.pdf
+│   │   │       ├── not_copy.pdf
+│   │   │       ├── not_xor_done.pdf
+│   │   │       ├── not_xor_done_simplify_fct.pdf
+│   │   │       └── not_xor.pdf
+│   │   └── transform
+│   │       ├── and_done.dot
+│   │       ├── and_done_transform_fct.dot
+│   │       ├── and.dot
+│   │       ├── copy_done.dot
+│   │       ├── copy_done_transform_fct.dot
+│   │       ├── copy.dot
+│   │       ├── neutral_done.dot
+│   │       ├── neutral_done_transform_fct.dot
+│   │       ├── neutral.dot
+│   │       ├── not_done.dot
+│   │       ├── not_done_transform_fct.dot
+│   │       ├── not.dot
+│   │       ├── or_done.dot
+│   │       ├── or_done_transform_fct.dot
+│   │       ├── or.dot
+│   │       ├── output
+│   │       │   ├── and_done.pdf
+│   │       │   ├── and_done_transform_fct.pdf
+│   │       │   ├── and.pdf
+│   │       │   ├── copy_done.pdf
+│   │       │   ├── copy_done_transform_fct.pdf
+│   │       │   ├── copy.pdf
+│   │       │   ├── neutral_done.pdf
+│   │       │   ├── neutral_done_transform_fct.pdf
+│   │       │   ├── neutral.pdf
+│   │       │   ├── not_done.pdf
+│   │       │   ├── not_done_transform_fct.pdf
+│   │       │   ├── not.pdf
+│   │       │   ├── or_done.pdf
+│   │       │   ├── or_done_transform_fct.pdf
+│   │       │   ├── or.pdf
+│   │       │   ├── xor_done.pdf
+│   │       │   ├── xor_done_transform_fct.pdf
+│   │       │   └── xor.pdf
+│   │       ├── xor_done.dot
+│   │       ├── xor_done_transform_fct.dot
+│   │       └── xor.dot
+│   ├── do_not_delete
+│   │   ├── g1.dot
+│   │   └── g2.dot
+│   ├── open_digraph
+│   │   ├── connected_graph_0.dot
+│   │   ├── connected_graph_1.dot
+│   │   ├── g1_compose_g2.dot
+│   │   ├── g1_icompose_g2.dot
+│   │   ├── g1_iparallel_g2.dot
+│   │   ├── g1_parallel_g2.dot
+│   │   ├── g_identity_5.dot
+│   │   ├── graph.dot
+│   │   ├── output
+│   │   │   ├── connected_graph_0.pdf
+│   │   │   ├── connected_graph_1.pdf
+│   │   │   ├── g1_compose_g2.pdf
+│   │   │   ├── g1_icompose_g2.pdf
+│   │   │   ├── g1_iparallel_g2.pdf
+│   │   │   ├── g1_parallel_g2.pdf
+│   │   │   ├── g_identity_5.pdf
+│   │   │   ├── graph.pdf
+│   │   │   └── test_from_file.pdf
+│   │   ├── test_from_file.dot
+│   │   └── test_save_file_w_verbose.dot
+│   ├── output
+│   ├── random
+│   │   ├── output
+│   │   │   ├── random_DAG_graph.pdf
+│   │   │   ├── random_DAG_loop_free_graph.pdf
+│   │   │   ├── random_graph.pdf
+│   │   │   ├── random_loop_free_graph.pdf
+│   │   │   ├── random_oriented_graph.pdf
+│   │   │   ├── random_oriented_loop_free_graph.pdf
+│   │   │   ├── random_undirected_graph.pdf
+│   │   │   └── random_undirected_loop_free_graph.pdf
+│   │   ├── random_DAG_graph.dot
+│   │   ├── random_DAG_loop_free_graph.dot
+│   │   ├── random_graph.dot
+│   │   ├── random_loop_free_graph.dot
+│   │   ├── random_oriented_graph.dot
+│   │   ├── random_oriented_loop_free_graph.dot
+│   │   ├── random_undirected_graph.dot
+│   │   └── random_undirected_loop_free_graph.dot
+│   └── random_graph
+│       ├── DAG_graph.dot
+│       ├── DAG_loop_free_graph.dot
+│       ├── graph.dot
+│       ├── loop_free_graph.dot
+│       ├── oriented_graph.dot
+│       ├── oriented_loop_free_graph.dot
+│       ├── output
+│       │   ├── DAG_graph.pdf
+│       │   ├── DAG_loop_free_graph.pdf
+│       │   ├── graph.pdf
+│       │   ├── loop_free_graph.pdf
+│       │   ├── oriented_graph.pdf
+│       │   ├── oriented_loop_free_graph.pdf
+│       │   ├── undirected_graph.pdf
+│       │   └── undirected_loop_free_graph.pdf
+│       ├── undirected_graph.dot
+│       └── undirected_loop_free_graph.dot
+├── modules
+│   ├── adjacency_matrix.py
+│   ├── bool_circ
+│   │   ├── bool_circ_classmethod_mx.py
+│   │   ├── bool_circ.py
+│   │   ├── bool_circ_simplify_mx.py
+│   │   ├── bool_circ_transform_mx.py
+│   │   └── __pycache__
+│   │       ├── bool_circ_classmethod_mx.cpython-310.pyc
+│   │       ├── bool_circ_classmethod_mx.cpython-38.pyc
+│   │       ├── bool_circ.cpython-310.pyc
+│   │       ├── bool_circ.cpython-38.pyc
+│   │       ├── bool_circ_simplify_mx.cpython-310.pyc
+│   │       ├── bool_circ_transform_mx.cpython-310.pyc
+│   │       └── bool_circ_transform_mx.cpython-38.pyc
+│   ├── node
+│   │   ├── node_add_remove_mx.py
+│   │   ├── node.py
+│   │   └── __pycache__
+│   │       ├── node_add_remove_mx.cpython-310.pyc
+│   │       ├── node_add_remove_mx.cpython-38.pyc
+│   │       ├── node.cpython-310.pyc
+│   │       └── node.cpython-38.pyc
+│   ├── open_digraph
+│   │   ├── open_digraph_add_remove_mx.py
+│   │   ├── open_digraph_classmethod_mx.py
+│   │   ├── open_digraph_composition_parallel_mx.py
+│   │   ├── open_digraph_path_mx.py
+│   │   ├── open_digraph.py
+│   │   ├── open_digraph_save_mx.py
+│   │   └── __pycache__
+│   │       ├── open_digraph_add_remove_mx.cpython-310.pyc
+│   │       ├── open_digraph_add_remove_mx.cpython-38.pyc
+│   │       ├── open_digraph_classmethod_mx.cpython-310.pyc
+│   │       ├── open_digraph_classmethod_mx.cpython-38.pyc
+│   │       ├── open_digraph_composition_parallel_mx.cpython-310.pyc
+│   │       ├── open_digraph_composition_parallel_mx.cpython-38.pyc
+│   │       ├── open_digraph.cpython-310.pyc
+│   │       ├── open_digraph.cpython-38.pyc
+│   │       ├── open_digraph_path_mx.cpython-310.pyc
+│   │       ├── open_digraph_path_mx.cpython-38.pyc
+│   │       ├── open_digraph_save_mx.cpython-310.pyc
+│   │       └── open_digraph_save_mx.cpython-38.pyc
+│   └── __pycache__
+│       ├── adjacency_matrix.cpython-310.pyc
+│       ├── adjacency_matrix.cpython-38.pyc
+│       ├── adjency_matrix.cpython-38.pyc
+│       ├── bool_circ.cpython-310.pyc
+│       ├── bool_circ.cpython-38.pyc
+│       ├── __init__.cpython-310.pyc
+│       ├── node.cpython-310.pyc
+│       ├── node.cpython-38.pyc
+│       ├── open_digraph.cpython-310.pyc
+│       └── open_digraph.cpython-38.pyc
+├── README.md
+├── sujets
+│   ├── TD01.pdf
+│   ├── TD02.pdf
+│   ├── TD03.pdf
+│   ├── TD04.pdf
+│   ├── TD05.pdf
+│   ├── TD06.pdf
+│   ├── TD07.pdf
+│   ├── TD08.pdf
+│   ├── TD09.pdf
+│   ├── TD10.pdf
+│   ├── TD11.pdf
+│   └── TD12.pdf
+├── tests
+│   ├── adjacency_matrix_test.py
+│   ├── bool_circ_test.py
+│   ├── node_test.py
+│   └── open_digraph_test.py
+├── tests.sh
+├── tmp.txt
+└── worksheet.py
+
+30 directories, 261 files

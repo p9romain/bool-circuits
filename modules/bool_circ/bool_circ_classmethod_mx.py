@@ -7,6 +7,7 @@ import random as rd
   
 import modules.open_digraph.open_digraph as od
 import modules.bool_circ.bool_circ as bc
+import modules.adjacency_matrix as am
 
 class bool_circ_classmethod_mx(object):
   @classmethod
@@ -109,7 +110,6 @@ class bool_circ_classmethod_mx(object):
 
     M = am.random_matrix(n, bound, null_diag = True, triangular = True)
     cls = am.graph_from_adjacency_matrix(M)
-
     # Inputs
     no_parents = [ n.id for n in cls.nodes_list if n.indegree() == 0 ] # all nodes without parents
     for id in no_parents :
@@ -118,7 +118,7 @@ class bool_circ_classmethod_mx(object):
     l = cls.nodes_not_io_list
     if input > len(no_parents) : # there isn't enough orphans lol
       for _ in range(input-len(no_parents)):
-        cls.add_input_node(children = {rd.sample(l, 1)[0].id : 1})
+        cls.add_input_node(children = {rd.sample(list(l), 1)[0].id : 1})
 
     while ( len(cls.inputs_ids) > input) : # there's too much inputs
       def fi(id1, id2):
@@ -140,7 +140,7 @@ class bool_circ_classmethod_mx(object):
     l = cls.nodes_not_io_list
     if output > len(no_children) : # there isn't enough orphans lol
       for _ in range(output-len(no_children)):
-        cls.add_output_node(parents = {rd.sample(l, 1)[0].id : 1})
+        cls.add_output_node(parents = {rd.sample(list(l), 1)[0].id : 1})
 
     while ( len(cls.outputs_ids) > output) : # there's too much outputs
       def fo(id1, id2):
@@ -163,15 +163,16 @@ class bool_circ_classmethod_mx(object):
       if in_deg == 1 and out_deg == 1 :
         n.label = '!'
       elif in_deg == 1 and out_deg > 1 :
-        n.label = ' '
+        n.label = ''
       elif in_deg > 1 and out_deg == 1 :
         n.label = rd.sample(['&&', '||', '^'], 1)[0]
       elif in_deg > 1 and out_deg > 1 :
-        id_cp = cls.add_node(label = ' ', parents = {n.id : 1}, children = n.children.copy())
-        n.children = {id_cp : 1}
-        n.label = rd.sample(['&&', '||', '^'], 1)[0]
-
-    cls.simplify()
+        uop = cls.add_node(rd.sample(['&&', '||', '^'], 1)[0], n.parents.copy(), {})
+        ucp = cls.add_node("", {}, n.children.copy())
+        cls.remove_node_by_id(n.id)
+        cls.add_edge((uop, ucp))
+        
+    cls = bc.bool_circ(cls.inputs_ids, cls.outputs_ids, cls.nodes_list)
     
     return cls
 

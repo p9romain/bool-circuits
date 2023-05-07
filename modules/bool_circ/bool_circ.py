@@ -12,10 +12,10 @@ import modules.bool_circ.bool_circ_classmethod_mx as bc_mx1
 import modules.bool_circ.bool_circ_transform_mx as bc_mx2
 import modules.bool_circ.bool_circ_simplify_mx as bc_mx3
 
-class bool_circ(od.open_digraph, 
-                bc_mx1.bool_circ_classmethod_mx,
+class bool_circ(bc_mx1.bool_circ_classmethod_mx,
                 bc_mx2.bool_circ_transform_mx,
-                bc_mx3.bool_circ_simplify_mx):
+                bc_mx3.bool_circ_simplify_mx,
+                od.open_digraph):
   def __init__(self, inputs : List[int], outputs : List[int], nodes : iter, desc : str = "") -> None:
     '''
     inputs: int list; the ids of the input nodes
@@ -149,6 +149,7 @@ class bool_circ(od.open_digraph,
 
     # for all co_leaves not attached to (at least) an output
     l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ]
+
     while len(l) > 0 :
       n = l[0]
       
