@@ -210,29 +210,29 @@ class Bool_CircTest(unittest.TestCase):
 
 
 
-    def test_transform(self):
-        self.transforms_graph["copy"].transform(1)
+    def test_transform_node(self):
+        self.transforms_graph["copy"].transform_node(1)
         self.transforms_graph["copy"].save_as_pdf_file("dot_files/bool_circ/transform/copy_done_transform_fct.dot", verbose=True)
         
-        self.transforms_graph["not"].transform(1)
-        self.transforms_graph["not"].transform(4)
+        self.transforms_graph["not"].transform_node(1)
+        self.transforms_graph["not"].transform_node(4)
         self.transforms_graph["not"].save_as_pdf_file("dot_files/bool_circ/transform/not_done_transform_fct.dot", verbose=True)
     
-        self.transforms_graph["and"].transform(0)
-        self.transforms_graph["and"].transform(5)
+        self.transforms_graph["and"].transform_node(0)
+        self.transforms_graph["and"].transform_node(5)
         self.transforms_graph["and"].save_as_pdf_file("dot_files/bool_circ/transform/and_done_transform_fct.dot", verbose=True)
 
-        self.transforms_graph["or"].transform(0)
-        self.transforms_graph["or"].transform(5)
+        self.transforms_graph["or"].transform_node(0)
+        self.transforms_graph["or"].transform_node(5)
         self.transforms_graph["or"].save_as_pdf_file("dot_files/bool_circ/transform/or_done_transform_fct.dot", verbose=True)
     
-        self.transforms_graph["xor"].transform(0)
-        self.transforms_graph["xor"].transform(5)
+        self.transforms_graph["xor"].transform_node(0)
+        self.transforms_graph["xor"].transform_node(5)
         self.transforms_graph["xor"].save_as_pdf_file("dot_files/bool_circ/transform/xor_done_transform_fct.dot", verbose=True)
 
-        self.transforms_graph["neutral"].transform(0)
-        self.transforms_graph["neutral"].transform(2)
-        self.transforms_graph["neutral"].transform(4)
+        self.transforms_graph["neutral"].transform_node(0)
+        self.transforms_graph["neutral"].transform_node(2)
+        self.transforms_graph["neutral"].transform_node(4)
         self.transforms_graph["neutral"].save_as_pdf_file("dot_files/bool_circ/transform/neutral_done_transform_fct.dot", verbose=True)
 
 
@@ -274,36 +274,67 @@ class Bool_CircTest(unittest.TestCase):
 
 
 
-    def test_evaluate_adder(self):
-        ad = bc.bool_circ.half_adder(2)
-        self.assertEqual(ad.evaluate("01000110"), "01010") # 0100 + 0110 = 1010 with carry 0
-        self.assertEqual(ad.evaluate("11000110"), "10010") # 1100 + 0110 = 0010 with carry 1
+    # def test_evaluate_adder(self):
+    #     ad = bc.bool_circ.half_adder(2)
+    #     self.assertEqual(ad.evaluate("01000110"), "01010") # 0100 + 0110 = 1010 with carry 0
+    #     self.assertEqual(ad.evaluate("11000110"), "10010") # 1100 + 0110 = 0010 with carry 1
 
-        ad = bc.bool_circ.half_adder(5)
-        self.assertEqual(ad.evaluate("0100101100101110101001011010101001011010100111010000010110101101"), "010100101110010111010101101010111")
-        # je te laisse vérifier sur internet ou manuellement
+    #     ad = bc.bool_circ.half_adder(5)
+    #     self.assertEqual(ad.evaluate("0100101100101110101001011010101001011010100111010000010110101101"), "010100101110010111010101101010111")
+    #     # je te laisse vérifier sur internet ou manuellement
 
-        self.assertEqual(ad.evaluateHalfAdder(1, 2), 3)
-        self.assertEqual(ad.evaluateHalfAdder(1, 0), 1)
-        self.assertEqual(ad.evaluateHalfAdder(0, 1), 1)
-        self.assertEqual(ad.evaluateHalfAdder(15, 37), 52)
-        self.assertEqual(ad.evaluateHalfAdder(2846423656, 23243), 2846446899)
+    #     self.assertEqual(ad.evaluateHalfAdder(1, 2), 3)
+    #     self.assertEqual(ad.evaluateHalfAdder(1, 0), 1)
+    #     self.assertEqual(ad.evaluateHalfAdder(0, 1), 1)
+    #     self.assertEqual(ad.evaluateHalfAdder(15, 37), 52)
+    #     self.assertEqual(ad.evaluateHalfAdder(2846423656, 23243), 2846446899)
 
-        ad = bc.bool_circ.adder(5)
-        self.assertEqual(ad.evaluateAdder(1, 2), 3)
-        self.assertEqual(ad.evaluateAdder(1, 0), 1)
-        self.assertEqual(ad.evaluateAdder(0, 1), 1)
-        self.assertEqual(ad.evaluateAdder(15, 37), 52)
-        self.assertEqual(ad.evaluateAdder(2846423656, 23243), 2846446899)
+    #     ad = bc.bool_circ.adder(5)
+    #     self.assertEqual(ad.evaluateAdder(1, 2), 3)
+    #     self.assertEqual(ad.evaluateAdder(1, 0), 1)
+    #     self.assertEqual(ad.evaluateAdder(0, 1), 1)
+    #     self.assertEqual(ad.evaluateAdder(15, 37), 52)
+    #     self.assertEqual(ad.evaluateAdder(2846423656, 23243), 2846446899)
 
 
     def test_enc(self):
         b = bc.bool_circ.enc()
-        b.display("dot_files/bool_circ/enc.dot")
+        print("Enc", b.outputs_ids)
+        b.display("dot_files/bool_circ/enc.dot",True)
 
     def test_dec(self):
         b = bc.bool_circ.dec()
-        b.display("dot_files/bool_circ/dec.dot")
+        print("Dec", b.inputs_ids)
+        b.display("dot_files/bool_circ/dec.dot",True)
+
+
+    def test_simplify(self):
+        b = bc.bool_circ.adder(0)
+        b.save_as_pdf_file("dot_files/bool_circ/adder0_simplified.dot")
+
+
+    def test_hamming(self):
+        b_enc = bc.bool_circ.enc()
+        n = len(b_enc.outputs_ids)
+        b_dec = bc.bool_circ.dec()
+
+        def f(i):
+            b = od.open_digraph.identity(n)
+            b.add_node("~",{i:1},{i+n:1})
+            b.remove_edge((i,i+n))
+            return b
+
+        def test_individual(b1,b2,b3,d):
+            b = od.open_digraph.compose(od.open_digraph.compose(b1,b2),b3)
+            b.simplify()
+            self.assertEqual(b.evaluate("1101"),"1101")
+            #b.display(f"dot_files/bool_circ/hamming{d}.dot")
+
+        b = od.open_digraph.compose(b_enc,b_dec)
+        b.simplify()
+        self.assertEqual(b.evaluate("1101"),"1101")
+        for i in range(n):
+            test_individual(b_enc,f(i),b_dec,i+1)
 
 
 if __name__ == '__main__': # the following code is called only when

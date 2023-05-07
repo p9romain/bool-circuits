@@ -198,7 +198,7 @@ class bool_circ_transform_mx:
       raise Exception("Given id must be a node in the bool circuit")
 
     n = self.node_by_id(id)
-    l = self.node_by_label_list(n.children_ids, r"^$")
+    l = self.getNodesCopyInList(n.children_ids)
     if len(l) == 0: return self
     else:
       n_children = l[0]
@@ -215,7 +215,7 @@ class bool_circ_transform_mx:
       raise Exception("Given id must be a node in the bool circuit")
 
     n = self.node_by_id(id)
-    l = self.node_by_label_list(n.children_ids, r"^$")
+    l = self.getNodesCopyInList(n.parents_ids)
     if len(l) == 0: return self
     else:
       n_parent = l[0]
@@ -234,11 +234,19 @@ class bool_circ_transform_mx:
     if not id in self.nodes_ids:
       raise Exception("Given id must be a node in the bool circuit")
 
-    
+    n = self.node_by_id(id)
+    if len(n.parents_ids) == 0 or len(n.children_ids) == 0: return self
+    else:
+      if len(n.children_ids) == 1 and self.isCopyNode(n.children_ids[0]) and len(self.node_by_id(n.children_ids[0]).children_ids) == 0:
+        for n_id in n.parents_ids:
+          self.add_node("",{n_id:1},{})
+
+        self.remove_node_by_id(n.children_ids[0])
+        self.remove_node_by_id(n.id)
 
     return self
 
-  def transform_no_through_xor(self, id : int) -> None : # focus on xor node
+  def transform_not_through_xor(self, id : int) -> None : # focus on xor node
     if not isinstance(id, int):
       raise TypeError("Given id must be an integer")
     if not id in self.nodes_ids:
@@ -257,7 +265,7 @@ class bool_circ_transform_mx:
 
     return self
 
-  def transform_no_through_copy(self, id : int) -> None : # focus on copy node
+  def transform_not_through_copy(self, id : int) -> None : # focus on copy node
     if not isinstance(id, int):
       raise TypeError("Given id must be an integer")
     if not id in self.nodes_ids:
@@ -276,22 +284,25 @@ class bool_circ_transform_mx:
 
     return self
 
-  def transform_invol_no(self, id : int) -> None : # focus on parent copy node compared to children copy node
+  def transform_invol_not(self, id : int) -> None : # focus on parent copy node compared to children copy node
     if not isinstance(id, int):
       raise TypeError("Given id must be an integer")
     if not id in self.nodes_ids:
       raise Exception("Given id must be a node in the bool circuit")
 
     n = self.node_by_id(id)
-    n_chidren = self.node_by_id(n.children_ids[0])
-    self.add_edge((n.id.parents_ids[0],n_chidren.children_ids[0]))
+    n_children = self.node_by_id(n.children_ids[0])
+
+    if not n_children.label in ["!","~"]: return self
+
+    self.add_edge((n.parents_ids[0],n_children.children_ids[0]))
     self.remove_node_by_id(n.id)
-    self.remove_node_by_id(n.childre.id)
+    self.remove_node_by_id(n_children.id)
 
     return self
 
 
-  def transform(self, id : int) -> None :
+  def transform_node(self, id : int) -> None :
     """
     Applies a certain transformation to a node
     """
@@ -311,3 +322,26 @@ class bool_circ_transform_mx:
       self.transform_or(id)
     elif label == "^":
       self.transform_xor(id)
+
+  def simplify_node(self, id : int) -> None :
+    """
+    Applies a certain simplify to a node
+    """
+    if not isinstance(id, int):
+      raise TypeError("Given id must be an integer")
+    if not id in self.nodes_ids:
+      raise Exception("Given id must be a node in the bool circuit")
+    if id in self.inputs_ids or id in self.outputs_ids: return
+
+    label = self.node_by_id(id).label
+    if label == "^":
+      self.transform_assoc_xor(id)
+      self.transform_invol_xor(id)
+      self.transform_not_through_xor(id)
+    elif self.isCopyNode(id):
+      self.transform_assoc_copy(id)
+      self.transform_not_through_copy(id)
+    elif label in ["~","!"]:
+      self.transform_invol_not(id)
+
+    if id in self.nodes_ids: self.transform_delete(id)

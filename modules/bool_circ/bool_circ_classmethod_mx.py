@@ -78,6 +78,8 @@ class bool_circ_classmethod_mx(object):
       g.node_by_id(id_node).label = ''
       g.add_input_node(i,{id_node:1})
 
+    g.simplify()
+    
     return g, list(merge_list.keys())
 
 
@@ -169,6 +171,8 @@ class bool_circ_classmethod_mx(object):
         n.children = {id_cp : 1}
         n.label = rd.sample(['&&', '||', '^'], 1)[0]
 
+    cls.simplify()
+    
     return cls
 
 
@@ -264,6 +268,8 @@ class bool_circ_classmethod_mx(object):
 
     cls = bis(n)
 
+    cls.simplify()
+    
     return cls
     
 
@@ -278,6 +284,9 @@ class bool_circ_classmethod_mx(object):
     node_c = cls.node_by_label(r"^c$")[0]
     cls.inputs_ids.remove(node_c.id)
     node_c.label = "0"
+    
+    cls.simplify()
+    
     return cls
 
 
@@ -337,6 +346,9 @@ class bool_circ_classmethod_mx(object):
         return g
 
     cls = bis(n)
+
+    cls.simplify()
+
     return cls
 
 
@@ -362,6 +374,7 @@ class bool_circ_classmethod_mx(object):
     for i in range(n):
       cls.inputs_ids.remove(i)
       cls.node_by_id(i).label = s[i]
+
     return cls
 
   @classmethod
@@ -374,6 +387,8 @@ class bool_circ_classmethod_mx(object):
 
     cls = bool_circ_classmethod_mx.from_str("((x1)^(x2))^(x4)", "((x1)^(x3))^(x4)", "(x1)", "((x2)^(x3))^(x4)", "(x2)", "(x3)", "(x4)")[0]
 
+    cls.simplify()
+    
     return cls
 
   @classmethod
@@ -389,4 +404,6 @@ class bool_circ_classmethod_mx(object):
     s3 = "(((x4)^(x5))^(x6))^(x7)"
     cls = bool_circ_classmethod_mx.from_str(f"((({s1})&({s2}))&(~({s3})))^(x3)", f"((({s1})&(~({s2})))&({s3}))^(x5)", f"(((~({s1}))&({s2}))&({s3}))^(x6)", f"((({s1})&({s2}))&({s3}))^(x7)")[0] # c'est horrible après on pouvait donner un nombre aux noeuds copies et les retirer après
 
+    cls.simplify()
+    
     return cls

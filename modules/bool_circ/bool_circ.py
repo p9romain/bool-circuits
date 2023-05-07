@@ -24,8 +24,6 @@ class bool_circ(od.open_digraph,
     od.open_digraph.__init__(self, inputs, outputs, nodes, desc)
     if not self.is_well_formed(): raise Exception("Given argument must be a correct bool circuit")
 
-
-
   def is_well_formed(self) -> bool :
     """
     Check if the bool circuit is well formed :
@@ -88,7 +86,6 @@ class bool_circ(od.open_digraph,
     Saves and display the graph in a pdf
     The verbose adds the id in the file, not only the label of a node
     """
-    print("here")
     od.open_digraph.display(self, path, verbose)
 
 
@@ -153,7 +150,7 @@ class bool_circ(od.open_digraph,
       
       # always an 0 or 1, but sometimes binary operator
       # eg : true && true && true => && with transform
-      if n.label in ["0", "1"] : b.transform(n.children_ids[0])
+      if n.label in ["0", "1"] : b.transform_node(n.children_ids[0])
       else : b.transform_neutral(n.id) 
       l = [ n for n in b.nodes_list if len(n.parents_ids) == 0 and f(n) ] # update what to do
 
@@ -214,3 +211,20 @@ class bool_circ(od.open_digraph,
     m = (len(self.inputs_ids)//2-len(m))*"0" + m
 
     return int(self.evaluate(n + m + "0"), 2) # bin to dec
+
+  def simplify(self) -> None:
+    g1 = self.copy()
+    n = 0
+    while (n < len(self.nodes_ids)) or (g1 != self):
+      g1 = self.copy()
+      self.simplify_node(self.nodes_ids[n])
+      if g1 == self:
+        n += 1
+      else:
+        n = 0
+
+  def isCopyNode(self, id : int) -> bool:
+    return self.node_by_id(id).label == "" and not id in self.inputs_ids and not id in self.outputs_ids
+
+  def getNodesCopyInList(self, t : List[int]) -> None:
+    return [ self.node_by_id(id) for id in t if self.isCopyNode(id)]
