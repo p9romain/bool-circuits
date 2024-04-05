@@ -1,7 +1,3 @@
-# Binôme
-- PERROD Romain
-- BOHÈRE Matthieu
+# Code's Execution
 
-# Exécution du code
-
-Pour exécuter les fichiers tests, faire `./tests.sh` dans un Terminal : tout sera exécuté petit à petit.
+To launch tests files, do `./tests.sh` in a Terminal : everything will be executed step by step.
